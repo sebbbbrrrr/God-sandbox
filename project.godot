@@ -1,0 +1,26 @@
+; Engine configuration file.
+; God Sandbox — Godot 4.5.2, mobile-first, 2D.
+config_version=5
+
+[application]
+config/name="God Sandbox"
+run/main_scene="res://scenes/world.tscn"
+config/features=PackedStringArray("4.5", "GL Compatibility")
+config/description="A living, procedural 2D sandbox."
+
+[display]
+window/size/viewport_width=480
+window/size/viewport_height=850
+window/size/window_width_override=480
+window/size/window_height_override=850
+window/stretch/mode="canvas_items"
+window/handheld/orientation=1
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+environment/defaults/default_clear_color=Color(0.06, 0.16, 0.22, 1)
+
+[physics]
+common/physics_ticks_per_second=60

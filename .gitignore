@@ -1,0 +1,12 @@
+# Godot generated state and credentials
+.godot/
+*.tmp
+*.log
+*.apk
+*.aab
+build/
+export/
+export_credentials.cfg
+*.keystore
+*.jks
+.DS_Store
