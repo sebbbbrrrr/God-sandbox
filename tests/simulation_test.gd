@@ -33,10 +33,10 @@ func _initialize() -> void:
     success = check(circle.has(Vector2i(12, 10)) and not circle.has(Vector2i(12, 12)),
         "circular brush footprint") and success
     var painting_world = Simulation.new(987)
-    var changes: int = Brush.paint_segment(painting_world, 5, Vector2i(8, 8), Vector2i(28, 8), 2)
-    success = check(changes > 0 and painting_world.at(18, 8) == Simulation.OCEAN,
-        "ocean drag changes terrain") and success
-    success = check(Brush.paint_segment(painting_world, 5,
+    var changes: int = Brush.paint_segment(painting_world, 0, Vector2i(8, 8), Vector2i(28, 8), 2)
+    success = check(changes > 0 and painting_world.at(18, 8) == Simulation.MEADOW,
+        "raise land drag changes terrain") and success
+    success = check(Brush.paint_segment(painting_world, 0,
         Vector2i(8, 8), Vector2i(28, 8), 2) == 0,
         "unchanged cells skipped") and success
     success = check(Brush.paint_segment(painting_world, 1,
