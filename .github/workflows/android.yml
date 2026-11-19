@@ -78,6 +78,9 @@ jobs:
       - name: Run simulation regression tests
         run: ./godot --headless --path . --script res://tests/simulation_test.gd
 
+      - name: Smoke-test main game scene
+        run: ./godot --headless --path . --quit-after 30
+
       - name: Export Android debug APK
         run: |
           mkdir -p build
