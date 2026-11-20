@@ -193,6 +193,12 @@ func touch_centroid() -> Vector2:
     return ((points[0] as Vector2) + (points[1] as Vector2)) * 0.5
 
 func _input(event: InputEvent) -> void:
+    # Standard Godot Buttons require emulated mouse clicks from Android touch.
+    # The world already processes native touch/drag events, so ignore only
+    # synthesized mouse events here to prevent double painting, taps and pans.
+    # Real mouse input (including a Bluetooth mouse) remains supported.
+    if event.device == InputEvent.DEVICE_ID_EMULATION and (event is InputEventMouseButton or event is InputEventMouseMotion):
+        return
     if event is InputEventScreenTouch:
         if event.pressed:
             touches[event.index] = event.position
