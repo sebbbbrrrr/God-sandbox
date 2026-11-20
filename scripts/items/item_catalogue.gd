@@ -106,6 +106,8 @@ func can_craft(id: String, inventory: Dictionary, context: Dictionary) -> bool:
         return false
     if not _flag_present(context.get("roles", {}), occupation):
         return false
+    if int(context.get("age_years", -1)) < int(recipe.get("min_age_years", 9999)):
+        return false
     if int(skill_xp.get(occupation, 0)) < int(recipe.get("min_skill_xp", 0)):
         return false
     return _has_materials(inventory, recipe["inputs"])
