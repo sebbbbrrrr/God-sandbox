@@ -47,8 +47,8 @@ static func advance_needs(state: Dictionary, tick: int) -> void:
     var elapsed: int = maxi(0, tick - int(state["last_needs_tick"]))
     state["last_needs_tick"] = tick
     var needs: Dictionary = state["needs"]
-    needs["fatigue"] = clampi(int(needs["fatigue"]) + elapsed / 12, 0, 100)
-    needs["social"] = clampi(int(needs["social"]) + elapsed / 18, 0, 100)
+    needs["fatigue"] = clampi(int(needs["fatigue"]) + tick / 12 - (tick - elapsed) / 12, 0, 100)
+    needs["social"] = clampi(int(needs["social"]) + tick / 18 - (tick - elapsed) / 18, 0, 100)
 
 static func danger_near(world: RefCounted, cell: Vector2i) -> bool:
     for dy in range(-1, 2):
