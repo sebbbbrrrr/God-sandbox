@@ -16,15 +16,16 @@ var inspected_citizen_id := -1
 # Keep the simulation from monopolising the Android main thread at 2x/4x.
 # One expensive world.step() cannot be interrupted, but subsequent steps are
 # deferred once the CPU slice has been consumed. Rendering uses real time.
-const SIM_TICK_SECONDS := 0.1
+const SIM_TICK_SECONDS := 1.0 # At 1x, one authoritative world tick takes one real second.
 const MAX_SIM_STEPS_PER_FRAME := 4
 const SIM_FRAME_BUDGET_USEC := 4500
-const MAX_SIM_BACKLOG_SECONDS := 0.25
+const MAX_SIM_BACKLOG_SECONDS := 4.0
 const VISUAL_REFRESH_SECONDS := 1.0 / 30.0
 const HUD_REFRESH_SECONDS := 0.1
 var visual_refresh_accum := 0.0
 var hud_refresh_accum := 0.0
 var units_need_refresh := false
+var work_visual_clock := 0.0
 
 
 func _ready() -> void:
@@ -109,6 +110,8 @@ func _process(delta: float) -> void:
         return
     var real_delta: float = maxf(0.0, delta)
     visual_refresh_accum += real_delta
+    if not paused:
+        work_visual_clock += real_delta * float(simulation_speed)
     hud_refresh_accum += real_delta
     if not paused:
         # Bound accumulated work after a device stall rather than trying to
@@ -140,6 +143,8 @@ func _process(delta: float) -> void:
         if units_need_refresh:
             world_renderer.refresh_units()
             units_need_refresh = false
+    if world_renderer.walks != null:
+        world_renderer.walks.walk_seconds = 0.85 / float(simulation_speed)
     world_renderer.animate(real_delta, 0.0 if paused else real_delta)
     if hud != null and (hud_refresh_accum >= HUD_REFRESH_SECONDS or paused):
         hud_refresh_accum = 0.0
