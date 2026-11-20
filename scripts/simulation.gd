@@ -1,6 +1,8 @@
 extends RefCounted
 class_name SandboxSimulation
 
+const AI = preload("res://scripts/ai/citizen_ai.gd")
+
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
 const WIDTH := 96
@@ -19,6 +21,7 @@ var seed: int
 var tick: int = 0
 var terrain := PackedByteArray()
 var citizens: Array[Dictionary] = []
+var citizen_ai_by_id: Dictionary = {}
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -84,6 +87,7 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         "hp": 100,
         "age": 0
     })
+    citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
     next_id += 1
     return true
 
@@ -107,22 +111,10 @@ func step() -> void:
             continue
         if (tick + citizen["id"]) % 3 != 0:
             continue
-        var r := rng.randi_range(0, 4)
-        var dx := 0
-        var dy := 0
-        if r == 0:
-            dx = -1
-        elif r == 1:
-            dx = 1
-        elif r == 2:
-            dy = -1
-        elif r == 3:
-            dy = 1
-        var nx: int = citizen["x"] + dx
-        var ny: int = citizen["y"] + dy
-        if is_walkable(nx, ny):
-            citizen["x"] = nx
-            citizen["y"] = ny
+        var id_key := str(citizen["id"])
+        if not citizen_ai_by_id.has(id_key):
+            citizen_ai_by_id[id_key] = AI.create_state(seed, int(citizen["id"]), tick)
+        AI.step(self, citizen, citizen_ai_by_id[id_key])
         citizen["age"] += 1
     if tick % 150 == 0:
         grow_settlements()
@@ -172,14 +164,16 @@ func apply_power(power: int, x: int, y: int) -> bool:
 
 func snapshot() -> Dictionary:
     return {
-        "version": 1, "seed": seed, "tick": tick, "next_id": next_id,
+        "version": 2, "seed": seed, "tick": tick, "next_id": next_id,
+        "ai_version": 1, "citizen_ai_by_id": citizen_ai_by_id,
         "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens,
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
         "rng_state": rng.state
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
-    if int(data.get("version", -1)) != 1:
+    var version := int(data.get("version", -1))
+    if version != 1 and version != 2:
         return null
     var raw := Marshalls.base64_to_raw(str(data.get("terrain", "")))
     if raw.size() != WIDTH * HEIGHT:
@@ -188,6 +182,7 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     result.terrain = raw
     result.tick = maxi(0, int(data.get("tick", 0)))
     result.citizens.clear()
+    result.citizen_ai_by_id.clear()
     var saved_people: Array = data.get("citizens", [])
     for person in saved_people:
         if typeof(person) != TYPE_DICTIONARY or result.citizens.size() >= MAX_PEOPLE:
@@ -200,7 +195,14 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 "x": x, "y": y, "hp": clampi(int(person.get("hp", 100)), 0, 100),
                 "age": maxi(0, int(person.get("age", 0)))
             })
-    result.next_id = maxi(1, int(data.get("next_id", result.citizens.size() + 1)))
+    var stored_ai: Dictionary = data.get("citizen_ai_by_id", {}) if version == 2 and data.get("citizen_ai_by_id", {}) is Dictionary else {}
+    var highest_id := 0
+    for person in result.citizens:
+        var person_id: int = int(person["id"])
+        highest_id = maxi(highest_id, person_id)
+        result.citizen_ai_by_id[str(person_id)] = AI.validate_state(
+            stored_ai.get(str(person_id), null), result.seed, person_id, result.tick)
+    result.next_id = maxi(highest_id + 1, int(data.get("next_id", highest_id + 1)))
     var saved_capitals: Array = data.get("capitals", [])
     if saved_capitals.size() == 2:
         for i in range(2):
