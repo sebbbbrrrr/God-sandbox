@@ -6091,5 +6091,1605 @@
     "page": 0,
     "category": "overlay",
     "source": "tools/expand_pixel_assets.py"
+  },
+  "era1_lean_to_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "lean_to",
+    "variant": "a"
+  },
+  "era1_lean_to_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "lean_to",
+    "variant": "b"
+  },
+  "era1_hide_tent_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "hide_tent",
+    "variant": "a"
+  },
+  "era1_hide_tent_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "hide_tent",
+    "variant": "b"
+  },
+  "era1_branch_hut_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "branch_hut",
+    "variant": "a"
+  },
+  "era1_branch_hut_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "branch_hut",
+    "variant": "b"
+  },
+  "era1_stone_shelter_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "stone_shelter",
+    "variant": "a"
+  },
+  "era1_stone_shelter_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "stone_shelter",
+    "variant": "b"
+  },
+  "era1_hearth_circle_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "hearth_circle",
+    "variant": "a"
+  },
+  "era1_hearth_circle_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      0,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      0,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "hearth_circle",
+    "variant": "b"
+  },
+  "era1_tool_area_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "tool_area",
+    "variant": "a"
+  },
+  "era1_tool_area_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "tool_area",
+    "variant": "b"
+  },
+  "era1_drying_rack_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "drying_rack",
+    "variant": "a"
+  },
+  "era1_drying_rack_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "drying_rack",
+    "variant": "b"
+  },
+  "era1_communal_canopy_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "communal_canopy",
+    "variant": "a"
+  },
+  "era1_communal_canopy_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 1,
+    "archetype": "communal_canopy",
+    "variant": "b"
+  },
+  "era2_wattle_house_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "wattle_house",
+    "variant": "a"
+  },
+  "era2_wattle_house_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "wattle_house",
+    "variant": "b"
+  },
+  "era2_longhouse_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "longhouse",
+    "variant": "a"
+  },
+  "era2_longhouse_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      64,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      64,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "longhouse",
+    "variant": "b"
+  },
+  "era2_granary_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "granary",
+    "variant": "a"
+  },
+  "era2_granary_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "granary",
+    "variant": "b"
+  },
+  "era2_mud_store_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "mud_store",
+    "variant": "a"
+  },
+  "era2_mud_store_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "mud_store",
+    "variant": "b"
+  },
+  "era2_farmstead_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "farmstead",
+    "variant": "a"
+  },
+  "era2_farmstead_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "farmstead",
+    "variant": "b"
+  },
+  "era2_tool_area_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "tool_area",
+    "variant": "a"
+  },
+  "era2_tool_area_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "tool_area",
+    "variant": "b"
+  },
+  "era2_pottery_kiln_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "pottery_kiln",
+    "variant": "a"
+  },
+  "era2_pottery_kiln_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      128,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      128,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "pottery_kiln",
+    "variant": "b"
+  },
+  "era2_meeting_lodge_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "meeting_lodge",
+    "variant": "a"
+  },
+  "era2_meeting_lodge_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 2,
+    "archetype": "meeting_lodge",
+    "variant": "b"
+  },
+  "era3_mudbrick_house_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "mudbrick_house",
+    "variant": "a"
+  },
+  "era3_mudbrick_house_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "mudbrick_house",
+    "variant": "b"
+  },
+  "era3_courtyard_house_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "courtyard_house",
+    "variant": "a"
+  },
+  "era3_courtyard_house_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "courtyard_house",
+    "variant": "b"
+  },
+  "era3_granary_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "granary",
+    "variant": "a"
+  },
+  "era3_granary_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "granary",
+    "variant": "b"
+  },
+  "era3_bronze_foundry_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "bronze_foundry",
+    "variant": "a"
+  },
+  "era3_bronze_foundry_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      192,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      192,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "bronze_foundry",
+    "variant": "b"
+  },
+  "era3_market_court_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "market_court",
+    "variant": "a"
+  },
+  "era3_market_court_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "market_court",
+    "variant": "b"
+  },
+  "era3_temple_shrine_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "temple_shrine",
+    "variant": "a"
+  },
+  "era3_temple_shrine_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "temple_shrine",
+    "variant": "b"
+  },
+  "era3_tool_area_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "tool_area",
+    "variant": "a"
+  },
+  "era3_tool_area_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "tool_area",
+    "variant": "b"
+  },
+  "era3_civic_hall_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "civic_hall",
+    "variant": "a"
+  },
+  "era3_civic_hall_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 3,
+    "archetype": "civic_hall",
+    "variant": "b"
+  },
+  "era4_stone_villa_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "stone_villa",
+    "variant": "a"
+  },
+  "era4_stone_villa_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      256,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      256,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "stone_villa",
+    "variant": "b"
+  },
+  "era4_courtyard_house_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "courtyard_house",
+    "variant": "a"
+  },
+  "era4_courtyard_house_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "courtyard_house",
+    "variant": "b"
+  },
+  "era4_tiled_workshop_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "tiled_workshop",
+    "variant": "a"
+  },
+  "era4_tiled_workshop_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "tiled_workshop",
+    "variant": "b"
+  },
+  "era4_colonnade_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "colonnade",
+    "variant": "a"
+  },
+  "era4_colonnade_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "colonnade",
+    "variant": "b"
+  },
+  "era4_market_forum_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "market_forum",
+    "variant": "a"
+  },
+  "era4_market_forum_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "market_forum",
+    "variant": "b"
+  },
+  "era4_barracks_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "barracks",
+    "variant": "a"
+  },
+  "era4_barracks_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      320,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      320,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "barracks",
+    "variant": "b"
+  },
+  "era4_tool_area_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "tool_area",
+    "variant": "a"
+  },
+  "era4_tool_area_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "tool_area",
+    "variant": "b"
+  },
+  "era4_bathhouse_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "bathhouse",
+    "variant": "a"
+  },
+  "era4_bathhouse_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 4,
+    "archetype": "bathhouse",
+    "variant": "b"
+  },
+  "era5_half_timber_house_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "half_timber_house",
+    "variant": "a"
+  },
+  "era5_half_timber_house_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "half_timber_house",
+    "variant": "b"
+  },
+  "era5_stone_cottage_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "stone_cottage",
+    "variant": "a"
+  },
+  "era5_stone_cottage_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "stone_cottage",
+    "variant": "b"
+  },
+  "era5_guildhall_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "guildhall",
+    "variant": "a"
+  },
+  "era5_guildhall_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      384,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      384,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "guildhall",
+    "variant": "b"
+  },
+  "era5_watermill_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      0,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      0,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "watermill",
+    "variant": "a"
+  },
+  "era5_watermill_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      64,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      64,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "watermill",
+    "variant": "b"
+  },
+  "era5_market_square_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      128,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      128,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "market_square",
+    "variant": "a"
+  },
+  "era5_market_square_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      192,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      192,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "market_square",
+    "variant": "b"
+  },
+  "era5_fortified_tower_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      256,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      256,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "fortified_tower",
+    "variant": "a"
+  },
+  "era5_fortified_tower_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      320,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      320,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "fortified_tower",
+    "variant": "b"
+  },
+  "era5_tool_area_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      384,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      384,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "tool_area",
+    "variant": "a"
+  },
+  "era5_tool_area_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      448,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      448,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "tool_area",
+    "variant": "b"
+  },
+  "era5_granary_a": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      512,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      512,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "granary",
+    "variant": "a"
+  },
+  "era5_granary_b": {
+    "atlas": "sprite_atlas_1",
+    "rect": [
+      576,
+      448,
+      64,
+      64
+    ],
+    "packed_rect": [
+      576,
+      448,
+      64,
+      64
+    ],
+    "page": 1,
+    "category": "era_architecture",
+    "age": 5,
+    "archetype": "granary",
+    "variant": "b"
   }
 }
