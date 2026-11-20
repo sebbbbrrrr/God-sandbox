@@ -104,6 +104,8 @@ func can_craft(id: String, inventory: Dictionary, context: Dictionary) -> bool:
     if not _flag_present(context.get("capabilities", {}), tech) or \
             not _flag_present(context.get("facilities", {}), station):
         return false
+    if not _flag_present(context.get("roles", {}), occupation):
+        return false
     if int(skill_xp.get(occupation, 0)) < int(recipe.get("min_skill_xp", 0)):
         return false
     return _has_materials(inventory, recipe["inputs"])
@@ -131,6 +133,8 @@ func can_use_ability(id: String, inventory: Dictionary, context: Dictionary) -> 
         return false
     var role := str(row.get("occupation", ""))
     var skills: Dictionary = context.get("skills", {})
+    if not _flag_present(context.get("roles", {}), role):
+        return false
     if int(skills.get(role, 0)) < int(row.get("min_skill_xp", 0)):
         return false
     if not _flag_present(context.get("capabilities", {}), str(row.get("capability", ""))):
@@ -146,16 +150,19 @@ func context_for_citizen(world: RefCounted, person: Dictionary, definition_id: S
     var row: Dictionary = abilities.get(definition_id, {}) if for_ability else items.get(definition_id, {})
     if row.is_empty() or int(person.get("hp", 0)) <= 0:
         return {}
-    var requirements: Dictionary = row if for_ability else row.get("recipe", {})
-    if requirements.is_empty():
+    var requirements_variant: Variant = row if for_ability else row.get("recipe", null)
+    if not requirements_variant is Dictionary or requirements_variant.is_empty():
         return {}
+    var requirements: Dictionary = requirements_variant
     var tech := str(requirements.get("capability", ""))
     var facility := str(requirements.get("facility", requirements.get("station", "")))
     var nation := int(person.get("nation", -1))
     var skills: Dictionary = world.occupations.record_for(person).get("xp", {})
+    var role := str(requirements.get("occupation", requirements.get("skill", "")))
     return {
         "age_years": world.calendar.age_years(int(person.get("birth_tick", world.tick)), world.tick),
         "skills": skills.duplicate(),
+        "roles": {role: world.occupations.enabled(world, nation, role)} if role != "" else {},
         "capabilities": {tech: world.occupations.has_capability(world, nation, tech)} if tech != "" else {},
         "facilities": {facility: world.occupations.facility_present(world, nation, facility)} if facility != "" else {}
     }
