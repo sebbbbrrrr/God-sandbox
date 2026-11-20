@@ -1,0 +1,921 @@
+{
+  "date": "2026-11-20",
+  "baseline_ref": "476e3a7b03ef1326c62d320f6ce30e35ddb8eb72",
+  "implementation_ref": "50b20edaf1d37b28c278eaf8ca34ef83f86929ec",
+  "verified_code_tree": "ef62f5e15294786c1dcb9c6b3414e367dc37acea",
+  "engine": "4.5.2.stable.official.6ce3de25a",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "before": [
+    {
+      "beliefs": 2560,
+      "bounds_and_replay_passed": true,
+      "decisions": 10776,
+      "dense": false,
+      "goals": {
+        "explore": 140,
+        "rest": 10,
+        "socialize": 10
+      },
+      "interactions": 1011,
+      "json_load_ms": 112.023,
+      "json_save_bytes": 987814,
+      "json_save_ms": 57.868,
+      "max_ms": 12.438,
+      "max_path_nodes_per_tick": 278,
+      "max_path_requests_per_tick": 12,
+      "max_social_candidates_per_tick": 226,
+      "mean_ms": 4.68787888888889,
+      "measured_ticks": 900,
+      "memories": 1908,
+      "p50_ms": 4.602,
+      "p95_ms": 6.716,
+      "p99_ms": 8.188,
+      "path_nodes": 98345,
+      "population": 160,
+      "relationships": 1195,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 8825464,
+      "process_wall_seconds": 5.552057475000311,
+      "process_cpu_seconds": 5.5288129999999995,
+      "cumulative_child_peak_rss_kib": 155316
+    },
+    {
+      "beliefs": 8000,
+      "bounds_and_replay_passed": true,
+      "decisions": 36021,
+      "dense": false,
+      "goals": {
+        "explore": 378,
+        "investigate": 20,
+        "rest": 35,
+        "socialize": 67
+      },
+      "interactions": 3812,
+      "json_load_ms": 353.627,
+      "json_save_bytes": 3274366,
+      "json_save_ms": 315.703,
+      "max_ms": 38.5,
+      "max_path_nodes_per_tick": 294,
+      "max_path_requests_per_tick": 12,
+      "max_social_candidates_per_tick": 836,
+      "mean_ms": 16.6837277777778,
+      "measured_ticks": 900,
+      "memories": 5961,
+      "p50_ms": 16.346,
+      "p95_ms": 21.229,
+      "p99_ms": 26.603,
+      "path_nodes": 121935,
+      "population": 500,
+      "relationships": 5355,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 29166308,
+      "process_wall_seconds": 19.143597365999995,
+      "process_cpu_seconds": 19.062014,
+      "cumulative_child_peak_rss_kib": 302780
+    },
+    {
+      "beliefs": 23993,
+      "bounds_and_replay_passed": true,
+      "decisions": 111608,
+      "dense": false,
+      "goals": {
+        "explore": 1051,
+        "investigate": 96,
+        "rest": 63,
+        "socialize": 290
+      },
+      "interactions": 12379,
+      "json_load_ms": 1253.572,
+      "json_save_bytes": 10027550,
+      "json_save_ms": 739.887,
+      "max_ms": 91.958,
+      "max_path_nodes_per_tick": 294,
+      "max_path_requests_per_tick": 12,
+      "max_social_candidates_per_tick": 3224,
+      "mean_ms": 53.927,
+      "measured_ticks": 900,
+      "memories": 17937,
+      "p50_ms": 53.205,
+      "p95_ms": 68.528,
+      "p99_ms": 78.319,
+      "path_nodes": 121070,
+      "population": 1500,
+      "relationships": 17620,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 89129676,
+      "process_wall_seconds": 60.52787505000015,
+      "process_cpu_seconds": 60.48609799999999,
+      "cumulative_child_peak_rss_kib": 746084
+    },
+    {
+      "beliefs": 24000,
+      "bounds_and_replay_passed": true,
+      "decisions": 97789,
+      "dense": true,
+      "goals": {
+        "explore": 1356,
+        "rest": 109,
+        "socialize": 35
+      },
+      "interactions": 12204,
+      "json_load_ms": 1143.028,
+      "json_save_bytes": 10035555,
+      "json_save_ms": 702.094,
+      "max_ms": 117.167,
+      "max_path_nodes_per_tick": 192,
+      "max_path_requests_per_tick": 12,
+      "max_social_candidates_per_tick": 4155,
+      "mean_ms": 48.1489266666667,
+      "measured_ticks": 900,
+      "memories": 18000,
+      "p50_ms": 46.911,
+      "p95_ms": 79.944,
+      "p99_ms": 97.625,
+      "path_nodes": 77580,
+      "population": 1500,
+      "relationships": 17999,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 89737492,
+      "process_wall_seconds": 54.008377224000014,
+      "process_cpu_seconds": 53.998541,
+      "cumulative_child_peak_rss_kib": 750588
+    }
+  ],
+  "after": [
+    {
+      "beliefs": 2560,
+      "binary_atomic": {
+        "bytes": 67482,
+        "load_ms": 115.056,
+        "prepare_ms": 43.33,
+        "write_flush_replace_ms": 1.139
+      },
+      "bounds_and_replay_passed": true,
+      "decisions": 10776,
+      "deferred_decisions": 0,
+      "dense": false,
+      "early_third_mean_ms": 4.56490666666667,
+      "goals": {
+        "explore": 140,
+        "rest": 10,
+        "socialize": 10
+      },
+      "interactions": 1011,
+      "json_encode_ms": 7.175,
+      "json_load_ms": 133.055,
+      "json_save_bytes": 232618,
+      "json_save_ms": 29.561,
+      "late_third_mean_ms": 5.14582666666667,
+      "max_ms": 38.358,
+      "max_path_nodes_per_tick": 278,
+      "max_path_requests_per_tick": 12,
+      "max_routine_decisions": 24,
+      "max_social_candidates_per_tick": 226,
+      "mean_ms": 5.02229777777778,
+      "measured_ticks": 900,
+      "memories": 1908,
+      "memory_samples": [
+        {
+          "bytes": 7131524,
+          "tick": 270
+        },
+        {
+          "bytes": 7657816,
+          "tick": 420
+        },
+        {
+          "bytes": 7873604,
+          "tick": 570
+        },
+        {
+          "bytes": 8045076,
+          "tick": 720
+        },
+        {
+          "bytes": 8244776,
+          "tick": 870
+        },
+        {
+          "bytes": 8411672,
+          "tick": 1020
+        }
+      ],
+      "p50_ms": 4.781,
+      "p95_ms": 7.632,
+      "p99_ms": 11.58,
+      "path_nodes": 98345,
+      "population": 160,
+      "relationships": 1195,
+      "snapshot_ms": 22.384,
+      "warmup_deferred_decisions": 0,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 8412460,
+      "process_wall_seconds": 6.019130114999825,
+      "process_cpu_seconds": 5.933649,
+      "cumulative_child_peak_rss_kib": 150800
+    },
+    {
+      "beliefs": 8000,
+      "binary_atomic": {
+        "bytes": 234680,
+        "load_ms": 360.241,
+        "prepare_ms": 151.877,
+        "write_flush_replace_ms": 0.255
+      },
+      "bounds_and_replay_passed": true,
+      "decisions": 36058,
+      "deferred_decisions": 0,
+      "dense": false,
+      "early_third_mean_ms": 15.04339,
+      "goals": {
+        "explore": 378,
+        "investigate": 19,
+        "rest": 32,
+        "socialize": 71
+      },
+      "interactions": 3802,
+      "json_encode_ms": 37.912,
+      "json_load_ms": 476.225,
+      "json_save_bytes": 742923,
+      "json_save_ms": 139.393,
+      "late_third_mean_ms": 15.5479066666667,
+      "max_ms": 49.261,
+      "max_path_nodes_per_tick": 294,
+      "max_path_requests_per_tick": 12,
+      "max_routine_decisions": 59,
+      "max_social_candidates_per_tick": 833,
+      "mean_ms": 15.4995888888889,
+      "measured_ticks": 900,
+      "memories": 5958,
+      "memory_samples": [
+        {
+          "bytes": 22669412,
+          "tick": 270
+        },
+        {
+          "bytes": 24462608,
+          "tick": 420
+        },
+        {
+          "bytes": 25590740,
+          "tick": 570
+        },
+        {
+          "bytes": 26482968,
+          "tick": 720
+        },
+        {
+          "bytes": 27206648,
+          "tick": 870
+        },
+        {
+          "bytes": 27750564,
+          "tick": 1020
+        }
+      ],
+      "p50_ms": 14.863,
+      "p95_ms": 22.067,
+      "p99_ms": 28.99,
+      "path_nodes": 121990,
+      "population": 500,
+      "relationships": 5348,
+      "snapshot_ms": 101.478,
+      "warmup_deferred_decisions": 9,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 27751352,
+      "process_wall_seconds": 18.197185744999842,
+      "process_cpu_seconds": 18.172068,
+      "cumulative_child_peak_rss_kib": 278840
+    },
+    {
+      "beliefs": 23993,
+      "binary_atomic": {
+        "bytes": 736315,
+        "load_ms": 994.09,
+        "prepare_ms": 426.084,
+        "write_flush_replace_ms": 0.483
+      },
+      "bounds_and_replay_passed": true,
+      "decisions": 86400,
+      "deferred_decisions": 84189,
+      "dense": false,
+      "early_third_mean_ms": 39.7391766666667,
+      "goals": {
+        "explore": 998,
+        "investigate": 119,
+        "rest": 81,
+        "socialize": 302
+      },
+      "interactions": 11751,
+      "json_encode_ms": 108.389,
+      "json_load_ms": 1041.24,
+      "json_save_bytes": 2251986,
+      "json_save_ms": 467.266,
+      "late_third_mean_ms": 40.33228,
+      "max_ms": 93.212,
+      "max_path_nodes_per_tick": 338,
+      "max_path_requests_per_tick": 12,
+      "max_routine_decisions": 96,
+      "max_social_candidates_per_tick": 1841,
+      "mean_ms": 40.3696166666667,
+      "measured_ticks": 900,
+      "memories": 17969,
+      "memory_samples": [
+        {
+          "bytes": 68031860,
+          "tick": 270
+        },
+        {
+          "bytes": 74661668,
+          "tick": 420
+        },
+        {
+          "bytes": 78869344,
+          "tick": 570
+        },
+        {
+          "bytes": 82061024,
+          "tick": 720
+        },
+        {
+          "bytes": 83938416,
+          "tick": 870
+        },
+        {
+          "bytes": 84733904,
+          "tick": 1020
+        }
+      ],
+      "p50_ms": 38.798,
+      "p95_ms": 54.201,
+      "p99_ms": 69.26,
+      "path_nodes": 123055,
+      "population": 1500,
+      "relationships": 17561,
+      "snapshot_ms": 358.872,
+      "warmup_deferred_decisions": 7171,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 84734692,
+      "process_wall_seconds": 47.330397069000355,
+      "process_cpu_seconds": 47.27202499999999,
+      "cumulative_child_peak_rss_kib": 663140
+    },
+    {
+      "beliefs": 24000,
+      "binary_atomic": {
+        "bytes": 645189,
+        "load_ms": 1157.41,
+        "prepare_ms": 411.826,
+        "write_flush_replace_ms": 0.384
+      },
+      "bounds_and_replay_passed": true,
+      "decisions": 86400,
+      "deferred_decisions": 48814,
+      "dense": true,
+      "early_third_mean_ms": 34.4256566666667,
+      "goals": {
+        "explore": 1333,
+        "rest": 107,
+        "socialize": 60
+      },
+      "interactions": 11121,
+      "json_encode_ms": 99.055,
+      "json_load_ms": 1093.831,
+      "json_save_bytes": 2199748,
+      "json_save_ms": 443.058,
+      "late_third_mean_ms": 39.3397633333333,
+      "max_ms": 79.566,
+      "max_path_nodes_per_tick": 183,
+      "max_path_requests_per_tick": 12,
+      "max_routine_decisions": 96,
+      "max_social_candidates_per_tick": 1375,
+      "mean_ms": 37.1446144444444,
+      "measured_ticks": 900,
+      "memories": 18000,
+      "memory_samples": [
+        {
+          "bytes": 69401416,
+          "tick": 270
+        },
+        {
+          "bytes": 76298892,
+          "tick": 420
+        },
+        {
+          "bytes": 80839724,
+          "tick": 570
+        },
+        {
+          "bytes": 83938172,
+          "tick": 720
+        },
+        {
+          "bytes": 84982992,
+          "tick": 870
+        },
+        {
+          "bytes": 85151748,
+          "tick": 1020
+        }
+      ],
+      "p50_ms": 35.884,
+      "p95_ms": 49.104,
+      "p99_ms": 65.083,
+      "path_nodes": 84214,
+      "population": 1500,
+      "relationships": 17990,
+      "snapshot_ms": 344.0,
+      "warmup_deferred_decisions": 6867,
+      "warmup_ticks": 120,
+      "world_static_delta_bytes": 85152536,
+      "process_wall_seconds": 44.366075994999846,
+      "process_cpu_seconds": 44.269622000000005,
+      "cumulative_child_peak_rss_kib": 665860
+    }
+  ],
+  "uncapped_ablation": {
+    "beliefs": 23993,
+    "binary_atomic": {
+      "bytes": 733678,
+      "load_ms": 975.672,
+      "prepare_ms": 424.569,
+      "write_flush_replace_ms": 0.398
+    },
+    "bounds_and_replay_passed": true,
+    "decisions": 111608,
+    "deferred_decisions": 0,
+    "dense": false,
+    "early_third_mean_ms": 43.2725566666667,
+    "goals": {
+      "explore": 1051,
+      "investigate": 96,
+      "rest": 63,
+      "socialize": 290
+    },
+    "interactions": 12379,
+    "json_encode_ms": 109.136,
+    "json_load_ms": 1018.887,
+    "json_save_bytes": 2260766,
+    "json_save_ms": 472.591,
+    "late_third_mean_ms": 49.7247833333333,
+    "max_ms": 120.679,
+    "max_path_nodes_per_tick": 294,
+    "max_path_requests_per_tick": 12,
+    "max_routine_decisions": 175,
+    "max_social_candidates_per_tick": 3224,
+    "mean_ms": 46.7498177777778,
+    "measured_ticks": 900,
+    "memories": 17937,
+    "memory_samples": [
+      {
+        "bytes": 68855780,
+        "tick": 270
+      },
+      {
+        "bytes": 75021268,
+        "tick": 420
+      },
+      {
+        "bytes": 79284136,
+        "tick": 570
+      },
+      {
+        "bytes": 82449392,
+        "tick": 720
+      },
+      {
+        "bytes": 84165460,
+        "tick": 870
+      },
+      {
+        "bytes": 84838428,
+        "tick": 1020
+      }
+    ],
+    "p50_ms": 45.739,
+    "p95_ms": 60.675,
+    "p99_ms": 73.187,
+    "path_nodes": 121070,
+    "population": 1500,
+    "relationships": 17620,
+    "routine_budget": 1500,
+    "snapshot_ms": 363.45,
+    "warmup_deferred_decisions": 0,
+    "warmup_ticks": 120,
+    "world_static_delta_bytes": 84839216
+  },
+  "soak": {
+    "beliefs": 23993,
+    "binary_atomic": {
+      "bytes": 777157,
+      "load_ms": 961.47,
+      "prepare_ms": 421.304,
+      "write_flush_replace_ms": 0.675
+    },
+    "bounds_and_replay_passed": true,
+    "decisions": 345600,
+    "deferred_decisions": 481301,
+    "dense": false,
+    "early_third_mean_ms": 40.3925675,
+    "goals": {
+      "explore": 845,
+      "investigate": 114,
+      "rest": 60,
+      "socialize": 481
+    },
+    "interactions": 47578,
+    "json_encode_ms": 109.241,
+    "json_load_ms": 1272.073,
+    "json_save_bytes": 2307489,
+    "json_save_ms": 437.689,
+    "late_third_mean_ms": 39.7052916666667,
+    "max_ms": 151.27,
+    "max_path_nodes_per_tick": 396,
+    "max_path_requests_per_tick": 12,
+    "max_routine_decisions": 96,
+    "max_social_candidates_per_tick": 1841,
+    "mean_ms": 40.5388577777778,
+    "measured_ticks": 3600,
+    "memories": 17701,
+    "memory_samples": [
+      {
+        "bytes": 68031860,
+        "tick": 270
+      },
+      {
+        "bytes": 74661668,
+        "tick": 420
+      },
+      {
+        "bytes": 78869344,
+        "tick": 570
+      },
+      {
+        "bytes": 82061024,
+        "tick": 720
+      },
+      {
+        "bytes": 83938416,
+        "tick": 870
+      },
+      {
+        "bytes": 84733904,
+        "tick": 1020
+      },
+      {
+        "bytes": 85001804,
+        "tick": 1170
+      },
+      {
+        "bytes": 85042000,
+        "tick": 1320
+      },
+      {
+        "bytes": 85058272,
+        "tick": 1470
+      },
+      {
+        "bytes": 85076088,
+        "tick": 1620
+      },
+      {
+        "bytes": 85038072,
+        "tick": 1770
+      },
+      {
+        "bytes": 85007780,
+        "tick": 1920
+      },
+      {
+        "bytes": 84948632,
+        "tick": 2070
+      },
+      {
+        "bytes": 84925496,
+        "tick": 2220
+      },
+      {
+        "bytes": 84895304,
+        "tick": 2370
+      },
+      {
+        "bytes": 84888820,
+        "tick": 2520
+      },
+      {
+        "bytes": 84872040,
+        "tick": 2670
+      },
+      {
+        "bytes": 84870768,
+        "tick": 2820
+      },
+      {
+        "bytes": 84914092,
+        "tick": 2970
+      },
+      {
+        "bytes": 84926716,
+        "tick": 3120
+      },
+      {
+        "bytes": 84932476,
+        "tick": 3270
+      },
+      {
+        "bytes": 84913860,
+        "tick": 3420
+      },
+      {
+        "bytes": 84910616,
+        "tick": 3570
+      },
+      {
+        "bytes": 84923288,
+        "tick": 3720
+      }
+    ],
+    "p50_ms": 38.648,
+    "p95_ms": 55.674,
+    "p99_ms": 69.065,
+    "path_nodes": 502749,
+    "population": 1500,
+    "relationships": 17893,
+    "snapshot_ms": 328.445,
+    "warmup_deferred_decisions": 7171,
+    "warmup_ticks": 120,
+    "world_static_delta_bytes": 84923948
+  },
+  "save_fixture_before": {
+    "population": 1500,
+    "samples": [
+      {
+        "bytes": 8416320,
+        "encode_ms": 265.296,
+        "read_parse_ms": 250.077,
+        "restore_ms": 607.454,
+        "snapshot_ms": 167.651,
+        "valid": true,
+        "write_flush_ms": 11.531
+      },
+      {
+        "bytes": 8416320,
+        "encode_ms": 258.889,
+        "read_parse_ms": 227.731,
+        "restore_ms": 504.069,
+        "snapshot_ms": 176.749,
+        "valid": true,
+        "write_flush_ms": 10.009
+      },
+      {
+        "bytes": 8416320,
+        "encode_ms": 249.324,
+        "read_parse_ms": 205.366,
+        "restore_ms": 483.107,
+        "snapshot_ms": 159.835,
+        "valid": true,
+        "write_flush_ms": 10.049
+      }
+    ],
+    "tick": 300
+  },
+  "save_fixture_after": {
+    "population": 1500,
+    "samples": [
+      {
+        "binary_atomic": {
+          "bytes": 552467,
+          "load_ms": 798.995,
+          "prepare_ms": 181.839,
+          "valid": true,
+          "write_flush_replace_ms": 0.346
+        },
+        "bytes": 1835363,
+        "encode_ms": 68.293,
+        "read_parse_ms": 46.476,
+        "restore_ms": 571.25,
+        "snapshot_ms": 87.556,
+        "valid": true,
+        "write_flush_ms": 3.251
+      },
+      {
+        "binary_atomic": {
+          "bytes": 552467,
+          "load_ms": 716.482,
+          "prepare_ms": 167.476,
+          "valid": true,
+          "write_flush_replace_ms": 0.478
+        },
+        "bytes": 1835363,
+        "encode_ms": 64.472,
+        "read_parse_ms": 43.984,
+        "restore_ms": 528.789,
+        "snapshot_ms": 91.417,
+        "valid": true,
+        "write_flush_ms": 2.444
+      },
+      {
+        "binary_atomic": {
+          "bytes": 552467,
+          "load_ms": 709.112,
+          "prepare_ms": 165.687,
+          "valid": true,
+          "write_flush_replace_ms": 0.473
+        },
+        "bytes": 1835363,
+        "encode_ms": 63.498,
+        "read_parse_ms": 52.124,
+        "restore_ms": 560.636,
+        "snapshot_ms": 93.976,
+        "valid": true,
+        "write_flush_ms": 2.993
+      }
+    ],
+    "tick": 300
+  },
+  "save_fixture_sha256": "81435cc46c8c9bdcea100a3fd1da6e64c563ec83d8cda7bd9d54ea52cc373a61",
+  "profile_before": {
+    "citizen_ai": {
+      "interact": [
+        449824,
+        4938
+      ],
+      "sense": [
+        5015982,
+        40438
+      ],
+      "step": [
+        17153903,
+        180000
+      ]
+    },
+    "perception": {
+      "begin_tick": [
+        1023245,
+        361
+      ],
+      "finish_observation": [
+        1030852,
+        40438
+      ],
+      "nearby": [
+        1318892,
+        40438
+      ],
+      "observe": [
+        1737877,
+        363312
+      ],
+      "view": [
+        585068,
+        80876
+      ]
+    },
+    "decision_engine": {
+      "choose": [
+        3876620,
+        40438
+      ]
+    },
+    "navigation": {
+      "next_step": [
+        3451084,
+        177625
+      ],
+      "plan": [
+        454690,
+        53387
+      ]
+    },
+    "emotions": {
+      "advance": [
+        461126,
+        204004
+      ]
+    },
+    "relationships": {
+      "advance": [
+        151854,
+        180000
+      ],
+      "find": [
+        385803,
+        322921
+      ]
+    },
+    "memory": {
+      "advance": [
+        222786,
+        180000
+      ]
+    }
+  },
+  "profile_after": {
+    "citizen_ai": {
+      "interact": [
+        432379,
+        4762
+      ],
+      "sense": [
+        3794672,
+        34295
+      ],
+      "step": [
+        13479213,
+        180000
+      ]
+    },
+    "perception": {
+      "begin_tick": [
+        1127959,
+        362
+      ],
+      "finish_observation": [
+        1155326,
+        34295
+      ],
+      "nearby": [
+        1259130,
+        34295
+      ],
+      "observe": [
+        868682,
+        308120
+      ],
+      "view": [
+        512328,
+        68590
+      ]
+    },
+    "decision_engine": {
+      "choose": [
+        3015487,
+        34295
+      ]
+    },
+    "navigation": {
+      "next_step": [
+        1986007,
+        176320
+      ],
+      "plan": [
+        435461,
+        4308
+      ]
+    },
+    "emotions": {
+      "advance": [
+        417567,
+        203030
+      ]
+    },
+    "relationships": {
+      "advance": [
+        140304,
+        180000
+      ],
+      "find": [
+        322595,
+        277155
+      ]
+    },
+    "memory": {
+      "advance": [
+        204628,
+        180000
+      ]
+    }
+  },
+  "project_checks": [
+    {
+      "name": "project-import",
+      "passed": false,
+      "exit_code": 0,
+      "errors": [
+        "WARNING: Missing .uid file for path \"res://scripts/game.gd\". The file was re-created from cache.",
+        "WARNING: Missing .uid file for path \"res://tests/citizen_ai_test.gd\". The file was re-created from cache.",
+        "WARNING: Missing .uid file for path \"res://tests/simulation_test.gd\". The file was re-created from cache.",
+        "SCRIPT ERROR: Parse Error: Cannot infer the type of \"mode_name\" variable because the value doesn't have a set type.",
+        "          at: GDScript::reload (res://scripts/game.gd:209)",
+        "ERROR: Failed to load script \"res://scripts/game.gd\" with error \"Parse error\"."
+      ]
+    },
+    {
+      "name": "scene-smoke",
+      "passed": false,
+      "exit_code": 0,
+      "errors": [
+        "SCRIPT ERROR: Parse Error: Cannot infer the type of \"mode_name\" variable because the value doesn't have a set type.",
+        "          at: GDScript::reload (res://scripts/game.gd:209)",
+        "ERROR: Failed to load script \"res://scripts/game.gd\" with error \"Parse error\"."
+      ]
+    }
+  ],
+  "verification": {
+    "assertions_passed": 118,
+    "reference_checkpoints_passed": 63,
+    "android_device_tested": false,
+    "graphics_files_unchanged": true
+  }
+}
