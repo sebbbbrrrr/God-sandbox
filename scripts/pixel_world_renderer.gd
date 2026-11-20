@@ -97,6 +97,44 @@ func land_mask(x: int, y: int) -> int:
             mask |= 1 << i
     return mask
 
+# Expose borders and diagonals consistently, even across 16-tile chunk seams.
+func scorch_exposure(x: int, y: int) -> int:
+    var exposure := 0
+    for i in range(4):
+        var neighbour: Vector2i = Vector2i(x, y) + DIRECTIONS[i]
+        if world.at(neighbour.x, neighbour.y) != world.ASH:
+            exposure |= 1 << i
+    for i in range(4):
+        var diagonal: Vector2i = Vector2i(x, y) + DIAGONALS[i]
+        if world.at(diagonal.x, diagonal.y) != world.ASH:
+            exposure |= 1 << (i + 4)
+    return exposure
+
+# Existing saves only contain ASH, not the terrain that burned. Approximate the
+# exposed substrate from the closest unburned cardinal/diagonal neighbour rather
+# than adding a new save format or changing simulation mechanics.
+func scorch_underlay(x: int, y: int) -> String:
+    for direction in DIRECTIONS + DIAGONALS:
+        var neighbour: Vector2i = Vector2i(x, y) + direction
+        var biome: int = world.at(neighbour.x, neighbour.y)
+        match biome:
+            world.FOREST:
+                return "forest"
+            world.BEACH:
+                return "sand"
+            world.MOUNTAIN:
+                return "rock"
+            world.TOWN:
+                return "earth"
+            world.MEADOW:
+                return "meadow"
+    # Coastal scars expose sand where there is no adjacent surviving land.
+    for direction in DIRECTIONS + DIAGONALS:
+        var neighbour: Vector2i = Vector2i(x, y) + direction
+        if world.at(neighbour.x, neighbour.y) == world.OCEAN:
+            return "sand"
+    return "meadow"
+
 func top_left(x: int, y: int) -> Vector2:
     return Vector2(x*TILE, y*TILE-world.height_at(x,y)*RISE)
 
@@ -205,7 +243,20 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var surface := variation(x,y,world.seed,variants)
     # Stable broad patches enrich colour without changing the material or sampling scale.
     var shade := 0.97 + variation(x/7,y/7,world.seed,7)*0.01 if type in [world.MEADOW,world.FOREST] else 1.0
-    ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
+    if type == world.ASH:
+        var exposure := scorch_exposure(x, y)
+        if exposure != 0:
+            var substrate := scorch_underlay(x, y)
+            var substrate_count: int = {"meadow":8,"forest":8,"sand":8,"rock":6,"earth":2}[substrate]
+            var substrate_variant := variation(x,y,world.seed+41,substrate_count)
+            ground.add("%s_%d" % [substrate,substrate_variant],p)
+            # The second draw is alpha-masked ash; transparent holes reveal
+            # nearby surviving terrain instead of a square black tile.
+            ground.add(atlas.scorch_tile(exposure,surface),p)
+        else:
+            ground.add("%s_%d" % [family,surface],p)
+    else:
+        ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
     if type == world.MOUNTAIN and variation(x,y,world.seed+27,7)==0:
         ground.add("mountain_%d" % v,p)
     var ocean_mask: int = neighbour_masks[world.OCEAN]
@@ -216,16 +267,18 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         var grass_mask: int = neighbour_masks[world.MEADOW] | neighbour_masks[world.FOREST]
         if grass_mask: transitions.add("meadow_edge_%d" % grass_mask,p)
         if ocean_mask and detail==2 and v%2==0: decor.add("shore_scatter",p)
-    # Overlay higher-priority neighbouring biome edges without hard tile borders.
-    for other in BIOMES:
-        if other == type:
-            continue
-        var mask: int = neighbour_masks[other]
-        if mask == 0:
-            continue
-        var edge_family: String = EDGE_FAMILY[other]
-        if type != world.MOUNTAIN:
-            transitions.add("%s_edge_%d" % [edge_family,mask],p)
+    # Ordinary biome-edge sprites must not paint rectangular overlays across
+    # the newly clipped ash silhouette. Adjacent intact cells keep ash_edge.
+    if type != world.ASH:
+        for other in BIOMES:
+            if other == type:
+                continue
+            var mask: int = neighbour_masks[other]
+            if mask == 0:
+                continue
+            var edge_family: String = EDGE_FAMILY[other]
+            if type != world.MOUNTAIN:
+                transitions.add("%s_edge_%d" % [edge_family,mask],p)
     var height := world.height_at(x,y)
     var south_drop := height-world.height_at(x,y+1)
     var east_drop := height-world.height_at(x+1,y)
