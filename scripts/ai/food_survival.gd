@@ -35,6 +35,21 @@ func pantry_for(household_id: int) -> Dictionary:
         pantries[key] = empty_food()
     return pantries[key]
 
+func on_household_merge(primary_id: int, absorbed_id: int, same_home: bool) -> void:
+    # A change of legal membership does not teleport supplies between houses.
+    # Co-residents already physically share a single dwelling, so they may
+    # consolidate its pantry without changing the food ledger.
+    if not same_home:
+        return
+    var old_key := str(absorbed_id)
+    if not pantries.has(old_key):
+        return
+    var target: Dictionary = pantry_for(primary_id)
+    var old: Dictionary = pantries[old_key]
+    for kind in FOOD_TYPES:
+        target[kind] = int(target[kind]) + int(old.get(kind, 0))
+    pantries.erase(old_key)
+
 func total(stores: Dictionary) -> int:
     return int(stores.get("berries", 0)) + int(stores.get("fish", 0)) + int(stores.get("grain", 0))
 
