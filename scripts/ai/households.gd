@@ -99,6 +99,10 @@ func form_household(world: RefCounted, first_id: int, second_id: int) -> bool:
         retained_home = original_home
     elif second_home > 0 and has_room(world, second_home, member_count(world, a)):
         retained_home = second_home
+    if retained_home <= 0 and (original_home > 0 or second_home > 0):
+        # Joining households cannot displace two previously sheltered
+        # people simply because neither dwelling has room for the other.
+        return false
     var members: Array = a["members"]
     for id in b["members"]:
         members.append(int(id))
