@@ -100,6 +100,7 @@ func run() -> void:
     var units_before:=0
     for row in game.world_renderer.unit_rows: units_before+=row.keys.size()
     game.selected_power=4
+    var citizen_count_before := game.world.citizens.size()
     var emulated_press := InputEventMouseButton.new()
     emulated_press.device = InputEvent.DEVICE_ID_EMULATION
     emulated_press.button_index = MOUSE_BUTTON_LEFT
@@ -108,7 +109,7 @@ func run() -> void:
     game._input(emulated_press)
     emulated_press.pressed = false
     game._input(emulated_press)
-    check(game.world.citizens.size() == units_before, "synthesized touchscreen mouse cannot double-apply world powers")
+    check(game.world.citizens.size() == citizen_count_before, "synthesized touchscreen mouse cannot double-apply world powers")
     game.tapped(point)
     var units_after:=0
     for row in game.world_renderer.unit_rows: units_after+=row.keys.size()
