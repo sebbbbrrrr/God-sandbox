@@ -266,12 +266,8 @@ func prune(world: RefCounted) -> void:
         if world.at(int(project["x"]), int(project["y"])) not in [world.MEADOW, world.TOWN]:
             projects.remove_at(i)
     for key in jobs.keys():
-        var alive := false
-        for person in world.citizens:
-            if str(person["id"]) == str(key) and int(person["hp"]) > 0:
-                alive = true
-                break
-        if alive:
+        var person: Dictionary = world.ai_context.people.get(int(key), {})
+        if not person.is_empty() and int(person["hp"]) > 0:
             continue
         var job: Dictionary = jobs[key]
         # Carried resources are lost with a dead worker; no magical refund.
