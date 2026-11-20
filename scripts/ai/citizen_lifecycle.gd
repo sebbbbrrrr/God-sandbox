@@ -72,6 +72,7 @@ func record_death(world: RefCounted, person: Dictionary, cause: String) -> void:
     append_event(world, person, "died", {"cause": cause,
         "age_years": world.calendar.age_years(int(person["birth_tick"]), int(world.tick))})
     world.households.dirty = true
+    world.demography.on_death(world, person)
 
 func update_person(world: RefCounted, person: Dictionary) -> void:
     if int(person["hp"]) <= 0:
