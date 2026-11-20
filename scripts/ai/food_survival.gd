@@ -4,7 +4,7 @@ extends RefCounted
 const Nav = preload("res://scripts/ai/navigation.gd")
 const Calendar = preload("res://scripts/ai/sim_calendar.gd")
 const FOOD_TYPES := ["berries", "fish", "grain"]
-const MAX_GATHERERS := 8
+const MAX_GATHERERS := 12
 const MAX_FARMS := 8
 const FOOD_INTERVAL := 120
 const SEARCH_RADIUS := 14
@@ -21,6 +21,7 @@ var wild_cycle := -1
 var farms: Array[Dictionary] = []
 var next_farm_id := 1
 var jobs: Dictionary = {}      # citizen ID -> physically executed job/cargo
+var next_job_scan: Dictionary = {}  # staggered, persisted per-worker search budget
 var produced := {"berries": 0, "fish": 0, "grain": 0}
 var consumed := {"berries": 0, "fish": 0, "grain": 0}
 var lost := {"berries": 0, "fish": 0, "grain": 0}
@@ -49,6 +50,13 @@ func on_household_merge(primary_id: int, absorbed_id: int, same_home: bool) -> v
     for kind in FOOD_TYPES:
         target[kind] = int(target[kind]) + int(old.get(kind, 0))
     pantries.erase(old_key)
+
+func reserve_target(world: RefCounted, family: Dictionary) -> int:
+    # A local household prepares more stores ahead of and during winter.
+    var members: int = world.households.member_count(world, family)
+    var season: int = int(world.calendar.date_at(world.tick)["season_index"])
+    var seasonal_extra := 4 if season in [2, 3] else 0
+    return clampi(members * 3 + seasonal_extra, 4, 24)
 
 func total(stores: Dictionary) -> int:
     return int(stores.get("berries", 0)) + int(stores.get("fish", 0)) + int(stores.get("grain", 0))
@@ -227,7 +235,8 @@ func on_tick(world: RefCounted) -> void:
         if int(world.tick) < int(person["next_food_tick"]):
             continue
         person["next_food_tick"] = int(world.tick) + FOOD_INTERVAL
-        person["hunger"] = mini(100, int(person["hunger"]) + 24)
+        var gestation_extra := 6 if world.demography.pregnancies.has(str(person["id"])) else 0
+        person["hunger"] = mini(100, int(person["hunger"]) + 24 + gestation_extra)
         if str(person["life_stage"]) in ["infant", "child", "adolescent"]:
             var guardian: Dictionary = world.ai_context.people.get(int(person.get("guardian_id", 0)), {})
             if not guardian.is_empty() and int(guardian["hp"]) > 0 and Nav.manhattan(
@@ -344,7 +353,12 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             take_ration(world, person)
         return true
     if not jobs.has(id):
-        if int(person["id"]) % 4 == 0 and gatherers(nation) < MAX_GATHERERS:
+        if int(world.tick) < int(next_job_scan.get(id, 0)):
+            return false
+        next_job_scan[id] = int(world.tick) + 18 + int(person["id"]) % 7
+        var reserves_low: bool = total(depots[nation]) < 8
+        var emergency: bool = reserves_low and int(person.get("hunger", 0)) >= 36
+        if (int(person["id"]) % 4 == 0 or emergency) and gatherers(nation) < MAX_GATHERERS:
             var farm: Dictionary = ready_farm(world, nation)
             if not farm.is_empty():
                 jobs[id] = {"kind": "farm", "nation": nation, "phase": "source",
@@ -360,7 +374,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         else:
             var family_id: int = int(person["household_id"])
             var family: Dictionary = world.households.family_for(family_id)
-            if family.is_empty() or int(family["home_id"]) <= 0 or total(pantry_for(family_id)) >= 3 or total(depots[nation]) < 2:
+            if family.is_empty() or int(family["home_id"]) <= 0 or total(pantry_for(family_id)) >= reserve_target(world, family) or total(depots[nation]) < 2:
                 return false
             var house := world.households.house_by_id(world, int(family["home_id"]))
             if house.is_empty():
@@ -468,13 +482,19 @@ func on_tick_households(world: RefCounted) -> void:
         if amount > 0:
             lost[str(job["type"])] += amount
         jobs.erase(id)
+    # Reclaim records after death or historical archiving.
+    for key in next_job_scan.keys():
+        var candidate: Dictionary = world.ai_context.people.get(int(key), {})
+        if candidate.is_empty() or int(candidate["hp"]) <= 0:
+            next_job_scan.erase(key)
 
 func snapshot() -> Dictionary:
     return {"version": 1, "depots": depots.duplicate(true), "pantries": pantries.duplicate(true),
         "customs": customs.duplicate(true), "techniques": techniques.duplicate(true),
         "wild_cycle": wild_cycle, "wild_taken": wild_taken.duplicate(true),
         "farms": farms.duplicate(true), "next_farm_id": next_farm_id,
-        "jobs": jobs.duplicate(true), "produced": produced.duplicate(true),
+        "jobs": jobs.duplicate(true), "next_job_scan": next_job_scan.duplicate(true),
+        "produced": produced.duplicate(true),
         "consumed": consumed.duplicate(true), "lost": lost.duplicate(true),
         "planted": planted.duplicate(true)}
 
@@ -498,6 +518,10 @@ func load_state(raw: Variant) -> bool:
     customs = raw["customs"].duplicate(true)
     wild_taken = raw["wild_taken"].duplicate(true)
     jobs = raw["jobs"].duplicate(true)
+    if raw.has("next_job_scan"):
+        if not raw["next_job_scan"] is Dictionary:
+            return false
+        next_job_scan = raw["next_job_scan"].duplicate(true)
     wild_cycle = int(raw.get("wild_cycle", -1))
     if not raw.get("techniques") is Array or raw["techniques"].size() != 2:
         return false

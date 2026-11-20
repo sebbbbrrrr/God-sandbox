@@ -164,6 +164,10 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     # responses remain active during hazards.
     if not urgent and world.lifecycle.dependent_step(world, person, state):
         return
+    # An expectant adult must travel to shelter and give birth in real time;
+    # danger avoidance always takes precedence over this movement.
+    if not urgent and world.demography.delivery_step(world, person, state):
+        return
     # Guardians perform actual travel and childcare before ordinary labour.
     if not urgent and world.households.care_step(world, person, state):
         return
