@@ -77,7 +77,7 @@ func source_kind(world: RefCounted, cell: Vector2i) -> String:
         return ""
     for direction in Nav.DIRS:
         var water: Vector2i = cell + direction
-        if world.at(water.x, water.y) == world.OCEAN:
+        if world.index_of(water.x, water.y) >= 0 and world.at(water.x, water.y) == world.OCEAN:
             return "fish"
     return ""
 
@@ -255,7 +255,7 @@ func water_near(world: RefCounted, cell: Vector2i) -> bool:
         for dx in range(-3, 4):
             if absi(dx) + absi(dy) > 3:
                 continue
-            if world.at(cell.x + dx, cell.y + dy) in [world.OCEAN, world.BEACH]:
+            if world.index_of(cell.x + dx, cell.y + dy) >= 0 and world.at(cell.x + dx, cell.y + dy) in [world.OCEAN, world.BEACH]:
                 return true
     return false
 
