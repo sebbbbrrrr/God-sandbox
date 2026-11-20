@@ -381,6 +381,12 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     return _select(world, person, mind)
 
 # Knapping at the yard physically wears one local hammerstone.
+func workshop_tool_ready(nation: int, item_id: String) -> bool:
+    for serial in _matching_serials("settlement:" + str(nation), item_id):
+        if int(instances[serial]["condition"]) > 0:
+            return true
+    return false
+
 func wear_workshop(world: RefCounted, nation: int, item_id: String) -> void:
     var ids := _matching_serials("settlement:" + str(nation), item_id)
     if ids.is_empty():
