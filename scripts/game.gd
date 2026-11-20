@@ -2,6 +2,7 @@ extends Node2D
 
 const Simulation = preload("res://scripts/simulation.gd")
 const Brush = preload("res://scripts/terrain_brush.gd")
+const AudioManagerScript = preload("res://scripts/audio/audio_manager.gd")
 const SAVE_PATH := "user://world.json"
 const COLORS := [
     Color("#1e617d"), Color("#dcc490"), Color("#77a45e"),
@@ -39,6 +40,7 @@ var sim_accum := 0.0
 var render_accum := 0.0
 var autosave_ticks := 0
 var font: Font
+var game_audio: Node
 
 func _ready() -> void:
     world = load_world()
@@ -46,7 +48,15 @@ func _ready() -> void:
         world = SandboxSimulation.new(int(Time.get_unix_time_from_system()) % 2147483647)
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
     font = ThemeDB.fallback_font
-    get_viewport().size_changed.connect(queue_redraw)
+    game_audio = AudioManagerScript.new()
+    game_audio.name = "GameAudio"
+    add_child(game_audio)
+    game_audio.configure_listener(get_viewport_rect().size, toolbar_height())
+    get_viewport().size_changed.connect(_on_viewport_resized)
+    queue_redraw()
+
+func _on_viewport_resized() -> void:
+    game_audio.configure_listener(get_viewport_rect().size, toolbar_height())
     queue_redraw()
 
 func _notification(what: int) -> void:
@@ -238,7 +248,9 @@ func draw_interface(sz: Vector2) -> void:
 func paint_segment(from_cell: Vector2i, to_cell: Vector2i) -> void:
     if not editable_power():
         return
-    Brush.paint_segment(world, selected_power, from_cell, to_cell, BRUSH_RADII[brush_index])
+    var changed: int = Brush.paint_segment(world, selected_power, from_cell, to_cell, BRUSH_RADII[brush_index])
+    if changed > 0:
+        game_audio.play_power(selected_power, world_origin() + (Vector2(to_cell) + Vector2(0.5, 0.5)) * tile_size())
     queue_redraw()
 
 func pan_camera(delta: Vector2) -> void:
@@ -372,6 +384,7 @@ func _input(event: InputEvent) -> void:
         queue_redraw()
 
 func tapped(position: Vector2) -> void:
+    game_audio.play_ui("ui.select")
     var sz := get_viewport_rect().size
     if position.y < 50:
         if position.x > sz.x - 60:
@@ -410,5 +423,6 @@ func tapped(position: Vector2) -> void:
     elif editable_power():
         paint_segment(cell, cell)
     else:
-        world.apply_power(selected_power, cell.x, cell.y)
+        if world.apply_power(selected_power, cell.x, cell.y):
+            game_audio.play_power(selected_power, world_origin() + (Vector2(cell) + Vector2(0.5, 0.5)) * tile_size())
         queue_redraw()
