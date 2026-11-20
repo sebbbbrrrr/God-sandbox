@@ -23,6 +23,11 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             continue
         var id: int = int(person["id"])
         var task: Dictionary = jobs.get(str(id), {})
+        if task.is_empty() and world.regional_economy.road_jobs.has(str(id)):
+            task = {"kind": "road", "phase": "site"}
+        elif task.is_empty() and world.regional_economy.trade_jobs.has(str(id)):
+            task = world.regional_economy.trade_jobs[str(id)].duplicate()
+            task["kind"] = "merchant"
         if task.is_empty():
             continue
         var kind := str(task.get("kind", ""))
@@ -42,6 +47,8 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
         var cargo: Dictionary = task.get("cargo", {})
         if kind == "gather" and phase == "depot" and int(task.get("amount", 0)) > 0:
             cargo = {str(task.get("material", "wood")): int(task.get("amount", 0))}
+        if kind == "merchant" and phase in ["exchange", "return"]:
+            cargo = world.inventory.citizen_inventory(id)
         var carrying := not cargo.is_empty()
         var t := clock + float(posmod(id * 37, 97)) * 0.23
         if carrying:
@@ -50,6 +57,28 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             # Stride dust and a swinging carrying posture. No new animation actors.
             if ts >= 19.0 and sin(t * 8.0) > 0.84:
                 _specks(canvas, p + Vector2(0, 9) * size, size, t, DUST, 2)
+            continue
+        if kind == "road":
+            var road_key: String = str(world.regional_economy.road_jobs.get(str(id), ""))
+            for site in world.regional_economy.road_queue:
+                if str(site.get("key", "")) != road_key:
+                    continue
+                var target: Array = site.get("cell", [])
+                if target.size() == 2 and int(person["x"]) == int(target[0]) and int(person["y"]) == int(target[1]):
+                    var stage: int = int(site.get("work", 0))
+                    _action(canvas, p, size, t, ["clear", "dig", "level"][posmod(stage + int(t / 2.5), 3)])
+                break
+            continue
+        if kind == "merchant":
+            var market: Vector2i = world.capitals[int(task.get("other", 1 - int(person["nation"])))]
+            var homeland: Vector2i = world.capitals[int(person["nation"])]
+            var here := Vector2i(int(person["x"]), int(person["y"]))
+            if phase == "pickup" and here == homeland:
+                _action(canvas, p, size, t, "pickup")
+            elif phase == "exchange" and here == market:
+                _action(canvas, p, size, t, "unload")
+            elif phase == "return" and here == homeland:
+                _action(canvas, p, size, t, "unload")
             continue
         if kind == "gather":
             if phase == "source":
