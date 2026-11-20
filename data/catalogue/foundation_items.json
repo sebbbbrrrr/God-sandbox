@@ -403,7 +403,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -433,7 +434,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -463,7 +465,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -493,7 +496,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -522,8 +526,9 @@
         "output": 1,
         "station": "",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -552,8 +557,9 @@
         "output": 1,
         "station": "workshop",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -583,7 +589,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -612,9 +619,10 @@
         },
         "output": 1,
         "station": "kiln",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "potter",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -644,9 +652,10 @@
         },
         "output": 1,
         "station": "smelter",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": "bronze_working"
+        "skill": "bronze_smith",
+        "min_skill_xp": 160,
+        "capability": "bronze_working",
+        "min_age_years": 18
       },
       "use_ability": "",
       "tags": [
@@ -674,9 +683,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -708,7 +718,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "woodcutting",
       "tags": [
@@ -739,7 +750,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "carving",
       "tags": [
@@ -771,7 +783,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "quarrying",
       "tags": [
@@ -801,7 +814,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "knapping",
       "tags": [
@@ -831,7 +845,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "sewing",
       "tags": [
@@ -860,9 +875,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "crop_cultivation",
       "tags": [
@@ -891,9 +907,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -924,7 +941,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "angling",
       "tags": [
@@ -955,7 +973,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "net_fishing",
       "tags": [
@@ -985,7 +1004,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1015,7 +1035,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1046,8 +1067,9 @@
         "output": 1,
         "station": "",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1079,7 +1101,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1109,8 +1132,9 @@
         "output": 1,
         "station": "",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1140,7 +1164,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1169,9 +1194,10 @@
         },
         "output": 1,
         "station": "forge",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": "bronze_working"
+        "skill": "bronze_smith",
+        "min_skill_xp": 160,
+        "capability": "bronze_working",
+        "min_age_years": 18
       },
       "use_ability": "",
       "tags": [
@@ -1200,9 +1226,10 @@
         },
         "output": 1,
         "station": "forge",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": "bronze_working"
+        "skill": "bronze_smith",
+        "min_skill_xp": 160,
+        "capability": "bronze_working",
+        "min_age_years": 18
       },
       "use_ability": "",
       "tags": [
@@ -1231,9 +1258,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "soil_tilling",
       "tags": [
@@ -1263,7 +1291,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -1293,7 +1322,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "spear_handling",
       "tags": [
@@ -1325,7 +1355,8 @@
         "station": "",
         "skill": "stone_toolmaker",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -1355,8 +1386,9 @@
         "output": 1,
         "station": "",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "sling_accuracy",
       "tags": [
@@ -1386,8 +1418,9 @@
         "output": 1,
         "station": "",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "archery",
       "tags": [
@@ -1418,8 +1451,9 @@
         "output": 6,
         "station": "",
         "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -1448,9 +1482,10 @@
         },
         "output": 1,
         "station": "forge",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": "bronze_working"
+        "skill": "bronze_smith",
+        "min_skill_xp": 160,
+        "capability": "bronze_working",
+        "min_age_years": 18
       },
       "use_ability": "",
       "tags": [
@@ -1480,9 +1515,10 @@
         },
         "output": 1,
         "station": "forge",
-        "skill": "stone_toolmaker",
-        "min_skill_xp": 0,
-        "capability": "bronze_working"
+        "skill": "bronze_smith",
+        "min_skill_xp": 160,
+        "capability": "bronze_working",
+        "min_age_years": 18
       },
       "use_ability": "",
       "tags": [
@@ -1513,7 +1549,8 @@
         "station": "",
         "skill": "basket_weaver",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1544,7 +1581,8 @@
         "station": "",
         "skill": "basket_weaver",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1574,8 +1612,9 @@
         "output": 1,
         "station": "workshop",
         "skill": "basket_weaver",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1605,8 +1644,9 @@
         "output": 1,
         "station": "",
         "skill": "basket_weaver",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1636,8 +1676,9 @@
         "output": 1,
         "station": "",
         "skill": "basket_weaver",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1666,8 +1707,9 @@
         "output": 1,
         "station": "",
         "skill": "basket_weaver",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1696,8 +1738,9 @@
         "output": 1,
         "station": "",
         "skill": "basket_weaver",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1726,9 +1769,10 @@
         },
         "output": 1,
         "station": "forge",
-        "skill": "basket_weaver",
-        "min_skill_xp": 0,
-        "capability": "bronze_working"
+        "skill": "bronze_smith",
+        "min_skill_xp": 160,
+        "capability": "bronze_working",
+        "min_age_years": 18
       },
       "use_ability": "",
       "tags": [
@@ -1759,7 +1803,8 @@
         "station": "",
         "skill": "forager",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1790,7 +1835,8 @@
         "station": "",
         "skill": "forager",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1820,9 +1866,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "forager",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1854,7 +1901,8 @@
         "station": "",
         "skill": "forager",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1886,7 +1934,8 @@
         "station": "",
         "skill": "forager",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1917,7 +1966,8 @@
         "station": "",
         "skill": "forager",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1947,9 +1997,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "forager",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -1977,9 +2028,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "forager",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2011,7 +2063,8 @@
         "station": "",
         "skill": "forager",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2040,9 +2093,10 @@
         },
         "output": 1,
         "station": "",
-        "skill": "forager",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "crop_farmer",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2071,8 +2125,9 @@
         "output": 1,
         "station": "",
         "skill": "carer",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 16
       },
       "use_ability": "basic_first_aid",
       "tags": [
@@ -2103,7 +2158,8 @@
         "station": "",
         "skill": "carer",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 16
       },
       "use_ability": "",
       "tags": [
@@ -2134,7 +2190,8 @@
         "station": "",
         "skill": "carer",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 16
       },
       "use_ability": "",
       "tags": [
@@ -2165,7 +2222,8 @@
         "station": "",
         "skill": "carer",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 16
       },
       "use_ability": "",
       "tags": [
@@ -2197,7 +2255,8 @@
         "station": "",
         "skill": "carer",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 16
       },
       "use_ability": "",
       "tags": [
@@ -2227,7 +2286,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2257,7 +2317,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2288,7 +2349,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2320,7 +2382,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2349,8 +2412,9 @@
         "output": 1,
         "station": "mason_yard",
         "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2380,8 +2444,9 @@
         "output": 1,
         "station": "",
         "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2410,8 +2475,9 @@
         "output": 1,
         "station": "",
         "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2441,7 +2507,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2472,7 +2539,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 15
       },
       "use_ability": "",
       "tags": [
@@ -2501,9 +2569,10 @@
         },
         "output": 1,
         "station": "kiln",
-        "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "potter",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2534,7 +2603,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2564,7 +2634,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2593,9 +2664,10 @@
         },
         "output": 1,
         "station": "kiln",
-        "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "skill": "potter",
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2626,7 +2698,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2655,8 +2728,9 @@
         "output": 1,
         "station": "",
         "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2688,7 +2762,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "fire_handling",
       "tags": [
@@ -2719,7 +2794,8 @@
         "station": "",
         "skill": "ceremony_facilitator",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2750,8 +2826,9 @@
         "output": 1,
         "station": "",
         "skill": "ceremony_facilitator",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2780,8 +2857,9 @@
         "output": 1,
         "station": "",
         "skill": "ceremony_facilitator",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2812,8 +2890,9 @@
         "output": 1,
         "station": "",
         "skill": "shelter_builder",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2844,7 +2923,8 @@
         "station": "",
         "skill": "shelter_builder",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
@@ -2874,7 +2954,8 @@
         "station": "",
         "skill": "oral_mentor",
         "min_skill_xp": 0,
-        "capability": ""
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "counting",
       "tags": [
@@ -2904,8 +2985,9 @@
         "output": 1,
         "station": "",
         "skill": "oral_mentor",
-        "min_skill_xp": 0,
-        "capability": ""
+        "min_skill_xp": 30,
+        "capability": "",
+        "min_age_years": 13
       },
       "use_ability": "",
       "tags": [
