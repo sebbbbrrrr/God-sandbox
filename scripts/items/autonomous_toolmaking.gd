@@ -74,7 +74,14 @@ func _matching_serials(holder: String, item_id: String) -> Array[String]:
         return int(a) < int(b))
     return ids
 
-func can_move(holder: String, units: Dictionary) -> bool:
+func can_move(holder: String, units: Dictionary, exact_serial: String = "") -> bool:
+    if exact_serial != "":
+        if not instances.has(exact_serial) or units.size() != 1:
+            return false
+        var chosen: Dictionary = instances[exact_serial]
+        if str(chosen["holder"]) != holder or not units.has(str(chosen["item_id"])) or \
+                int(units[chosen["item_id"]]) != 1:
+            return false
     for item_id in units:
         if _managed(str(item_id)) and _matching_serials(holder, str(item_id)).size() < int(units[item_id]):
             return false
@@ -103,11 +110,14 @@ func _unassign(serial: String) -> void:
         if str(equipped[id]) == serial:
             equipped.erase(id)
 
-func move_instances(source: String, target: String, units: Dictionary) -> void:
+func move_instances(source: String, target: String, units: Dictionary,
+        exact_serial: String = "") -> void:
     for item_id in units:
         if not _managed(str(item_id)):
             continue
         var ids := _matching_serials(source, str(item_id))
+        if exact_serial != "" and ids.has(exact_serial):
+            ids = [exact_serial]
         for i in range(mini(ids.size(), int(units[item_id]))):
             var serial := ids[i]
             var instance: Dictionary = instances[serial]
@@ -193,6 +203,59 @@ func try_equip(world: RefCounted, person: Dictionary, material: String) -> void:
             equipped[pid] = viable
         elif not moved_ids.is_empty():
             equipped[pid] = moved_ids[0]
+
+# D4: explicit, ownership-preserving equipment commands. The player cannot
+# grant a tool to someone who does not physically possess it.
+func equip_owned(world: RefCounted, citizen_id: int, serial: String) -> bool:
+    var person := _person(world, citizen_id)
+    if person.is_empty() or not _living_adolescent(world, person) or \
+            not instances.has(serial):
+        return false
+    var instance: Dictionary = instances[serial]
+    if str(instance["holder"]) != "citizen:" + str(citizen_id) or \
+            int(instance["condition"]) <= 0 or not _managed(str(instance["item_id"])):
+        return false
+    equipped[str(citizen_id)] = serial
+    return true
+
+func unequip_owned(world: RefCounted, citizen_id: int, serial: String) -> bool:
+    var person := _person(world, citizen_id)
+    if person.is_empty() or int(person.get("hp", 0)) <= 0 or \
+            str(equipped.get(str(citizen_id), "")) != serial:
+        return false
+    equipped.erase(str(citizen_id))
+    return true
+
+# A repair request becomes a persistent D3 work job. It never repairs the
+# item instantly and cannot interrupt another physical job mid-cargo.
+func request_repair(world: RefCounted, citizen_id: int, serial: String) -> bool:
+    if not instances.has(serial):
+        return false
+    var person := _person(world, citizen_id)
+    if person.is_empty() or not _living_adolescent(world, person):
+        return false
+    var nation := int(person["nation"])
+    if not _site(world, nation) or not _knowledge(world, nation) or \
+            not world.occupations.enabled(world, nation, "stone_toolmaker"):
+        return false
+    var station: Vector2i = world.capitals[nation]
+    if Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), station) > 1:
+        return false
+    var entry: Dictionary = instances[serial]
+    if str(entry["holder"]) != "settlement:" + str(nation) or \
+            int(entry["condition"]) >= int(entry["max_condition"]):
+        return false
+    var material := str(REPAIR_INPUTS.get(str(entry["item_id"]), ""))
+    if world.inventory.held("settlement:" + str(nation), material) < 1:
+        return false
+    var id := str(citizen_id)
+    if jobs.has(id) or world.food.jobs.has(id) or world.construction.jobs.has(id) or \
+            _has_worker(nation):
+        return false
+    if not world.citizen_ai_by_id.has(id):
+        return false
+    return _begin(world, person, world.citizen_ai_by_id[id], "repair",
+        {"serial": serial, "remaining": 3})
 
 func _begin(world: RefCounted, person: Dictionary, mind: Dictionary, kind: String,
         extra: Dictionary = {}) -> bool:
