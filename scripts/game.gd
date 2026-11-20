@@ -2,6 +2,9 @@ extends Node2D
 
 const Simulation = preload("res://scripts/simulation.gd")
 const Brush = preload("res://scripts/terrain_brush.gd")
+const Inspector = preload("res://scripts/ui/item_inspector.gd")
+const ItemArt = preload("res://scripts/ui/item_pixel_art.gd")
+const ItemOverlay = preload("res://scripts/ui/item_overlay.gd")
 const SAVE_PATH := "user://world.json"
 const COLORS := [
     Color("#1e617d"), Color("#dcc490"), Color("#77a45e"),
@@ -39,6 +42,11 @@ var sim_accum := 0.0
 var render_accum := 0.0
 var autosave_ticks := 0
 var font: Font
+var inspector = Inspector.new()
+var inspector_touch_id := -1
+var inspector_touch_y := 0.0
+var inspector_touch_moved := false
+var inspector_scroll_pixels := 0.0
 
 func _ready() -> void:
     world = load_world()
@@ -110,9 +118,11 @@ func _draw() -> void:
     var sz := get_viewport_rect().size
     draw_rect(Rect2(Vector2.ZERO, sz), Color("#123d59"))
     draw_terrain(sz)
+    draw_world_items(sz)
     draw_people(sz)
     draw_brush_preview(sz)
     draw_interface(sz)
+    ItemOverlay.draw_panel(self, font, world, inspector, sz, toolbar_height())
 
 func draw_terrain(sz: Vector2) -> void:
     var ts := tile_size()
@@ -155,6 +165,49 @@ func draw_terrain(sz: Vector2) -> void:
                 world.ASH:
                     draw_circle(p + Vector2(ts * 0.5, ts * 0.5), ts * 0.13, Color("#ee8147"))
 
+# D4 decorations are only drawn for visible cells. Existing terrain art is
+# untouched so the separate high-definition renderer can integrate later.
+func draw_world_items(sz: Vector2) -> void:
+    var ts := tile_size()
+    if ts < 7.0:
+        return
+    var origin := world_origin()
+    var world_bottom := sz.y - toolbar_height()
+    for building in world.construction.houses:
+        if str(building.get("type", "home")) != "tool_area":
+            continue
+        var pos := origin + Vector2(float(building["x"]), float(building["y"])) * ts
+        if pos.x < -ts or pos.x > sz.x or pos.y < 50.0 - ts or pos.y > world_bottom:
+            continue
+        ItemArt.draw_workshop(self, Rect2(pos, Vector2(ts, ts)), world.tick)
+    for holder in world.inventory.balances:
+        var key := str(holder)
+        if not key.begins_with("ground:"):
+            continue
+        var store: Dictionary = world.inventory.balances[holder]
+        if store.is_empty():
+            continue
+        var idx := int(key.get_slice(":", 1))
+        var x := idx % world.WIDTH
+        var y := int(idx / world.WIDTH)
+        var pos := origin + Vector2(float(x), float(y)) * ts
+        if pos.x < -ts or pos.x > sz.x or pos.y < 50.0 - ts or pos.y > world_bottom:
+            continue
+        var kinds: Array = store.keys()
+        kinds.sort()
+        var visible_id := ""
+        var total := 0
+        for item_id in kinds:
+            var qty := int(store[item_id])
+            if qty <= 0:
+                continue
+            total += qty
+            if visible_id == "":
+                visible_id = str(item_id)
+        if visible_id != "":
+            ItemArt.draw_ground(self, Rect2(pos, Vector2(ts, ts)),
+                visible_id, total, inspector.visible and inspector.holder_id == key)
+
 func draw_people(sz: Vector2) -> void:
     var ts := tile_size()
     var origin := world_origin()
@@ -166,6 +219,15 @@ func draw_people(sz: Vector2) -> void:
         if p.x < -ts or p.x > sz.x + ts or p.y < 50.0 or p.y > sz.y - toolbar_height():
             continue
         draw_circle(p, radius, NATION_COLORS[citizen["nation"]])
+        if ts >= 13.0:
+            var serial := str(world.toolmaking.equipped.get(str(citizen["id"]), ""))
+            if serial != "" and world.toolmaking.instances.has(serial):
+                var instance: Dictionary = world.toolmaking.instances[serial]
+                ItemArt.draw_item(self, str(instance["item_id"]),
+                    p + Vector2(radius * 1.65, -radius * 0.55), ts / 19.0)
+                if int(instance["condition"]) * 4 < int(instance["max_condition"]):
+                    draw_rect(Rect2(p + Vector2(radius * 1.05, radius * 0.65),
+                        Vector2(maxf(2.0, ts * 0.16), 2.0)), Color("#df816e"))
         if ts > 15.0:
             draw_arc(p, radius, 0.0, TAU, 12, Color("#263a3d"), 0.8)
 
@@ -234,6 +296,7 @@ func draw_interface(sz: Vector2) -> void:
     label("1 finger: paint" if enabled else "1 finger: move / tap to use",
         Vector2(12, sz.y - 11), 10, Color("#bfcdb9"))
     label("2 fingers: pan + zoom", Vector2(sz.x * 0.54, sz.y - 11), 10, Color("#bfcdb9"))
+    ItemOverlay.draw_chip(self, font, sz, toolbar_height(), inspector.visible)
 
 func paint_segment(from_cell: Vector2i, to_cell: Vector2i) -> void:
     if not editable_power():
@@ -258,7 +321,103 @@ func touch_centroid() -> Vector2:
     var points := touches.values()
     return ((points[0] as Vector2) + (points[1] as Vector2)) * 0.5
 
+# The modal consumes its own touch stream; swipes scroll item rows rather
+# than dragging the world underneath or activating an equipped god power.
+func inspector_input(event: InputEvent) -> void:
+    if event is InputEventScreenTouch:
+        if event.pressed:
+            if inspector_touch_id == -1:
+                inspector_touch_id = event.index
+                inspector_touch_y = event.position.y
+                inspector_touch_moved = false
+                inspector_scroll_pixels = 0.0
+            else:
+                inspector_touch_moved = true
+        elif event.index == inspector_touch_id:
+            if not inspector_touch_moved:
+                inspector.tap(world, event.position, get_viewport_rect().size, toolbar_height())
+            inspector_touch_id = -1
+            inspector_scroll_pixels = 0.0
+        queue_redraw()
+    elif event is InputEventScreenDrag:
+        if event.index == inspector_touch_id:
+            var dy: float = event.position.y - inspector_touch_y
+            inspector_touch_y = event.position.y
+            inspector_scroll_pixels += dy
+            if absf(inspector_scroll_pixels) > 8.0:
+                inspector_touch_moved = true
+            if absf(inspector_scroll_pixels) >= inspector.ROW_HEIGHT:
+                var steps := int(floor(absf(inspector_scroll_pixels) / inspector.ROW_HEIGHT))
+                inspector.scroll_by(world, -steps if inspector_scroll_pixels > 0.0 else steps,
+                    get_viewport_rect().size, toolbar_height())
+                inspector_scroll_pixels = fmod(inspector_scroll_pixels, inspector.ROW_HEIGHT)
+            queue_redraw()
+    elif event is InputEventMouseButton:
+        if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+            inspector.tap(world, event.position, get_viewport_rect().size, toolbar_height())
+        elif event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+            inspector.scroll_by(world, -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1,
+                get_viewport_rect().size, toolbar_height())
+        queue_redraw()
+    elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+        inspector.close()
+        queue_redraw()
+
+# In hand mode a tap inspects real entities rather than merely printing to
+# the development console. Repeating an occupied tile cycles its citizens.
+func inspect_cell(cell: Vector2i) -> bool:
+    var idx := world.index_of(cell.x, cell.y)
+    if idx < 0:
+        return false
+    var ground_id := "ground:" + str(idx)
+    var ground: Dictionary = world.inventory.balances.get(ground_id, {})
+    if not ground.is_empty() and inspector.focus_citizen_id > 0:
+        return inspector.open_for(world, ground_id, "ground")
+    var occupants: Array[int] = []
+    for citizen in world.citizens:
+        if int(citizen["hp"]) > 0 and int(citizen["x"]) == cell.x and int(citizen["y"]) == cell.y:
+            occupants.append(int(citizen["id"]))
+    if not occupants.is_empty():
+        var idx_to_use := 0
+        var last: int = occupants.find(inspector.focus_citizen_id)
+        if last >= 0:
+            idx_to_use = (last + 1) % occupants.size()
+        return inspector.open_for(world, "citizen:" + str(occupants[idx_to_use]), "citizen")
+    for building in world.construction.houses:
+        if str(building.get("type", "home")) == "tool_area" and \
+                int(building["x"]) == cell.x and int(building["y"]) == cell.y:
+            return inspector.open_for(world,
+                "settlement:" + str(building["nation"]), "workshop")
+    if not ground.is_empty():
+        return inspector.open_for(world, ground_id, "ground")
+    for nation in range(2):
+        if world.capitals[nation] == cell:
+            return inspector.open_for(world, "settlement:" + str(nation), "settlement")
+    return false
+
+func open_items_shortcut() -> void:
+    selected_power = -1
+    var person: Dictionary = world.inventory._person(world, inspector.focus_citizen_id)
+    if not person.is_empty() and int(person.get("hp", 0)) > 0:
+        inspector.open_for(world, "citizen:" + str(person["id"]), "citizen")
+        return
+    var best := -1
+    var distance := INF
+    for nation in range(2):
+        var capital: Vector2i = world.capitals[nation]
+        if capital.x < 0:
+            continue
+        var d := Vector2(capital).distance_squared_to(camera_center)
+        if d < distance:
+            distance = d
+            best = nation
+    if best >= 0:
+        inspector.open_for(world, "settlement:" + str(best), "settlement")
+
 func _input(event: InputEvent) -> void:
+    if inspector.visible:
+        inspector_input(event)
+        return
     if event is InputEventScreenTouch:
         if event.pressed:
             touches[event.index] = event.position
@@ -383,6 +542,11 @@ func tapped(position: Vector2) -> void:
         return
     var top := sz.y - toolbar_height()
     if position.y >= top:
+        if position.x >= sz.x - 111.0 and position.x <= sz.x - 12.0 and \
+                position.y >= top + 3.0 and position.y <= top + 27.0:
+            open_items_shortcut()
+            queue_redraw()
+            return
         var row := position.y - top
         if row >= 30 and row <= 67:
             var cw := (sz.x - 12.0) / float(CATEGORY_NAMES.size())
@@ -402,11 +566,8 @@ func tapped(position: Vector2) -> void:
         return
     var cell := screen_to_tile(position)
     if selected_power == -1:
-        for person in world.citizens:
-            if person["x"] == cell.x and person["y"] == cell.y:
-                print("Citizen #%d · Nation %d · Health %d" %
-                    [person["id"], person["nation"] + 1, person["hp"]])
-                break
+        if inspect_cell(cell):
+            queue_redraw()
     elif editable_power():
         paint_segment(cell, cell)
     else:
