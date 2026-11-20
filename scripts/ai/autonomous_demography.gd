@@ -59,8 +59,20 @@ func set_household_preferences(household_id: int, data: Dictionary) -> bool:
 func on_household_merge(primary_id: int, absorbed_id: int) -> void:
     var primary_key := str(primary_id)
     var absorbed_key := str(absorbed_id)
-    if not household_preferences.has(primary_key) and household_preferences.has(absorbed_key):
-        household_preferences[primary_key] = household_preferences[absorbed_key]
+    if household_preferences.has(absorbed_key):
+        var incoming: Dictionary = household_preferences[absorbed_key]
+        if household_preferences.has(primary_key):
+            var existing: Dictionary = household_preferences[primary_key]
+            # Forming a household never overrides an adult's explicit wish
+            # not to have children. A longer requested spacing also wins.
+            existing["desired_children"] = mini(int(existing["desired_children"]),
+                int(incoming["desired_children"]))
+            existing["minimum_spacing_years"] = maxi(int(existing["minimum_spacing_years"]),
+                int(incoming["minimum_spacing_years"]))
+            existing["partnership_interest"] = mini(int(existing["partnership_interest"]),
+                int(incoming["partnership_interest"]))
+        else:
+            household_preferences[primary_key] = incoming.duplicate(true)
     household_preferences.erase(absorbed_key)
     family_birth_counts[primary_key] = int(family_birth_counts.get(primary_key, 0)) + int(
         family_birth_counts.get(absorbed_key, 0))
