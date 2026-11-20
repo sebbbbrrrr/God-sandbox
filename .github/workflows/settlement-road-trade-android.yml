@@ -104,13 +104,15 @@ jobs:
           set -euo pipefail
           mkdir -p build
           ./godot --headless --path . --export-debug "Android" build/GodSandbox-Settlement-Roads-Trade-debug.apk
-          test -s build/GodSandbox-Unified-ZoomFix-debug.apk
-          ls -lh build/GodSandbox-Unified-ZoomFix-debug.apk
-      - name: Upload Unified debug APK
+          test -s build/GodSandbox-Settlement-Roads-Trade-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose build/GodSandbox-Settlement-Roads-Trade-debug.apk
+          unzip -tqq build/GodSandbox-Settlement-Roads-Trade-debug.apk
+          ls -lh build/GodSandbox-Settlement-Roads-Trade-debug.apk
+      - name: Upload Settlement Roads Trade debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: GodSandbox-Unified-ZoomFix-Android-debug
-          path: build/GodSandbox-Unified-ZoomFix-debug.apk
+          name: GodSandbox-Settlement-Roads-Trade-Android-debug
+          path: build/GodSandbox-Settlement-Roads-Trade-debug.apk
           if-no-files-found: error
           retention-days: 14
       - name: Upload validation diagnostics on failure
