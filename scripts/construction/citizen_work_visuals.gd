@@ -1,4 +1,5 @@
 extends RefCounted
+const PhysicalSprites = preload("res://scripts/visuals/physical_sprite_atlas.gd")
 # Phase A2: reusable work choreography. ALL jobs, movement, materials and stages
 # come from the authoritative world. This module modifies no simulation data.
 # Drawing is culled to visible citizens, without nodes or animated textures.
@@ -111,6 +112,19 @@ static func _build_action(world: RefCounted, site: Dictionary, clock: float) -> 
     return "hammer"
 
 static func _bundle(canvas: Node2D, at: Vector2, scale: float, cargo: Dictionary) -> void:
+    # Draw actual named cargo, not a generic symbolic bundle. The task's
+    # authoritative cargo dictionary decides what is visible.
+    var keys: Array = cargo.keys()
+    keys.sort()
+    for item in keys:
+        if int(cargo[item]) <= 0:
+            continue
+        var key := "resource.%s.stack_small" % str(item)
+        var place := at + Vector2(5, 0) * scale
+        if PhysicalSprites.draw(canvas, key, place, 16.0 * scale):
+            return
+        if PhysicalSprites.draw_item(canvas, str(item), place, 16.0 * scale):
+            return
     var wood: int = int(cargo.get("wood", 0))
     var stone: int = int(cargo.get("stone", 0))
     var fibre: int = int(cargo.get("plant_fibre", 0))

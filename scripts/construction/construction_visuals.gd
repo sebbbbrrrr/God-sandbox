@@ -1,4 +1,5 @@
 extends RefCounted
+const PhysicalSprites = preload("res://scripts/visuals/physical_sprite_atlas.gd")
 # Site artwork uses ONLY real project stage, stage_work and material custody.
 # Smooth intermittent tool animation is drawn separately by citizen_work_visuals.
 static func draw(canvas: Node2D, game: Node2D) -> void:
@@ -94,11 +95,12 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
         var loose_wood := maxi(0, int(delivered.get("wood", 0)) - int(consumed.get("wood", 0)))
         var loose_stone := maxi(0, int(delivered.get("stone", 0)) - int(consumed.get("stone", 0)))
         if ts >= 13.0:
-            for i in range(mini(3, loose_wood)):
-                canvas.draw_line(p + Vector2(w - 12, h - 8 - i * 2) * s,
-                    p + Vector2(w - 3, h - 10 - i * 2) * s, timber_light, maxf(1.0, 2.0 * s))
-            for i in range(mini(3, loose_stone)):
-                canvas.draw_rect(Rect2((p + Vector2(3 + i * 4, h - 6) * s).round(), Vector2(4, 3) * s), stone)
+            if loose_wood > 0:
+                var wood_key := "resource.wood.stack_large" if loose_wood >= 4 else "resource.wood.stack_small"
+                PhysicalSprites.draw(canvas, wood_key, p + Vector2(w - 7, h - 8) * s, 13.0 * s)
+            if loose_stone > 0:
+                var stone_key := "resource.stone.stack_large" if loose_stone >= 4 else "resource.stone.stack_small"
+                PhysicalSprites.draw(canvas, stone_key, p + Vector2(7, h - 7) * s, 12.0 * s)
         if paused:
             canvas.draw_rect(Rect2(p + Vector2(2, 2) * s, Vector2(width - 4 * s, height - 4 * s)),
                 Color("#995a45", 0.18))

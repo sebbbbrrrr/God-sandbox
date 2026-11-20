@@ -1,4 +1,5 @@
 extends Node2D
+const PhysicalSprites = preload("res://scripts/visuals/physical_sprite_atlas.gd")
 # Unified front-end overlay: world-space item sprites at layer 5;
 # modal item inspector at layer 20. Both read the D4 physical ledger.
 const ConstructionVisuals = preload("res://scripts/construction/construction_visuals.gd")
@@ -7,6 +8,9 @@ const Art = preload("res://scripts/ui/item_pixel_art.gd")
 const InspectorOverlay = preload("res://scripts/ui/item_overlay.gd")
 var game: Node2D
 var mode := "world"
+
+func _ready() -> void:
+    texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 func _draw() -> void:
     if game == null or game.world == null:
@@ -53,6 +57,35 @@ func _draw() -> void:
             if first != "":
                 Art.draw_ground(self, Rect2(p, Vector2(ts, ts)), first, total,
                     game.inspector.visible and game.inspector.holder_id == label)
+    # Physical settlement stores: present representative piles from real
+    # conserved inventory quantities. No independent stockpile state exists.
+    if ts >= 12.0:
+        for nation in range(2):
+            var capital: Vector2i = world.capitals[nation]
+            if world.index_of(capital.x, capital.y) < 0:
+                continue
+            var stock: Dictionary = world.inventory.stockpile(nation)
+            var kinds: Array = stock.keys()
+            kinds.sort()
+            var biggest_id := ""
+            var biggest_count := 0
+            for item_id in kinds:
+                var qty := int(stock[item_id])
+                if qty > biggest_count:
+                    biggest_id = str(item_id)
+                    biggest_count = qty
+            if biggest_count <= 0:
+                continue
+            var p := origin + Vector2(float(capital.x), float(capital.y)) * ts
+            p.y -= float(world.height_at(capital.x, capital.y)) * (12.0 / 32.0) * ts
+            if p.x < -ts or p.x > size.x or p.y < -ts or p.y > size.y:
+                continue
+            var pile := "resource.%s.stack_large" % biggest_id if biggest_count >= 16 else (
+                "resource.%s.stack_small" % biggest_id if biggest_count >= 4 else
+                "item.%s" % biggest_id)
+            var pos := p + Vector2(ts * 0.8, ts * 0.85)
+            if not PhysicalSprites.draw(self, pile, pos, ts * 0.54):
+                PhysicalSprites.draw_item(self, biggest_id, pos, ts * 0.54)
     # Render only tools that are actually equipped and linked to a unique
     # durable instance. Follow the interpolated walking trajectory.
     if ts >= 13.0:
