@@ -4,6 +4,7 @@ extends RefCounted
 # national career. Later jobs need actual adopted techniques AND facilities.
 const Nav = preload("res://scripts/ai/navigation.gd")
 const Calendar = preload("res://scripts/ai/sim_calendar.gd")
+const Relations = preload("res://scripts/ai/relationships.gd")
 const TIER_XP := [0, 50, 160, 360, 700]
 const TIER_NAMES := ["novice", "practised", "skilled", "expert", "master"]
 const MAX_SKILLS := 24
@@ -375,6 +376,7 @@ func training_step(world: RefCounted, mentor: Dictionary, mind: Dictionary) -> b
             apprenticeships.erase(student_key)
             return false
         credit(world, pupil, profession, 3, false)
+        credit(world, mentor, "oral_mentor", 1, true)
         link["lessons"] = int(link["lessons"]) + 1
         link["next_tick"] = int(world.tick) + TRAIN_INTERVAL
         append_event(world, mentor, "lesson_taught",
@@ -392,13 +394,55 @@ func retire_invalid_apprenticeships(world: RefCounted) -> void:
                 not enabled(world, int(pupil["nation"]), str(link["occupation"])):
             apprenticeships.erase(key)
 
+func auto_apprenticeship(world: RefCounted) -> void:
+    # Teaching emerges only where a capable, interested adult has an actually
+    # observed social relationship with a reachable eligible pupil.
+    var occupied_teachers := {}
+    for link in apprenticeships.values():
+        occupied_teachers[str(link["teacher_id"])] = true
+    for teacher in world.citizens:
+        if int(teacher["hp"]) <= 0 or occupied_teachers.has(str(teacher["id"])) or                 world.calendar.age_years(int(teacher["birth_tick"]), world.tick) < 18:
+            continue
+        var rec := record_for(teacher)
+        if rec.is_empty():
+            continue
+        var taught := ""
+        var most_xp := MENTOR_MIN_XP - 1
+        for skill_id in rec["xp"]:
+            var xp: int = int(rec["xp"][skill_id])
+            if xp > most_xp and enabled(world, int(teacher["nation"]), str(skill_id)):
+                most_xp = xp
+                taught = str(skill_id)
+        if taught == "":
+            continue
+        var teacher_mind: Dictionary = world.citizen_ai_by_id.get(str(teacher["id"]), {})
+        if teacher_mind.is_empty():
+            continue
+        for pupil in world.ai_context.nearby(world, teacher):
+            if apprenticeships.has(str(pupil["id"])) or                     not apprenticeship_available(world, teacher, pupil, taught):
+                continue
+            var tie := Relations.find(teacher_mind, int(pupil["id"]))
+            var student_mind: Dictionary = world.citizen_ai_by_id.get(str(pupil["id"]), {})
+            var reverse := Relations.find(student_mind, int(teacher["id"])) if not student_mind.is_empty() else {}
+            if tie.is_empty() or reverse.is_empty() or int(tie["trust"]) < 3 or                     int(reverse["trust"]) < 3:
+                continue
+            if begin_apprenticeship(world, int(teacher["id"]), int(pupil["id"]), taught):
+                occupied_teachers[str(teacher["id"])] = true
+                break
+
 func on_tick(world: RefCounted) -> void:
     if int(world.tick) % 90 == 0:
         retire_invalid_apprenticeships(world)
+    if int(world.tick) % Calendar.TICKS_PER_YEAR == 0:
+        for record in skills_by_id.values():
+            for skill_id in record["xp"]:
+                if int(world.tick) - int(record["last_practice"].get(skill_id, world.tick)) > 5 * Calendar.TICKS_PER_YEAR:
+                    record["xp"][skill_id] = maxi(0, int(record["xp"][skill_id]) - 2)
     if int(world.tick) < next_plan_tick:
         return
     next_plan_tick = int(world.tick) + PLANNING_INTERVAL
     var local: Array = [available_roles(world, 0), available_roles(world, 1)]
+    auto_apprenticeship(world)
     for person in world.citizens:
         if int(person["hp"]) <= 0:
             continue
@@ -406,6 +450,9 @@ func on_tick(world: RefCounted) -> void:
         if record.is_empty():
             register_citizen(person, world.tick)
             record = record_for(person)
+        if world.calendar.age_years(int(person["birth_tick"]), world.tick) < 18:
+            record["preference"] = ""
+            continue
         var nation: int = int(person["nation"])
         var old_role := str(record["preference"])
         var choice := old_role if old_role in local[nation] else ""
