@@ -203,6 +203,9 @@ func apply_power(power: int, x: int, y: int) -> bool:
             set_terrain_cell(x, y, FOREST)
         3:
             for citizen in citizens:
+                # Bless heals the living; it does not silently undo a recorded death.
+                if int(citizen["hp"]) <= 0:
+                    continue
                 if abs(citizen["x"] - x) <= 2 and abs(citizen["y"] - y) <= 2:
                     var restored_hp: int = 100 - int(citizen["hp"])
                     citizen["hp"] = 100
