@@ -8,6 +8,7 @@ const UnifiedOverlay = preload("res://scripts/ui/unified_world_overlay.gd")
 const AudioManagerScript = preload("res://scripts/audio/audio_manager.gd")
 const LivingWorldAudio = preload("res://scripts/audio/living_world_audio.gd")
 const ConstructionAudioBridge = preload("res://scripts/audio/construction_audio_bridge.gd")
+const WorldAudioDirector = preload("res://scripts/audio/world_audio_director.gd")
 
 var world_renderer: PixelWorldRenderer
 var hud: GodSandboxHUD
@@ -32,6 +33,7 @@ var work_visual_clock := 0.0
 var game_audio: Node
 var living_audio = LivingWorldAudio.new()
 var construction_audio = ConstructionAudioBridge.new()
+var world_audio_director = WorldAudioDirector.new()
 
 
 func _ready() -> void:
@@ -44,6 +46,7 @@ func _ready() -> void:
     add_child(game_audio)
     living_audio.reset()
     construction_audio.reset()
+    world_audio_director.reset()
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
     selected_power = -1
     brush_index = 1
@@ -166,6 +169,12 @@ func _process(delta: float) -> void:
     if world_renderer.walks != null:
         world_renderer.walks.walk_seconds = 0.85 / float(simulation_speed)
     world_renderer.animate(real_delta, 0.0 if paused else real_delta)
+    if not paused:
+        var now_ms := Time.get_ticks_msec()
+        world_audio_director.update_weather(world_renderer.weather, int(world.tick),
+            living_audio, game_audio, ui_size())
+        world_audio_director.update_civilisation(world, game_audio, camera_center,
+            ui_size(), now_ms)
     if hud != null and (hud_refresh_accum >= HUD_REFRESH_SECONDS or paused):
         hud_refresh_accum = 0.0
         hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused,
