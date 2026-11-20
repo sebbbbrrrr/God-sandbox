@@ -330,6 +330,21 @@ func delivery_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
     mind["route"] = []
     return true
 
+func on_death(world: RefCounted, person: Dictionary) -> void:
+    var key := str(person["id"])
+    if partners.has(key):
+        var survivor_id: int = int(partners[key])
+        partners.erase(key)
+        partners.erase(str(survivor_id))
+        var survivor: Dictionary = world.ai_context.people.get(survivor_id, {})
+        if not survivor.is_empty() and int(survivor["hp"]) > 0:
+            world.lifecycle.append_event(world, survivor, "bereaved",
+                {"former_partner_id": int(person["id"])})
+    if pregnancies.has(key):
+        fail_pregnancy(world, person, "gestational_parent_died")
+    # Pregnancy may remain viable if the non-gestational parent dies. The
+    # child's original biological parent IDs are preserved in the record.
+
 func archive_dead(world: RefCounted) -> void:
     # Dead citizens occupy renderer slots until two years after death,
     # preserving legacy death expectations and allowing immediate inspection.
