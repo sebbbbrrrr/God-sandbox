@@ -37,6 +37,20 @@ const DEFINITIONS := {
     "weather.wind": {"bus": "Environment", "duration": 0.8, "tone": 95.0, "noise": 0.94, "gain": -26.0},
     "weather.thunder": {"bus": "Environment", "duration": 0.9, "tone": 70.0, "noise": 0.82, "gain": -13.0}
 }
+# Authored, redistributable original 16-kHz mono WAV foley, kept short for mobile.
+# Unlisted event IDs fall back to deterministic synthetic textures.
+const SAMPLE_PATHS := {
+    "work.chop": "res://assets/audio/foley/work_chop.wav",
+    "work.mine": "res://assets/audio/foley/work_mine.wav",
+    "work.saw": "res://assets/audio/foley/work_saw.wav",
+    "work.dig": "res://assets/audio/foley/work_dig.wav",
+    "work.build": "res://assets/audio/foley/work_build.wav",
+    "work.deliver": "res://assets/audio/foley/work_deliver.wav",
+    "citizen.step.grass": "res://assets/audio/foley/step_grass.wav",
+    "citizen.step.stone": "res://assets/audio/foley/step_stone.wav",
+    "ui.select": "res://assets/audio/foley/ui_select.wav",
+    "world.fire": "res://assets/audio/foley/world_fire.wav"
+}
 const POWER_EVENTS := ["world.raise", "world.fire", "world.forest", "world.bless", "world.spawn", "world.ocean"]
 const VOICE_LIMITS := {"battery": 10, "balanced": 20, "high": 40}
 
@@ -200,6 +214,13 @@ func register_sample(event_id: String, stream: AudioStream) -> bool:
 func _get_sample(event_id: String) -> AudioStream:
     if _samples.has(event_id):
         return _samples[event_id]
+    if SAMPLE_PATHS.has(event_id):
+        var path: String = SAMPLE_PATHS[event_id]
+        if ResourceLoader.exists(path):
+            var imported := load(path) as AudioStream
+            if imported != null:
+                _samples[event_id] = imported
+                return imported
     # Lightweight original procedural placeholder; replace through register_sample
     # with properly licensed realistic recordings during later content phases.
     var info: Dictionary = DEFINITIONS[event_id]
