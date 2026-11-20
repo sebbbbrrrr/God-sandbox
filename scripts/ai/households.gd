@@ -327,6 +327,7 @@ func care_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             child["carried_by"] = 0
         child["last_care_tick"] = int(world.tick)
         child["care_visits"] = int(child["care_visits"]) + 1
+        world.occupations.on_real_work(world, person, "carer")
         return true
     return false
 

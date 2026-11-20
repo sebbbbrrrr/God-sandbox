@@ -10,6 +10,7 @@ const Lifecycle = preload("res://scripts/ai/citizen_lifecycle.gd")
 const Households = preload("res://scripts/ai/households.gd")
 const Food = preload("res://scripts/ai/food_survival.gd")
 const Demography = preload("res://scripts/ai/autonomous_demography.gd")
+const Occupations = preload("res://scripts/ai/era_occupations.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -37,6 +38,7 @@ var lifecycle := Lifecycle.new()
 var households := Households.new()
 var food := Food.new()
 var demography := Demography.new()
+var occupations := Occupations.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -119,6 +121,7 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
     lifecycle.initialise_founder(citizens[-1], seed, tick)
     households.on_citizen_added(self, citizens[-1])
     demography.initialize_citizen(self, citizens[-1])
+    occupations.register_citizen(citizens[-1], tick)
     citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
     ai_context.added(citizens[-1], citizen_ai_by_id[str(next_id)])
     next_id += 1
@@ -186,6 +189,7 @@ func step() -> void:
     food.on_tick(self)
     food.on_tick_households(self)
     construction.plan(self)
+    occupations.on_tick(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
         if citizen["hp"] <= 0:
@@ -250,7 +254,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "construction": construction.snapshot(),
         "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot(),
         "households": households.snapshot(),
-        "food": food.snapshot(), "demography": demography.snapshot()
+        "food": food.snapshot(), "demography": demography.snapshot(),
+        "occupations": occupations.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -287,7 +292,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 "next_food_tick": int(person.get("next_food_tick", result.tick + 120 + incoming_id % 40)),
                 "can_gestate": bool(person.get("can_gestate", Demography.can_gestate_for(result.seed, incoming_id))),
                 "last_birth_tick": int(person.get("last_birth_tick", -Calendar.TICKS_PER_YEAR * 100)),
-                "last_partner_decision": int(person.get("last_partner_decision", result.tick))
+                "last_partner_decision": int(person.get("last_partner_decision", result.tick)),
+                "occupation_id": str(person.get("occupation_id", ""))
             }
             if person.has("birth_tick"):
                 restored_citizen["birth_tick"] = int(person["birth_tick"])
@@ -342,6 +348,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     if not result.food.load_state(data.get("food", null)):
         return null
     if not result.demography.load_state(result, data.get("demography", null)):
+        return null
+    if not result.occupations.load_state(result, data.get("occupations", null)):
         return null
     return result
 

@@ -144,6 +144,7 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
     var origin := Vector2i(int(person["x"]), int(person["y"]))
     var chosen: Dictionary = {}
     var best_score := 2147483647
+    var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
     for dy in range(-SEARCH_RADIUS, SEARCH_RADIUS + 1):
         for dx in range(-SEARCH_RADIUS, SEARCH_RADIUS + 1):
             if absi(dx) + absi(dy) > SEARCH_RADIUS:
@@ -155,6 +156,9 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
             if access.x < 0:
                 continue
             var score: int = Nav.manhattan(origin, access) + Nav.manhattan(access, depot)
+            if (preferred == "fisher" and source_kind(world, source) == "fish") or (
+                    preferred == "forager" and source_kind(world, source) != "fish"):
+                score -= 4
             if score < best_score:
                 best_score = score
                 chosen = {"source": [source.x, source.y], "target": [access.x, access.y],
@@ -317,7 +321,7 @@ func create_farm(world: RefCounted, nation: int) -> bool:
     if reused.is_empty():
         farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
             "sown_tick": world.tick, "ready_tick": world.tick + 240,
-            "fertility": 5, "yield": crop_yield, "collected": 0, "harvested": false)
+            "fertility": 5, "yield": crop_yield, "collected": 0, "harvested": false})
         next_farm_id += 1
     else:
         reused["sown_tick"] = world.tick
@@ -329,7 +333,7 @@ func create_farm(world: RefCounted, nation: int) -> bool:
 
 func ready_farm(world: RefCounted, nation: int) -> Dictionary:
     var season: int = int(world.calendar.date_at(world.tick)["season_index"])
-    if season == 3:
+    if season == 3 or not bool(techniques[nation].get("cultivation", false)):
         return {}
     for farm in farms:
         if int(farm["nation"]) == nation and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
@@ -358,7 +362,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         next_job_scan[id] = int(world.tick) + 18 + int(person["id"]) % 7
         var reserves_low: bool = total(depots[nation]) < 8
         var emergency: bool = reserves_low and int(person.get("hunger", 0)) >= 36
-        if (int(person["id"]) % 4 == 0 or emergency) and gatherers(nation) < MAX_GATHERERS:
+        var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
+        var vocation: bool = preferred in ["forager", "fisher", "crop_farmer"]
+        if (int(person["id"]) % 4 == 0 or emergency or vocation) and gatherers(nation) < MAX_GATHERERS:
             var farm: Dictionary = ready_farm(world, nation)
             if not farm.is_empty():
                 jobs[id] = {"kind": "farm", "nation": nation, "phase": "source",
@@ -392,7 +398,8 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
                 if food == "":
                     jobs.erase(id)
                     return true
-                var number: int = mini(2, int(depots[nation][food]))
+                var trained: int = world.occupations.skill_tier(person, "food_courier")
+                var number: int = mini(2 + (1 if trained >= 2 else 0), int(depots[nation][food]))
                 depots[nation][food] = int(depots[nation][food]) - number
                 job["type"] = food
                 job["amount"] = number
@@ -416,11 +423,15 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         if move(world, person, mind, target):
             var food: String = str(job["type"])
             pantry_for(int(family["id"]))[food] += int(job["amount"])
+            world.occupations.on_real_work(world, person, "food_courier", int(job["amount"]))
             jobs.erase(id)
             mind["route"] = []
         return true
     var source := Vector2i(int(job["source"][0]), int(job["source"][1]))
     var target := source
+    if str(job["kind"]) == "farm" and not bool(techniques[nation].get("cultivation", false)):
+        jobs.erase(id)
+        return false
     if str(job["kind"]) == "forage":
         target = Vector2i(int(job["target"][0]), int(job["target"][1]))
         if source_kind(world, source) != str(job["type"]) or resource_left(world, source) <= 0:
@@ -436,14 +447,17 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         for farm in farms:
             if int(farm["id"]) == int(job["farm_id"]) and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
                 var available: int = maxi(0, int(farm["yield"]) - int(farm.get("collected", 0)))
-                amount = mini(CARRY_AMOUNT, available)
+                var farm_tier: int = world.occupations.skill_tier(person, "crop_farmer")
+                amount = mini(CARRY_AMOUNT + (1 if farm_tier >= 2 else 0), available)
                 farm["collected"] = int(farm.get("collected", 0)) + amount
                 if int(farm["collected"]) >= int(farm["yield"]):
                     farm["harvested"] = true
                     farm["fertility"] = maxi(0, int(farm["fertility"]) - 1)
                 break
     else:
-        amount = mini(CARRY_AMOUNT, resource_left(world, source))
+        var harvest_role: String = "fisher" if str(job["type"]) == "fish" else "forager"
+        var skill_tier: int = world.occupations.skill_tier(person, harvest_role)
+        amount = mini(CARRY_AMOUNT + (1 if skill_tier >= 2 else 0), resource_left(world, source))
         if amount > 0:
             var key := str(world.index_of(source.x, source.y))
             wild_taken[key] = int(wild_taken.get(key, 0)) + amount
@@ -453,6 +467,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     job["amount"] = amount
     job["phase"] = "depot"
     produced[str(job["type"])] += amount
+    var completed_role: String = "crop_farmer" if str(job["kind"]) == "farm" else (
+        "fisher" if str(job["type"]) == "fish" else "forager")
+    world.occupations.on_real_work(world, person, completed_role, amount)
     mind["route"] = []
     return true
 

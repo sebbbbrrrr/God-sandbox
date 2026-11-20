@@ -140,8 +140,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         if project.is_empty():
             return false
         var job: Dictionary = {}
-        if int(person["id"]) % 5 == 0:
-            # Reserve one builder immediately so they wait locally for actual supplies.
+        var profession: String = str(world.occupations.record_for(person).get("preference", ""))
+        if int(person["id"]) % 5 == 0 or profession == "shelter_builder":
+            # Skilled/aspiring builders can reserve an actual construction job.
             if int(project["reserved"]) != 0:
                 return false
             project["reserved"] = int(person["id"])
@@ -195,6 +196,8 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
     if walk(world, person, mind, target) and Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), source) <= 1:
         var key := str(world.index_of(source.x, source.y))
         depleted[key] = int(depleted.get(key, 0)) + 1
+        world.occupations.on_real_work(world, person,
+            "woodcutter" if str(task["material"]) == "wood" else "quarry_worker")
         task[str(task["material"])] = 1
         task["phase"] = "depot"
         mind["route"] = []
@@ -231,7 +234,11 @@ func build_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: Str
     if not world.is_walkable(site.x, site.y) or Nav.danger_near(world, site):
         return false
     if walk(world, person, mind, site):
-        project["progress"] = mini(HOUSE_WORK, int(project["progress"]) + 1)
+        # Expertise reduces required labour while never skipping actual
+        # construction actions or creating free materials.
+        var effort: int = 1 + (1 if world.occupations.skill_tier(person, "shelter_builder") >= 3 else 0)
+        project["progress"] = mini(HOUSE_WORK, int(project["progress"]) + effort)
+        world.occupations.on_real_work(world, person, "shelter_builder")
         if int(project["progress"]) == HOUSE_WORK:
             houses.append({"id": int(project["id"]), "nation": int(project["nation"]),
                 "x": site.x, "y": site.y, "capacity": 6, "built_tick": int(world.tick)})
