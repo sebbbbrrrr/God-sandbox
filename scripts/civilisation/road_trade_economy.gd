@@ -292,6 +292,23 @@ func authorizes_exchange(citizen_id: int, target_nation: int, offer: Dictionary,
         and int(job.get("other", -1)) == target_nation \
         and offer == {str(job.get("offer", "")): 1} and payment == {str(job.get("payment", "")): 1}
 
+# Merchants use built road waypoints rather than teleporting or drawing a
+# cosmetic connection. Each waypoint is approached by the normal AI movement.
+func _follow_trade_route(world: RefCounted, person: Dictionary, mind: Dictionary,
+        job: Dictionary, destination_nation: int) -> bool:
+    var fallback := world.capitals[destination_nation]
+    if route.size() < 2 or not connected(world):
+        return _move(world, person, mind, fallback)
+    var final_index: int = 0 if destination_nation == 0 else route.size() - 1
+    var current_index: int = clampi(int(job.get("route_index", 0 if int(job["nation"]) == 0 else route.size() - 1)), 0, route.size() - 1)
+    if current_index == final_index:
+        return true
+    var increment: int = 1 if final_index > current_index else -1
+    var next_index: int = current_index + increment
+    if _move(world, person, mind, _cell(route[next_index])):
+        job["route_index"] = next_index
+    return int(job.get("route_index", current_index)) == final_index
+
 func _trading_work(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var id := str(person["id"])
     if not trade_jobs.has(id):
@@ -320,10 +337,11 @@ func _trading_work(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
             trade_jobs.erase(id)
             return false
         job["phase"] = "exchange"
+        job["route_index"] = 0 if nation == 0 else route.size() - 1
         mind["route"] = []
         return true
     if str(job["phase"]) == "exchange":
-        if not _move(world, person, mind, foreign):
+        if not _follow_trade_route(world, person, mind, job, int(job["other"])):
             return true
         if world.inventory.exchange_at_market(world, int(person["id"]), int(job["other"]), offered, received):
             job["phase"] = "return"
@@ -333,7 +351,7 @@ func _trading_work(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
             job["success"] = false
         mind["route"] = []
         return true
-    if not _move(world, person, mind, home):
+    if not _follow_trade_route(world, person, mind, job, nation):
         return true
     var goods: Dictionary = received if bool(job.get("success", false)) else offered
     if not world.inventory.transfer(world, cargo_id, home_id, goods, int(person["id"])):
