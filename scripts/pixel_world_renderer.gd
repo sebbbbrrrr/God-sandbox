@@ -7,6 +7,7 @@ const Commands = preload("res://scripts/pixel_commands.gd")
 const Weather = preload("res://scripts/weather_cycle.gd")
 const RainOverlay = preload("res://scripts/weather_overlay.gd")
 const Walk = preload("res://scripts/citizen_walk.gd")
+const Architecture = preload("res://scripts/visuals/era_architecture.gd")
 const TILE := 32
 const CHUNK := 16
 const RISE := 12
@@ -24,6 +25,7 @@ var unit_rows: Array[PixelCommands] = []
 var walks: CitizenWalk
 var walk_draw_accum := 0.0
 var rendered_building_count := -1
+var architecture_ages := [-1, -1]
 var facility_cells: Dictionary = {}
 var physical_buildings: Dictionary = {}
 var physical_footprints: Dictionary = {}
@@ -168,7 +170,25 @@ func tile_at(pixel: Vector2) -> Vector2i:
             return Vector2i(base.x,y)
     return base
 
+func refresh_architecture_ages() -> void:
+    # Technology evolution or loss updates only cached town chunks.
+    # Physics, labour, inventory and old simulation saves are unchanged.
+    var change := false
+    for nation in range(2):
+        var age: int = Architecture.visual_age(world, nation)
+        if architecture_ages[nation] != age:
+            architecture_ages[nation] = age
+            change = true
+    if change and not town_cells.is_empty():
+        for cell in town_cells:
+            var coord := Vector2i(floori(float(cell.x) / CHUNK),
+                floori(float(cell.y) / CHUNK))
+            if chunks.has(coord):
+                chunks[coord].dirty = true
+        view_dirty = true
+
 func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> void:
+    refresh_architecture_ages()
     if world.construction.houses.size() != rendered_building_count:
         paths_dirty = true
     if not view_dirty and not paths_dirty and position==origin.round() and previous_screen_tile==screen_tile and previous_screen_rect==screen_rect:
@@ -454,7 +474,7 @@ func rebuild_paths() -> void:
 
 func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0, tint: Color = Color.WHITE, sway: float = 0.0) -> void:
     var sz := atlas.size_of(key)*factor
-    if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall"):
+    if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall") or key.begins_with("era"):
         layer.add("ground_shadow",(foot-Vector2(sz.x*0.43,9)).round(),Vector2(sz.x,14).round())
     layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint,-1.0,sway)
 
