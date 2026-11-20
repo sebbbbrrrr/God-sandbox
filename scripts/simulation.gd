@@ -131,6 +131,12 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
     terrain_changed.emit(Vector2i(x, y))
     return true
 
+# Compatibility for the separate visual branch's editor/capture tests.
+# The authoritative setter remains set_terrain_cell and invokes every
+# construction, inventory, food and AI terrain-change hook.
+func set_terrain(x: int, y: int, type: int) -> void:
+    set_terrain_cell(x, y, type)
+
 func add_citizen(x: int, y: int, nation: int) -> bool:
     if not is_walkable(x, y) or citizens.size() >= MAX_PEOPLE:
         return false
