@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   android:
-    name: Godot 4.5.2 D4 smoke, UI tests and APK export
+    name: Godot 4.5.2 unified integration, smoke and Android APK export
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -94,13 +94,13 @@ jobs:
           set -euo pipefail
           mkdir -p build
           ./godot --headless --path . --export-debug "Android" build/GodSandbox-Unified-debug.apk
-          test -s build/GodSandbox-D4-debug.apk
-          ls -lh build/GodSandbox-D4-debug.apk
-      - name: Upload D4 debug APK
+          test -s build/GodSandbox-Unified-debug.apk
+          ls -lh build/GodSandbox-Unified-debug.apk
+      - name: Upload Unified debug APK
         uses: actions/upload-artifact@v4
         with:
           name: GodSandbox-Unified-Android-debug
-          path: build/GodSandbox-D4-debug.apk
+          path: build/GodSandbox-Unified-debug.apk
           if-no-files-found: error
           retention-days: 14
       - name: Upload validation diagnostics on failure
@@ -112,6 +112,6 @@ jobs:
             /tmp/d4-import.log
             /tmp/item_inspector_test.log
             /tmp/game_item_ui_test.log
-    /tmp/unified_integration_test.log
+            /tmp/unified_integration_test.log
           if-no-files-found: warn
           retention-days: 7
