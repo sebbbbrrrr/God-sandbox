@@ -9,6 +9,9 @@ signal pause_pressed
 signal speed_pressed
 signal save_pressed
 signal items_pressed
+signal audio_volume_changed(volume: float)
+signal audio_muted_changed(muted: bool)
+signal audio_quality_changed(quality: String)
 
 const INK := Color("#172825")
 const SURFACE := Color("#1b2d2b")
@@ -74,6 +77,9 @@ var power_buttons := {}
 var inspector_title: Label
 var inspector_body: Label
 var motion_button: Button
+var audio_volume_slider: HSlider
+var audio_mute_button: CheckButton
+var audio_quality_picker: OptionButton
 var inspector_content: Dictionary = {}
 
 func _ready() -> void:
@@ -394,6 +400,36 @@ func _make_interface() -> void:
         reduced_motion = not reduced_motion
         motion_button.text = "Animations: Off" if reduced_motion else "Animations: On"
     )
+    settings_col.add_child(_label("AUDIO", 15, GOLD))
+    audio_mute_button = CheckButton.new()
+    audio_mute_button.text = "Mute all sound"
+    audio_mute_button.custom_minimum_size.y = 38
+    settings_col.add_child(audio_mute_button)
+    audio_mute_button.toggled.connect(func(value: bool) -> void:
+        audio_muted_changed.emit(value)
+    )
+    settings_col.add_child(_label("Master volume", 12, IVORY))
+    audio_volume_slider = HSlider.new()
+    audio_volume_slider.min_value = 0.0
+    audio_volume_slider.max_value = 1.0
+    audio_volume_slider.step = 0.05
+    audio_volume_slider.value = 0.8
+    audio_volume_slider.custom_minimum_size.y = 35
+    settings_col.add_child(audio_volume_slider)
+    audio_volume_slider.value_changed.connect(func(value: float) -> void:
+        audio_volume_changed.emit(value)
+    )
+    settings_col.add_child(_label("Sound performance", 12, IVORY))
+    audio_quality_picker = OptionButton.new()
+    audio_quality_picker.add_item("Battery saver", 0)
+    audio_quality_picker.add_item("Balanced", 1)
+    audio_quality_picker.add_item("High", 2)
+    audio_quality_picker.select(1)
+    audio_quality_picker.custom_minimum_size.y = 42
+    settings_col.add_child(audio_quality_picker)
+    audio_quality_picker.item_selected.connect(func(index: int) -> void:
+        audio_quality_changed.emit(["battery", "balanced", "high"][index])
+    )
     settings_col.add_child(_label("Hand: drag to move. Painting: drag to draw.", 12, MUTED))
     settings_col.add_child(_label("Two fingers: move and zoom while editing.", 12, MUTED))
     settings_panel.visible = false
@@ -518,6 +554,14 @@ func _palette_y() -> float:
     if viewport_size.x > viewport_size.y * 1.2:
         return maxf(78.0, (viewport_size.y - palette_panel.size.y) * 0.45)
     return dock_panel.position.y - palette_panel.size.y - 9
+
+func set_audio_preferences(volume: float, muted: bool, quality: String) -> void:
+    if audio_volume_slider != null:
+        audio_volume_slider.set_value_no_signal(clampf(volume, 0.0, 1.0))
+    if audio_mute_button != null:
+        audio_mute_button.set_pressed_no_signal(muted)
+    if audio_quality_picker != null:
+        audio_quality_picker.select(["battery", "balanced", "high"].find(quality) if quality in ["battery", "balanced", "high"] else 1)
 
 func _show_settings(show: bool) -> void:
     if show:

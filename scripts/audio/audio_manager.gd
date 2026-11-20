@@ -33,9 +33,21 @@ const DEFINITIONS := {
     "ambient.ocean": {"bus": "Ambience", "duration": 1.0, "tone": 115.0, "noise": 0.96, "gain": -25.0},
     "ambient.settlement": {"bus": "Ambience", "duration": 0.65, "tone": 230.0, "noise": 0.67, "gain": -26.0},
     "ambient.wilderness": {"bus": "Ambience", "duration": 0.7, "tone": 420.0, "noise": 0.75, "gain": -28.0},
+    "ambient.night": {"bus": "Ambience", "duration": 1.1, "tone": 180.0, "noise": 0.73, "gain": -29.0},
     "weather.rain": {"bus": "Environment", "duration": 0.9, "tone": 135.0, "noise": 0.98, "gain": -25.0},
     "weather.wind": {"bus": "Environment", "duration": 0.8, "tone": 95.0, "noise": 0.94, "gain": -26.0},
-    "weather.thunder": {"bus": "Environment", "duration": 0.9, "tone": 70.0, "noise": 0.82, "gain": -13.0}
+    "weather.thunder": {"bus": "Environment", "duration": 0.9, "tone": 70.0, "noise": 0.82, "gain": -13.0},
+    "civilisation.early_stone": {"bus": "Ambience", "duration": 0.500, "tone": 140.0, "noise": 0.45, "gain": -28.0},
+    "civilisation.agricultural": {"bus": "Ambience", "duration": 0.525, "tone": 172.0, "noise": 0.49, "gain": -28.0},
+    "civilisation.bronze": {"bus": "Ambience", "duration": 0.550, "tone": 204.0, "noise": 0.52, "gain": -28.0},
+    "civilisation.classical": {"bus": "Ambience", "duration": 0.575, "tone": 236.0, "noise": 0.56, "gain": -28.0},
+    "civilisation.medieval": {"bus": "Ambience", "duration": 0.600, "tone": 268.0, "noise": 0.59, "gain": -28.0},
+    "civilisation.scientific": {"bus": "Ambience", "duration": 0.625, "tone": 300.0, "noise": 0.63, "gain": -28.0},
+    "civilisation.industrial": {"bus": "Ambience", "duration": 0.650, "tone": 332.0, "noise": 0.67, "gain": -28.0},
+    "civilisation.electrical": {"bus": "Ambience", "duration": 0.675, "tone": 364.0, "noise": 0.70, "gain": -28.0},
+    "civilisation.information": {"bus": "Ambience", "duration": 0.700, "tone": 396.0, "noise": 0.74, "gain": -28.0},
+    "civilisation.advanced": {"bus": "Ambience", "duration": 0.725, "tone": 428.0, "noise": 0.77, "gain": -28.0},
+    "civilisation.far_future": {"bus": "Ambience", "duration": 0.750, "tone": 460.0, "noise": 0.81, "gain": -28.0}
 }
 # Authored, redistributable original 16-kHz mono WAV foley, kept short for mobile.
 # Unlisted event IDs fall back to deterministic synthetic textures.
@@ -176,6 +188,9 @@ func emit_event(event_id: String, screen_position: Vector2, spatial: bool = true
     player.bus = str(definition["bus"])
     player.stream = _get_sample(event_id)
     player.volume_db = float(definition["gain"])
+    # Gentle per-event timbre variation; unrelated to simulation speed.
+    if event_id.begins_with("work.") or event_id.begins_with("citizen.step."):
+        player.pitch_scale = 0.96 + float(posmod(_accepted_count * 17 + event_id.hash(), 9)) * 0.01
     player.max_distance = 1000.0
     player.attenuation = 0.6 if spatial else 0.0
     player.position = screen_position if spatial else _listener

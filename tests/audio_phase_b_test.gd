@@ -5,7 +5,7 @@ const Simulation = preload("res://scripts/simulation.gd")
 var failed := false
 
 class FakeAudio:
-    extends RefCounted
+    extends Node
     var events: Array[String] = []
     func emit_event(event_id: String, _point: Vector2, _spatial: bool = true) -> bool:
         events.append(event_id)
@@ -27,7 +27,7 @@ func _initialize() -> void:
     # Start tracking then move an existing citizen in-place solely in this test.
     var first = world.citizens[0]
     var initial_cell := Vector2i(int(first["x"]), int(first["y"]))
-    observer.observe_movement(world, audio, origin, 16.0, Vector2(1000, 1000), 0)
+    observer.observe_movement(world, audio, origin, 16.0, Vector2(4096, 4096), 0)
     var destination := Vector2i(-1, -1)
     for dx in range(-1, 2):
         for dy in range(-1, 2):
@@ -43,9 +43,9 @@ func _initialize() -> void:
         first["y"] = destination.y
         world.tick += 1
         _check(observer.observe_movement(world, audio, origin, 16.0,
-            Vector2(1000, 1000), 0) == 1, "actual step emits exactly once")
+            Vector2(4096, 4096), 0) == 1, "actual step emits exactly once")
         _check(observer.observe_movement(world, audio, origin, 16.0,
-            Vector2(1000, 1000), 0) == 0, "same tick does not repeat step")
+            Vector2(4096, 4096), 0) == 0, "same tick does not repeat step")
     _check(observer.on_work_marker(audio, "chop", 7, 30, Vector2(150, 150)),
         "authoritative chop animation marker")
     _check(not observer.on_work_marker(audio, "chop", 7, 30, Vector2(150, 150)),

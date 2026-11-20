@@ -1,7 +1,10 @@
-name: God Sandbox Integrated Construction Audio Android
+name: God Sandbox Expanded World Audio Android
 
 on:
   push:
+    branches:
+      - feature/audio-world-expansion
+  pull_request:
     branches:
       - feature/audio-construction-integrated
   workflow_dispatch:
@@ -102,7 +105,7 @@ jobs:
       - name: Audio phase A, B and construction integration regressions
         run: |
           set -euo pipefail
-          for test in audio_phase_a_test audio_phase_b_test audio_sample_test audio_construction_integration_test construction_animation_test universal_construction_test; do
+          for test in audio_phase_a_test audio_phase_b_test audio_sample_test audio_construction_integration_test audio_world_expansion_test construction_animation_test universal_construction_test; do
             ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/$test.log"
             if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" "/tmp/$test.log"; then exit 1; fi
           done
@@ -110,7 +113,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build
-          ./godot --headless --path . --export-debug "Android" build/GodSandbox-Integrated-Audio-debug.apk
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-World-Audio-debug.apk
           test -s build/GodSandbox-Settlement-Roads-Trade-debug.apk
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose build/GodSandbox-Settlement-Roads-Trade-debug.apk
           unzip -tqq build/GodSandbox-Settlement-Roads-Trade-debug.apk
@@ -118,7 +121,7 @@ jobs:
       - name: Upload Settlement Roads Trade debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: GodSandbox-Integrated-Audio-Android-debug
+          name: GodSandbox-World-Audio-Android-debug
           path: build/GodSandbox-Settlement-Roads-Trade-debug.apk
           if-no-files-found: error
           retention-days: 14

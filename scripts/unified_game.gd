@@ -8,6 +8,7 @@ const UnifiedOverlay = preload("res://scripts/ui/unified_world_overlay.gd")
 const AudioManagerScript = preload("res://scripts/audio/audio_manager.gd")
 const LivingWorldAudio = preload("res://scripts/audio/living_world_audio.gd")
 const ConstructionAudioBridge = preload("res://scripts/audio/construction_audio_bridge.gd")
+const WorldAudioDirector = preload("res://scripts/audio/world_audio_director.gd")
 
 var world_renderer: PixelWorldRenderer
 var hud: GodSandboxHUD
@@ -29,9 +30,10 @@ var visual_refresh_accum := 0.0
 var hud_refresh_accum := 0.0
 var units_need_refresh := false
 var work_visual_clock := 0.0
-var game_audio: Node
+var game_audio
 var living_audio = LivingWorldAudio.new()
 var construction_audio = ConstructionAudioBridge.new()
+var world_audio_director = WorldAudioDirector.new()
 
 
 func _ready() -> void:
@@ -44,6 +46,7 @@ func _ready() -> void:
     add_child(game_audio)
     living_audio.reset()
     construction_audio.reset()
+    world_audio_director.reset()
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
     selected_power = -1
     brush_index = 1
@@ -70,6 +73,11 @@ func _ready() -> void:
     hud.speed_pressed.connect(_cycle_speed)
     hud.save_pressed.connect(save_world)
     hud.items_pressed.connect(_open_items)
+    hud.audio_volume_changed.connect(game_audio.set_master)
+    hud.audio_muted_changed.connect(game_audio.set_muted)
+    hud.audio_quality_changed.connect(game_audio.set_quality)
+    hud.set_audio_preferences(game_audio.master_volume, game_audio.muted,
+        game_audio.quality)
     hud.set_active_power(selected_power)
     hud.set_brush(brush_index)
 
@@ -124,7 +132,10 @@ func _process(delta: float) -> void:
     var real_delta: float = maxf(0.0, delta)
     visual_refresh_accum += real_delta
     if not paused:
+        var old_audio_clock := work_visual_clock
         work_visual_clock += real_delta * float(simulation_speed)
+        construction_audio.flush_contacts(living_audio, game_audio,
+            old_audio_clock, work_visual_clock)
     hud_refresh_accum += real_delta
     if not paused:
         # Bound accumulated work after a device stall rather than trying to
@@ -163,6 +174,13 @@ func _process(delta: float) -> void:
     if world_renderer.walks != null:
         world_renderer.walks.walk_seconds = 0.85 / float(simulation_speed)
     world_renderer.animate(real_delta, 0.0 if paused else real_delta)
+    if not paused:
+        var now_ms := Time.get_ticks_msec()
+        world_audio_director.update_weather(world_renderer.weather, int(world.tick),
+            living_audio, game_audio, ui_size())
+        world_audio_director.update_civilisation(world, game_audio, camera_center,
+            ui_size(), now_ms)
+        world_audio_director.update_day_night(world, game_audio, ui_size(), now_ms)
     if hud != null and (hud_refresh_accum >= HUD_REFRESH_SECONDS or paused):
         hud_refresh_accum = 0.0
         hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused,

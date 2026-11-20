@@ -52,7 +52,7 @@ func reset() -> void:
     _last_work_marker.clear()
     _last_weather_marker = ""
 
-func observe_movement(world: Object, audio: Node, origin: Vector2, cell_pixels: float,
+func observe_movement(world, audio, origin: Vector2, cell_pixels: float,
         screen_size: Vector2, panel_height: float, accelerated: bool = false) -> int:
     if int(world.tick) == _previous_tick:
         return 0
@@ -81,7 +81,7 @@ func observe_movement(world: Object, audio: Node, origin: Vector2, cell_pixels: 
     _previous_positions = next_positions
     return heard
 
-func observe_ambience(world: Object, audio: Node, center: Vector2, origin: Vector2,
+func observe_ambience(world, audio, center: Vector2, origin: Vector2,
         cell_pixels: float, screen_size: Vector2, panel_height: float,
         now_ms: int) -> String:
     if now_ms - _last_ambience_ms < AMBIENCE_INTERVAL_MS:
@@ -114,7 +114,7 @@ func observe_ambience(world: Object, audio: Node, center: Vector2, origin: Vecto
         return event_id
     return ""
 
-func on_work_marker(audio: Node, action: String, worker_id: int, marker_id: int,
+func on_work_marker(audio, action: String, worker_id: int, marker_id: int,
         screen_position: Vector2) -> bool:
     # The calling construction animation must provide its actual hit/action marker.
     # Distinct worker/marker keys stop replaying a gesture across render frames.
@@ -129,7 +129,7 @@ func on_work_marker(audio: Node, action: String, worker_id: int, marker_id: int,
         _last_work_marker[worker_id] = marker_id
     return audio.emit_event(event_id, screen_position, true)
 
-func on_weather_event(audio: Node, kind: String, event_marker: String,
+func on_weather_event(audio, kind: String, event_marker: String,
         screen_position: Vector2) -> bool:
     # Use weather simulation transitions/actual thunder strike markers, not random audio.
     var event_id := "weather." + kind.to_lower()

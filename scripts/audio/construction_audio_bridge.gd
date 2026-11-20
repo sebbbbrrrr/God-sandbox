@@ -8,12 +8,15 @@ var _last_tick := -1
 var _site_progress := {}
 var _jobs := {}
 var _building_conditions := {}
+var _pending: Dictionary = {}
+const MAX_PENDING := 12
 
 func reset() -> void:
     _last_tick = -1
     _site_progress.clear()
     _jobs.clear()
     _building_conditions.clear()
+    _pending.clear()
 
 static func classify_build_action(action: String) -> String:
     if action in ["clear", "dig", "level", "stake"]:
@@ -25,7 +28,7 @@ static func classify_build_action(action: String) -> String:
         return "build"
     return ""
 
-func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
+func observe(world, living, audio, origin: Vector2,
         cell_pixels: float, viewport_size: Vector2, panel_height: float,
         animation_clock: float) -> int:
     if int(world.tick) == _last_tick:
@@ -75,7 +78,7 @@ func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
             var action: String = WorkVisuals._build_action(world, site, animation_clock)
             var audio_action := classify_build_action(action)
             if audio_action != "":
-                if living.on_work_marker(audio, audio_action, int(job_id), int(world.tick), point):
+                if _queue_contact(audio_action, int(job_id), int(world.tick), point):
                     emitted += 1
             break
         if emitted >= MAX_EVENTS_PER_STEP:
@@ -103,7 +106,7 @@ func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
                 continue
             var point := LivingWorldAudio.world_to_screen(positions[job_id], origin, cell_pixels)
             if LivingWorldAudio.screen_visible(point, viewport_size, panel_height):
-                if living.on_work_marker(audio, action, int(job_id), int(world.tick), point):
+                if _queue_contact(action, int(job_id), int(world.tick), point):
                     emitted += 1
     # Detect completed repairs even when a job is removed in the same tick.
     for house in world.construction.houses:
@@ -112,3 +115,44 @@ func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
     _jobs = now_jobs
     _building_conditions = now_condition
     return emitted
+
+# Sound is queued only after the authoritative simulation has committed work.
+# The display then fires it at the exact same contact beat as _action() visuals.
+func _queue_contact(action: String, worker_id: int, marker: int, point: Vector2) -> bool:
+    if worker_id <= 0 or action == "":
+        return false
+    if _pending.size() >= MAX_PENDING and not _pending.has(worker_id):
+        return false
+    _pending[worker_id] = {"action": action, "marker": marker, "point": point}
+    return true
+
+static func contact_cycle(clock: float, worker_id: int) -> int:
+    var phase: float = (clock + float(posmod(worker_id * 37, 97)) * 0.23) * 4.5
+    # Each 2*pi visual cycle has contact when wrapped phase enters [2.1,3.1].
+    return int(floor(phase / TAU))
+
+static func contact_crossed(previous_clock: float, current_clock: float, worker_id: int) -> bool:
+    if current_clock <= previous_clock:
+        return false
+    var offset := float(posmod(worker_id * 37, 97)) * 0.23
+    var before: float = (previous_clock + offset) * 4.5
+    var after: float = (current_clock + offset) * 4.5
+    return int(floor((after - 2.1) / TAU)) > int(floor((before - 2.1) / TAU))
+
+func flush_contacts(living, audio, previous_clock: float,
+        current_clock: float) -> int:
+    var played := 0
+    var remove: Array = []
+    for worker_id in _pending:
+        if not contact_crossed(previous_clock, current_clock, int(worker_id)):
+            continue
+        var row: Dictionary = _pending[worker_id]
+        if living.on_work_marker(audio, str(row["action"]), int(worker_id),
+                int(row["marker"]), row["point"]):
+            played += 1
+        # An attempted event must not replay on the next contact cycle, even
+        # if throttled by the mixer's voice budget or mute setting.
+        remove.append(worker_id)
+    for worker_id in remove:
+        _pending.erase(worker_id)
+    return played
