@@ -177,6 +177,9 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     # Food collection and survival take priority over optional construction.
     if not urgent and world.food.work_step(world, person, state):
         return
+    # One dedicated toolmaking worker per settlement; physical labour only.
+    if not urgent and world.toolmaking.work_step(world, person, state):
+        return
     # Work is a physical commitment, interrupted by immediate danger.
     if not urgent and world.construction.work_step(world, person, state):
         return
