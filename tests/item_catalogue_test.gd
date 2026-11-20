@@ -22,18 +22,30 @@ func _initialize() -> void:
     ok = check(catalogue.craft("wood_plank", inventory, context) and
         int(inventory.get("wood_plank", 0)) == 1 and not inventory.has("wood") and
         int(inventory.get("stone", 0)) == 1, "successful craft conserves unrelated inventory") and ok
+    var child_context: Dictionary = context.duplicate(true)
+    child_context["age_years"] = 6
+    ok = check(not catalogue.can_craft("wood_plank", {"wood": 2}, child_context),
+        "child cannot perform age-restricted crafting") and ok
+    var denied_role: Dictionary = context.duplicate(true)
+    denied_role["roles"] = {"stone_toolmaker": false}
+    ok = check(not catalogue.can_craft("wood_plank", {"wood": 2}, denied_role),
+        "catalogued-but-disabled occupation does not authorize crafting") and ok
     var before: Dictionary = inventory.duplicate(true)
     ok = check(not catalogue.craft("wood_plank", inventory, context) and inventory == before,
         "failed craft never consumes partial input or produces items") and ok
     ok = check(not catalogue.craft("fresh_water", inventory, context),
         "natural resources cannot be created by crafting") and ok
     var forged := {"copper_ore": 3, "tin_ore": 1, "charcoal": 1}
-    var metal_ctx := {"age_years": 30, "skills": {"stone_toolmaker": 0},
+    var metal_ctx := {"age_years": 30, "skills": {"bronze_smith": 160},
         "capabilities": {}, "facilities": {"smelter": true},
-        "roles": {"stone_toolmaker": true}}
+        "roles": {"bronze_smith": true}}
     ok = check(not catalogue.can_craft("bronze_ingot", forged, metal_ctx),
         "bronze not unlocked by era label or raw ore alone") and ok
     metal_ctx["capabilities"] = {"bronze_working": true}
+    var untrained: Dictionary = metal_ctx.duplicate(true)
+    untrained["skills"] = {"bronze_smith": 0}
+    ok = check(not catalogue.can_craft("bronze_ingot", forged, untrained),
+        "knowledge and workshop alone do not substitute for practiced skill") and ok
     ok = check(catalogue.craft("bronze_ingot", forged, metal_ctx) and
         int(forged.get("bronze_ingot", 0)) == 1 and forged.size() == 1,
         "actual adopted metallurgy and smelter allow conserved production") and ok
