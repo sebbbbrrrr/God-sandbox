@@ -65,11 +65,11 @@ static func draw_panel(canvas: CanvasItem, font: Font, world: RefCounted,
     var area: Rect2 = g["rows"]
     var row_capacity: int = int(g["rows_count"])
     for slot in range(row_capacity):
-        var y := area.position.y + float(slot) * inspector.ROW_HEIGHT
+        var y: float = area.position.y + float(slot) * inspector.ROW_HEIGHT
         var rect := Rect2(area.position + Vector2(0, float(slot) * inspector.ROW_HEIGHT),
             Vector2(area.size.x, inspector.ROW_HEIGHT - 2))
         var index: int = inspector.scroll + slot
-        var selected := index < rows.size() and str(rows[index]["key"]) == inspector.selected_key
+        var selected: bool = index < rows.size() and str(rows[index]["key"]) == inspector.selected_key
         _rect(canvas, rect, Color("#405c4e") if selected else
             Color("#293f39") if posmod(slot, 2) == 0 else Color("#263a34"),
             GOLD if selected else Color("#3f5b4e"))
