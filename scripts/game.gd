@@ -357,5 +357,6 @@ func tapped(position: Vector2) -> void:
         paint_segment(cell, cell)
     else:
         world.apply_power(selected_power, cell.x, cell.y)
+        world_renderer.refresh_units()
         world_renderer.add_power_effect(selected_power,cell)
         queue_redraw()

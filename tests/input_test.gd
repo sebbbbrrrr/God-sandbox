@@ -65,6 +65,28 @@ func run() -> void:
     game.tapped(Vector2(450,20));check(game.simulation_speed==2,"speed control")
     game.tapped(Vector2(330,20));check(game.selected_power==-1,"hand selection")
     game.tapped(Vector2(70,710));check(game.selected_power==0,"category returns to editing")
+    game.paused=true
+    var point:=Vector2(240,300)
+    var cell: Vector2i=game.screen_to_tile(point)
+    game.world.set_terrain(cell.x,cell.y,game.world.MEADOW)
+    point=game.world_origin()+game.world_renderer.tile_center(cell)*game.tile_size()/32.0
+    game.world_renderer.refresh_units()
+    var units_before:=0
+    for row in game.world_renderer.unit_rows: units_before+=row.keys.size()
+    game.selected_power=4
+    game.tapped(point)
+    var units_after:=0
+    for row in game.world_renderer.unit_rows: units_after+=row.keys.size()
+    check(units_after==units_before+1,"spawn sprite updates immediately while paused")
+    game.world.citizens.back()["hp"]=20
+    game.selected_power=1
+    game.tapped(point)
+    var survivors:=0
+    for citizen in game.world.citizens:
+        if citizen["hp"]>0: survivors+=1
+    units_after=0
+    for row in game.world_renderer.unit_rows: units_after+=row.keys.size()
+    check(units_after==survivors and units_after<units_before+1,"fire removes dead sprites immediately while paused")
     print("INPUT_TESTS_%s (%d assertions)"%["PASSED" if success else "FAILED",assertions])
     game.free()
     quit(0 if success else 1)

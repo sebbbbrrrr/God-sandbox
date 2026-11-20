@@ -24,6 +24,15 @@ func run() -> void:
     for key in renderer.atlas.entries:
         var tex := renderer.atlas.texture(key)
         check(tex != null and Rect2(Vector2.ZERO,tex.get_size()).encloses(renderer.atlas.region(key)),"atlas bounds: "+key)
+    check(ResourceLoader.exists(ProjectSettings.get_setting("application/config/icon","")),"Android export icon exists")
+    var capital: Vector2i=world.capitals[0]
+    world.apply_power(1,capital.x,capital.y)
+    var capital_chunk: PixelChunk=renderer.chunks[Vector2i(capital.x/16,capital.y/16)]
+    renderer.build_chunk(capital_chunk)
+    var hall_present:=false
+    for row in capital_chunk.rows:
+        if row.keys.has("town_hall"): hall_present=true
+    check(not hall_present,"burned capital loses intact town hall")
     # Exhaustive cardinal transition lookup including diagonal/chunk-border cases.
     var center := Vector2i(15,15)
     world.set_terrain(15,15,Sim.OCEAN)

@@ -162,7 +162,7 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var type := world.at(x,y)
     var p := top_left(x,y)
     var v := variation(x,y,world.seed,4)
-    var is_capital := Vector2i(x,y) in world.capitals and world.is_walkable(x,y)
+    var is_capital := Vector2i(x,y) in world.capitals and world.is_walkable(x,y) and type!=world.ASH
     var water := chunk.layers[0]
     var ground := chunk.layers[1]
     var transitions := chunk.layers[2]

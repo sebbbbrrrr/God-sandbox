@@ -30,6 +30,7 @@ After:
 
 | File | Purpose |
 | --- | --- |
+| `assets/icon.svg` | Original app icon used by Android export |
 | `assets/pixel/sprite_atlas.png` | Single runtime atlas |
 | `assets/pixel/terrain.png` | 37 named terrain regions |
 | `assets/pixel/objects.png` | 50 transparent sprite regions |
@@ -46,8 +47,8 @@ After:
 | --- | --- |
 | Godot 4.5.2 headless project import | Passed, no script/resource errors |
 | Existing simulation tests | 15 checks passed |
-| Rendering / terrain / saves | 304 assertions passed |
-| Synthetic touch and controls | 24 assertions passed |
+| Rendering / terrain / saves | 306 assertions passed |
+| Synthetic touch and controls | 26 assertions passed |
 | Main-scene headless smoke | 90 frames, no errors |
 | GL Compatibility viewport capture | Passed under Mesa llvmpipe |
 | Physical Huawei P30 | Pending |
@@ -77,5 +78,7 @@ No static terrain rebuild occurred during the cached-view samples. A single edit
 - The existing workflow produces a newly debug-signed APK on each run. Android may require uninstalling the previous build, which removes local app data. Production signing is outside this phase.
 
 ## Android workflow
+
+The stricter export check caught the original project’s missing app-icon configuration on the first CI export. An original SVG app icon is now configured, and paused spawn/fire sprite refresh plus burned-capital rendering have additional regression coverage.
 
 The existing Android workflow now runs the simulation, rendering and input suites, rejects script errors even if Godot returns exit code zero, captures actual GL gameplay and exports the APK. It runs on main or this dedicated development branch. No main merge is required. APK and validation captures are retained as workflow artifacts for 14 days. Build status and exact artifact are reported with the delivery.
