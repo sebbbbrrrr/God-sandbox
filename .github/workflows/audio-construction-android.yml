@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feature/audio-world-expansion
+  pull_request:
+    branches:
+      - feature/audio-construction-integrated
   workflow_dispatch:
 
 permissions:
