@@ -82,8 +82,9 @@ func _ready() -> void:
 
 func _panel_style(raised: bool = false) -> StyleBoxFlat:
     var s := StyleBoxFlat.new()
-    s.bg_color = SURFACE_RAISED if raised else SURFACE
-    s.bg_color.a = 0.96 if raised else 0.94
+    var tint := SURFACE_RAISED if raised else SURFACE
+    tint.a = 0.96 if raised else 0.94
+    s.bg_color = tint
     s.border_color = Color("#607c6c", 0.68)
     s.set_border_width_all(1)
     s.set_corner_radius_all(15)
@@ -443,7 +444,8 @@ func _refresh_selection() -> void:
         active_button.set_meta("hud_icon", POWER_ICONS[active_power])
         active_button.icon = _icon(POWER_ICONS[active_power], true)
     else:
-        active_button.remove_meta("hud_icon") if active_button.has_meta("hud_icon") else null
+        if active_button.has_meta("hud_icon"):
+            active_button.remove_meta("hud_icon")
         active_button.icon = null
     dock_brush_button.visible = active_power == 0 or active_power == 2 or active_power == 5
     dock_brush_button.text = ["S", "M", "L"][active_brush]
@@ -526,6 +528,19 @@ func show_citizen(person: Dictionary) -> void:
         int(person.get("age", 0)), int(person.get("x", 0)), int(person.get("y", 0))
     ]
     _reveal_inspector()
+
+func refresh_citizen(person: Dictionary) -> void:
+    if not inspector_panel.visible or inspector_content.is_empty():
+        return
+    if int(person.get("id", -1)) != int(inspector_content.get("id", -2)):
+        return
+    inspector_content = person.duplicate()
+    var new_details := "Civilisation: %d\\nHealth: %d / 100\\nAge: %d\\nPosition: %d, %d" % [
+        int(person.get("nation", 0)) + 1, int(person.get("hp", 100)),
+        int(person.get("age", 0)), int(person.get("x", 0)), int(person.get("y", 0))
+    ]
+    if inspector_body.text != new_details:
+        inspector_body.text = new_details
 
 func show_terrain(cell: Vector2i, kind: String, elevation: int) -> void:
     inspector_content.clear()
