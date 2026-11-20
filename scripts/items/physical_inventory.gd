@@ -23,7 +23,7 @@ func ensure_settlements() -> void:
     for nation in range(2):
         var key := "settlement:" + str(nation)
         if not balances.has(key):
-            balances[key] = {}
+            balances[key] = {"wood": 0, "stone": 0}
 
 # Legacy construction.stockpiles[] is a read-through compatibility reference
 # to this same dictionary, not an independently updated inventory.
@@ -165,7 +165,7 @@ func transfer(world: RefCounted, source: String, target: String, units: Dictiona
     for item_id in units:
         var qty := int(units[item_id])
         original[item_id] = int(original[item_id]) - qty
-        if int(original[item_id]) == 0:
+        if int(original[item_id]) == 0 and not (source.begins_with("settlement:") and item_id in ["wood", "stone"]):
             original.erase(item_id)
         dst[item_id] = int(dst.get(item_id, 0)) + qty
     _log(world, "transfer", source, target, units)
@@ -315,7 +315,8 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
         for item_id in contents:
             if not item_id is String or not catalogue.items.has(item_id):
                 return false
-            if typeof(contents[item_id]) != TYPE_INT or int(contents[item_id]) <= 0 or int(contents[item_id]) > MAX_STACK:
+            var qty := int(contents[item_id])
+            if typeof(contents[item_id]) != TYPE_INT or qty < 0 or qty > MAX_STACK or (qty == 0 and not (holder_id.begins_with("settlement:") and item_id in ["wood", "stone"])):
                 return false
         if holder_id.begins_with("citizen:") and _weight(contents) > MAX_CARRY_KG:
             return false
@@ -353,9 +354,10 @@ func ledger_ok() -> bool:
         if not store is Dictionary:
             return false
         for item_id in store:
-            if not catalogue.items.has(item_id) or int(store[item_id]) <= 0:
+            if not catalogue.items.has(item_id) or int(store[item_id]) < 0:
                 return false
-            held_totals[item_id] = int(held_totals.get(item_id, 0)) + int(store[item_id])
+            if int(store[item_id]) > 0:
+                held_totals[item_id] = int(held_totals.get(item_id, 0)) + int(store[item_id])
     var keys := {}
     for bucket in [held_totals, minted, consumed, destroyed]:
         for item_id in bucket:
