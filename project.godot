@@ -29,4 +29,6 @@ environment/defaults/default_clear_color=Color(0.06, 0.16, 0.22, 1)
 common/physics_ticks_per_second=60
 
 [input_devices]
-pointing/emulate_mouse_from_touch=false
+pointing/; Godot Control buttons on Android need touch-to-mouse emulation.
+; World gestures continue to use native ScreenTouch/ScreenDrag events.
+emulate_mouse_from_touch=true
