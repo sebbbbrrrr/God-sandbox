@@ -121,6 +121,7 @@ func _initialize() -> void:
     limit.households.form_household(limit, left, right)
     add_house(limit, 301, 2)
     limit.households.reconcile(limit)
+    provision_family(limit, int(limit.citizens[0]["household_id"]), 3)
     ok = check(not limit.register_birth(12, 12, 0, left, right),
         "a completely full home cannot accommodate a newborn") and ok
     limit.construction.houses[0]["capacity"] = 3
