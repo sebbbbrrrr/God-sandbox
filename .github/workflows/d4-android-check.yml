@@ -40,11 +40,11 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://github.com/godotengine/godot-builds/releases/download/$GODOT_VERSION-$GODOT_STATUS"
-          curl -fL --retry 3 "$BASE/Godot_v$GODOT_VERSION-$GODOT_STATUS_linux.x86_64.zip" -o godot.zip
+          curl -fL --retry 3 "$BASE/Godot_v$GODOT_VERSION-${GODOT_STATUS}_linux.x86_64.zip" -o godot.zip
           unzip -q godot.zip
-          mv "Godot_v$GODOT_VERSION-$GODOT_STATUS_linux.x86_64" godot
+          mv "Godot_v$GODOT_VERSION-${GODOT_STATUS}_linux.x86_64" godot
           chmod +x godot
-          curl -fL --retry 3 "$BASE/Godot_v$GODOT_VERSION-$GODOT_STATUS_export_templates.tpz" -o export.tpz
+          curl -fL --retry 3 "$BASE/Godot_v$GODOT_VERSION-${GODOT_STATUS}_export_templates.tpz" -o export.tpz
           mkdir -p "$HOME/.local/share/godot/export_templates/$GODOT_VERSION.$GODOT_STATUS"
           unzip -q export.tpz -d extracted
           cp extracted/templates/* "$HOME/.local/share/godot/export_templates/$GODOT_VERSION.$GODOT_STATUS/"
