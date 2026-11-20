@@ -6,6 +6,7 @@ const Chunk = preload("res://scripts/pixel_chunk.gd")
 const Commands = preload("res://scripts/pixel_commands.gd")
 const Weather = preload("res://scripts/weather_cycle.gd")
 const RainOverlay = preload("res://scripts/weather_overlay.gd")
+const Walk = preload("res://scripts/citizen_walk.gd")
 const TILE := 32
 const CHUNK := 16
 const RISE := 12
@@ -20,6 +21,10 @@ var world: SandboxSimulation
 var atlas: PixelAtlas
 var chunks: Dictionary = {}
 var unit_rows: Array[PixelCommands] = []
+var walks: CitizenWalk
+var walk_draw_accum := 0.0
+var rendered_building_count := -1
+var facility_cells: Dictionary = {}
 var effects: PixelCommands
 var weather: SandboxWeather
 var weather_overlay: PixelWeatherOverlay
@@ -46,6 +51,7 @@ func setup(simulation: SandboxSimulation) -> void:
     weather = Weather.new(world.seed)
     weather.set_time(float(world.tick) * 0.1)
     atlas = Atlas.new()
+    walks = Walk.new()
     texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     z_index = -1000
     for cy in range(ceili(float(world.HEIGHT) / CHUNK)):
@@ -109,6 +115,43 @@ func land_mask(x: int, y: int) -> int:
             mask |= 1 << i
     return mask
 
+func scorch_exposure(x: int, y: int) -> int:
+    var exposure := 0
+    for i in range(4):
+        var neighbour: Vector2i = Vector2i(x, y) + DIRECTIONS[i]
+        if world.at(neighbour.x, neighbour.y) != world.ASH:
+            exposure |= 1 << i
+    for i in range(4):
+        var diagonal: Vector2i = Vector2i(x, y) + DIAGONALS[i]
+        if world.at(diagonal.x, diagonal.y) != world.ASH:
+            exposure |= 1 << (i + 4)
+    return exposure
+
+# Existing saves only contain ASH, not the terrain that burned. Approximate the
+# exposed substrate from the closest unburned cardinal/diagonal neighbour rather
+# than adding a new save format or changing simulation mechanics.
+func scorch_underlay(x: int, y: int) -> String:
+    for direction in DIRECTIONS + DIAGONALS:
+        var neighbour: Vector2i = Vector2i(x, y) + direction
+        var biome: int = world.at(neighbour.x, neighbour.y)
+        match biome:
+            world.FOREST:
+                return "forest"
+            world.BEACH:
+                return "sand"
+            world.MOUNTAIN:
+                return "rock"
+            world.TOWN:
+                return "earth"
+            world.MEADOW:
+                return "meadow"
+    # Coastal scars expose sand where there is no adjacent surviving land.
+    for direction in DIRECTIONS + DIAGONALS:
+        var neighbour: Vector2i = Vector2i(x, y) + direction
+        if world.at(neighbour.x, neighbour.y) == world.OCEAN:
+            return "sand"
+    return "meadow"
+
 func top_left(x: int, y: int) -> Vector2:
     return Vector2(x*TILE, y*TILE-world.height_at(x,y)*RISE)
 
@@ -150,6 +193,7 @@ func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> voi
             rebuilds += 1
     for y in range(unit_rows.size()):
         unit_rows[y].visible = y*TILE >= visible_rect.position.y-64 and y*TILE <= visible_rect.end.y+64
+    render_units()
 
 func build_chunk(chunk: PixelChunk) -> void:
     chunk.clear_commands()
@@ -225,7 +269,20 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var surface := variation(x,y,world.seed,variants)
     # Stable broad patches enrich colour without changing the material or sampling scale.
     var shade := 0.97 + variation(x/7,y/7,world.seed,7)*0.01 if type in [world.MEADOW,world.FOREST] else 1.0
-    ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
+    if type == world.ASH:
+        var exposure := scorch_exposure(x, y)
+        if exposure != 0:
+            var substrate := scorch_underlay(x, y)
+            var substrate_count: int = {"meadow":8,"forest":8,"sand":8,"rock":6,"earth":2}[substrate]
+            var substrate_variant := variation(x,y,world.seed+41,substrate_count)
+            ground.add("%s_%d" % [substrate,substrate_variant],p)
+            # The second draw is alpha-masked ash; transparent holes reveal
+            # nearby surviving terrain instead of a square black tile.
+            ground.add(atlas.scorch_tile(exposure,surface),p)
+        else:
+            ground.add("%s_%d" % [family,surface],p)
+    else:
+        ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
     if type == world.MOUNTAIN and variation(x,y,world.seed+27,7)==0:
         ground.add("mountain_%d" % v,p)
     var ocean_mask: int = neighbour_masks[world.OCEAN]
@@ -236,16 +293,18 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         var grass_mask: int = neighbour_masks[world.MEADOW] | neighbour_masks[world.FOREST]
         if grass_mask: transitions.add("meadow_edge_%d" % grass_mask,p)
         if ocean_mask and detail==2 and v%2==0: decor.add("shore_scatter",p)
-    # Overlay higher-priority neighbouring biome edges without hard tile borders.
-    for other in BIOMES:
-        if other == type:
-            continue
-        var mask: int = neighbour_masks[other]
-        if mask == 0:
-            continue
-        var edge_family: String = EDGE_FAMILY[other]
-        if type != world.MOUNTAIN:
-            transitions.add("%s_edge_%d" % [edge_family,mask],p)
+    # Ordinary biome-edge sprites must not paint rectangular overlays across
+    # the newly clipped ash silhouette. Adjacent intact cells keep ash_edge.
+    if type != world.ASH:
+        for other in BIOMES:
+            if other == type:
+                continue
+            var mask: int = neighbour_masks[other]
+            if mask == 0:
+                continue
+            var edge_family: String = EDGE_FAMILY[other]
+            if type != world.MOUNTAIN:
+                transitions.add("%s_edge_%d" % [edge_family,mask],p)
     var height := world.height_at(x,y)
     var south_drop := height-world.height_at(x,y+1)
     var east_drop := height-world.height_at(x+1,y)
@@ -371,22 +430,54 @@ func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0,
     var sz := atlas.size_of(key)*factor
     if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall"):
         layer.add("ground_shadow",(foot-Vector2(sz.x*0.43,9)).round(),Vector2(sz.x,14).round())
-    layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint,sway)
+    layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint,-1.0,sway)
 
 func refresh_units() -> void:
+    # Refresh only when the authoritative simulation changes. Between ticks,
+    # presentation positions advance independently without changing AI state.
+    walks.synchronize(world.citizens)
+    render_units()
+
+func render_units() -> void:
     for row in unit_rows:
         row.clear_commands()
     for citizen in world.citizens:
-        if citizen["hp"] <= 0:
+        if int(citizen["hp"]) <= 0:
             continue
-        var x: int = citizen["x"]
-        var y: int = citizen["y"]
-        var p := top_left(x,y)+Vector2(12+citizen["id"]%9,25)
-        prop(unit_rows[y],"citizen_gold" if citizen["nation"]==0 else "citizen_rose",p,0.9)
+        var id: int = int(citizen["id"])
+        if not walks.tracks.has(id):
+            continue
+        var track: Dictionary = walks.tracks[id]
+        var start: Vector2 = track["from"]
+        var goal: Vector2 = track["to"]
+        var fraction: float = walks.alpha(id)
+        var start_height := world.height_at(roundi(start.x), roundi(start.y))
+        var end_height := world.height_at(int(citizen["x"]), int(citizen["y"]))
+        var p := start.lerp(goal, fraction) * TILE + Vector2(
+            12 + posmod(id, 9), 25 - lerpf(float(start_height), float(end_height), fraction) * RISE)
+        var phase: float = walks.walk_phase(id)
+        if phase >= 0.0:
+            p.y -= absf(sin(phase * TAU * 2.0)) * 0.65
+        # Skip invisible sprites, not simulated citizens. No one-sprite nodes.
+        if visible_rect.size != Vector2.ZERO and not visible_rect.grow(72.0).has_point(p):
+            continue
+        var row_index := clampi(roundi(lerpf(start.y, goal.y, fraction)), 0, world.HEIGHT - 1)
+        var key := "citizen_gold" if int(citizen["nation"]) == 0 else "citizen_rose"
+        var sprite_size := (atlas.size_of(key) * 0.9).round()
+        unit_rows[row_index].add(key,
+            (p - Vector2(sprite_size.x * 0.5, sprite_size.y)).round(),
+            sprite_size, Color.WHITE, phase)
     for row in unit_rows:
-        row.queue_redraw()
+        if row.visible:
+            row.queue_redraw()
 
-func animate(delta: float) -> void:
+func animate(delta: float, simulated_delta: float = -1.0) -> void:
+    var motion_delta: float = delta if simulated_delta < 0.0 else simulated_delta
+    if walks.advance(motion_delta):
+        walk_draw_accum += delta
+        if walk_draw_accum >= 1.0 / 30.0 or not walks.has_active_motion():
+            render_units()
+            walk_draw_accum = 0.0
     # Animate the small visible vegetation pass at 15 Hz, never the static
     # chunks. Phase transitions follow saved simulation ticks.
     weather.set_time(float(world.tick) * 0.1)
@@ -400,7 +491,7 @@ func animate(delta: float) -> void:
             for row in chunk.wind_rows:
                 row.set_wind(sway_clock, weather.wind_strength, weather.wind_direction.x)
         weather_overlay.update_weather(visible_rect, sway_clock, weather.rain_strength, weather.wind_direction, world.seed)
-    effect_clock += delta
+    effect_clock += motion_delta
     if effect_clock < 0.25:
         return
     effect_clock = 0.0
