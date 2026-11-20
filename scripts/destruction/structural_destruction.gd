@@ -43,6 +43,33 @@ func ignite_at(engine, world, cell: Vector2i, intensity: int = 2) -> bool:
         return false
     return ignite(engine, world, id, intensity)
 
+# Explicit impact hooks for future tornado/flood/quake tools and weather systems.
+# They never spawn damage on their own and do not create material out of nothing.
+static func hazard_damage(house: Dictionary, hazard: String, strength: int) -> int:
+    var durability := resistance(house.get("materials", {}),
+        int(house.get("original_age", 1)))
+    match hazard:
+        "earthquake":
+            return maxi(1, strength * 7 - int(durability / 3))
+        "flood":
+            return maxi(1, strength * 4 - int(durability / 2))
+        "storm":
+            return maxi(1, strength * 3 - int(durability / 3))
+        "explosion":
+            return maxi(1, strength * 9 - int(durability / 4))
+    return 0
+
+func apply_hazard_at(engine, world, cell: Vector2i, hazard: String,
+        strength: int = 1) -> bool:
+    if strength <= 0 or hazard not in ["earthquake", "flood", "storm", "explosion"]:
+        return false
+    var id := int(engine.placement.tiles.get(cell, 0))
+    var house: Dictionary = engine.building_by_id(id)
+    if house.is_empty():
+        return false
+    var amount := hazard_damage(house, hazard, clampi(strength, 1, 10))
+    return engine.lifecycle.damage(engine, world, id, amount, hazard)
+
 func record_removal(house: Dictionary, reason: String, tick: int) -> void:
     var id := int(house.get("id", 0))
     fires.erase(id)
@@ -56,6 +83,9 @@ func record_removal(house: Dictionary, reason: String, tick: int) -> void:
         rubble.pop_front()
 
 func on_tick(engine, world) -> void:
+    # Expire one oldest debris record per tick; do not scan every past ruin.
+    if not rubble.is_empty() and int(world.tick) - int(rubble[0].get("tick", int(world.tick))) >= RUBBLE_LIFETIME:
+        rubble.pop_front()
     if fires.is_empty():
         return
     var ids: Array = fires.keys()
