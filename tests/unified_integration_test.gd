@@ -71,7 +71,7 @@ func run() -> void:
     game.world.set_terrain_cell(crater.x, crater.y, game.world.MEADOW)
     game.world.set_terrain_cell(crater.x, crater.y + 1, game.world.MEADOW)
     game.world.set_terrain_cell(crater.x, crater.y, game.world.ASH)
-    var key := game.world_renderer.atlas.scorch_tile(
+    var key: String = game.world_renderer.atlas.scorch_tile(
         game.world_renderer.scorch_exposure(crater.x, crater.y), 0)
     check(key.begins_with("scorch_") and
         game.world_renderer.atlas.texture(key) != null,
@@ -114,7 +114,7 @@ func run() -> void:
     game.inspector.close()
     game.camera_center = Vector2(int(citizen["x"]), int(citizen["y"]))
     game._process(0.01)
-    var position := game.world_origin() + game.world_renderer.tile_center(moved) * game.tile_size() / 32.0
+    var position: Vector2 = game.world_origin() + game.world_renderer.tile_center(moved) * game.tile_size() / 32.0
     game.tapped(position)
     check(game.inspector.visible and game.inspector.holder_id.begins_with("citizen:"),
         "hand mode inspects actual citizen inventory over high-res sprites")
