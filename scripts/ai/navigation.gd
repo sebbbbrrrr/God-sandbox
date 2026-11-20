@@ -1,4 +1,5 @@
 extends RefCounted
+const THREAT_EVENTS := ["damage", "danger", "witness_damage"]
 
 const Memory = preload("res://scripts/ai/memory.gd")
 const DIRS := [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
@@ -6,24 +7,21 @@ const MAX_NODES := 64
 const MAX_ROUTE := 12
 
 static func danger_near(world: RefCounted, cell: Vector2i) -> bool:
-    # Hot safety gate: direct packed-terrain access avoids 18 nested method calls.
-    var width: int = world.WIDTH
-    var height: int = world.HEIGHT
-    var terrain: PackedByteArray = world.terrain
-    for y in range(maxi(0, cell.y - 1), mini(height, cell.y + 2)):
-        var row := y * width
-        for x in range(maxi(0, cell.x - 1), mini(width, cell.x + 2)):
-            if terrain[row + x] == 5:
-                return true
-    return false
+    var context: RefCounted = world.ai_context
+    if context.terrain_tick != int(world.tick) or context.terrain_dirty:
+        context.refresh_terrain(world)
+    if cell.x < 0 or cell.y < 0 or cell.x >= world.WIDTH or cell.y >= world.HEIGHT:
+        return false
+    return context.hazard_mask[cell.y * int(world.WIDTH) + cell.x] != 0
 
 static func hazard_cost(world: RefCounted, state: Dictionary, cell: Vector2i) -> int:
     var maps: Dictionary = world.ai_context.risk_maps
     var id: int = state["id"]
-    if not maps.has(id):
+    var revision: int = state.get("risk_revision", 0)
+    if not maps.has(id) or int(world.ai_context.risk_revisions.get(id, -1)) != revision:
         var costs: Dictionary = {}
         for record in state["memories"]:
-            if record["kind"] not in ["damage", "danger", "witness_damage"]:
+            if record["kind"] not in THREAT_EVENTS:
                 continue
             var center := Vector2i(record["cell"][0], record["cell"][1])
             for dy in range(-2, 3):
@@ -43,6 +41,7 @@ static func hazard_cost(world: RefCounted, state: Dictionary, cell: Vector2i) ->
                     var point := center + Vector2i(dx, dy)
                     costs[point] = maxi(int(costs.get(point, 0)), int(fact["confidence"]) * 2)
         maps[id] = costs
+        world.ai_context.risk_revisions[id] = revision
     # Route preference uses beliefs and episodes, never unseen distant fire tiles.
     return int(maps[id].get(cell, 0))
 
@@ -109,7 +108,8 @@ static func next_step(world: RefCounted, person: Dictionary, state: Dictionary, 
         if manhattan(pos, next) != 1 or not world.is_walkable(next.x, next.y) or danger_near(world, next):
             route.clear()
     if route.is_empty() and int(world.tick) >= int(state["next_path_tick"]):
-        route = plan(world, state, pos, target)
+        if int(world.ai_context.metrics["path_requests"]) < world.ai_context.MAX_PATH_REQUESTS:
+            route = plan(world, state, pos, target)
         state["route"] = route
         state["next_path_tick"] = int(world.tick) + 9
     if not route.is_empty():

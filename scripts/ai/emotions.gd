@@ -1,4 +1,5 @@
 extends RefCounted
+const FAST_RECOVERY := ["fear", "stress"]
 
 const KEYS := ["fear", "anger", "happiness", "sadness", "stress", "social_attachment", "confidence"]
 
@@ -20,7 +21,7 @@ static func advance(state: Dictionary, tick: int) -> void:
     for key in KEYS:
         var current: int = state["emotions"][key]
         var target: int = baseline[key]
-        state["emotions"][key] = move_toward(current, target, units * (2 if key in ["fear", "stress"] else 1)) as int
+        state["emotions"][key] = move_toward(current, target, units * (2 if key in FAST_RECOVERY else 1)) as int
 
 static func react(state: Dictionary, kind: String, strength: int, tick: int) -> void:
     advance(state, tick)

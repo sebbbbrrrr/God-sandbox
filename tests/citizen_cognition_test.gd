@@ -234,6 +234,7 @@ func persistence() -> void:
         if i == 35:
             a.apply_power(1, a.citizens[0]["x"], a.citizens[0]["y"])
         a.step()
+    var frozen_legacy: Dictionary = a.snapshot(true)
     var frozen: Dictionary = a.snapshot()
     var immutable := var_to_bytes(frozen)
     var json_data: Dictionary = JSON.parse_string(JSON.stringify(frozen))
@@ -247,13 +248,13 @@ func persistence() -> void:
         b.step()
     check(a.snapshot() == b.snapshot(), "JSON save continuation stays deterministic with powers and settlement growth")
     check(var_to_bytes(frozen) == immutable, "captured snapshots cannot mutate with live world")
-    var legacy: Dictionary = frozen.duplicate(true)
+    var legacy: Dictionary = frozen_legacy.duplicate(true)
     legacy["version"] = 1
     legacy.erase("citizen_ai_by_id")
     legacy.erase("ai_version")
     var migrated = Simulation.from_snapshot(legacy)
     check(migrated != null and migrated.citizens == frozen["citizens"] and migrated.terrain == Marshalls.base64_to_raw(frozen["terrain"]) and str(migrated.rng.state) == frozen["rng_state"], "v1 migration preserves physical world and RNG")
-    legacy = frozen.duplicate(true)
+    legacy = frozen_legacy.duplicate(true)
     legacy["version"] = 2
     legacy["ai_version"] = 1
     for id in legacy["citizen_ai_by_id"]:
@@ -261,7 +262,7 @@ func persistence() -> void:
         legacy["citizen_ai_by_id"][id] = {"personality": original["personality"], "needs": original["needs"], "goal": "explore", "last_decision": 170, "last_needs_tick": 180,
             "memories": [{"kind": "danger", "cell": [30, 30], "tick": 100}], "danger_cell": [30, 30]}
     migrated = Simulation.from_snapshot(legacy)
-    check(migrated != null and migrated.citizen_ai_by_id["1"]["memories"][0]["participants"] == [] and migrated.citizen_ai_by_id["1"]["personality"] == frozen["citizen_ai_by_id"]["1"]["personality"], "v2 basic danger memories and identity migrate to structured schema")
+    check(migrated != null and migrated.citizen_ai_by_id["1"]["memories"][0]["participants"] == [] and migrated.citizen_ai_by_id["1"]["personality"] == frozen_legacy["citizen_ai_by_id"]["1"]["personality"], "v2 basic danger memories and identity migrate to structured schema")
     var clean := AI.validate_state({"emotions": [], "relationships": [null, {"id": 2, "trust": 9999}], "memories": [false, {"cell": "invalid"}], "beliefs": [null], "route": [null], "personality": {"caution": -100}}, 1, 1, 100)
     check(clean["emotions"].size() == 7 and clean["relationships"][0]["trust"] == 100 and clean["memories"].is_empty() and clean["personality"]["caution"] == 0, "malformed nested cognition safely sanitizes and clamps")
     var duplicate: Dictionary = frozen.duplicate(true)

@@ -45,6 +45,7 @@ static func restore(data: Variant, safe: Dictionary, tick: int) -> Dictionary:
         safe[key] = number(data.get(key, safe[key]), 0, tick, safe[key])
     for key in ["next_decision", "next_path_tick", "next_social_tick", "commit_until"]:
         safe[key] = number(data.get(key, safe[key]), 0, tick + 600, safe[key])
+    safe["risk_revision"] = number(data.get("risk_revision", 0), 0, 9223372036854775807)
     safe["blocked_steps"] = number(data.get("blocked_steps", 0), 0, 100)
     for step in records(data, "route", Nav.MAX_ROUTE):
         var location := cell(step)

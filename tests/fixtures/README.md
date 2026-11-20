@@ -1,0 +1,3 @@
+# Phase 2 replay fixtures
+
+Generated with Godot 4.5.2 against commit 476e3a7. JSON SHA-256 checkpoints include physical world state and full cognition/utility scores; only newly introduced derived-cache fields and the scheduler configuration are normalized out. The 160-citizen case includes all six powers and brush editing over 360 ticks (15 checkpoints). The 500-citizen spread case checks every tick through tick 48 with the new budget disabled (48 checkpoints); it catches accidental mechanical changes independently of the explicit overload scheduling policy. Generation uses the same trace scripts against the baseline checkout with `--record --trace=<new-path>`.

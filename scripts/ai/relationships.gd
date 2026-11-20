@@ -1,4 +1,5 @@
 extends RefCounted
+const FADING_TIES := ["familiarity", "attachment", "trust"]
 
 const CAPACITY := 12
 const FIELDS := ["familiarity", "affinity", "trust", "respect", "fear", "rivalry", "attachment"]
@@ -70,5 +71,5 @@ static func advance(state: Dictionary, tick: int) -> void:
         tie["rivalry"] = maxi(0, int(tie["rivalry"]) - units)
         tie["affinity"] = int(move_toward(int(tie["affinity"]), 0, units))
         if tick - int(tie["last_tick"]) > 600:
-            for key in ["familiarity", "attachment", "trust"]:
+            for key in FADING_TIES:
                 tie[key] = maxi(0, int(tie[key]) - units)

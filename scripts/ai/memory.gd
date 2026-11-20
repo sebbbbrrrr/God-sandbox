@@ -1,10 +1,12 @@
 extends RefCounted
+const THREAT_EVENTS := ["danger", "damage", "witness_damage"]
 
 const CAPACITY := 12
 
 static func remember(state: Dictionary, kind: String, cell: Vector2i, tick: int,
         participants: Array = [], significance: int = 35, outcome: int = -20,
         importance: int = 40, confidence: int = 100) -> void:
+    state["risk_revision"] = int(state.get("risk_revision", 0)) + 1
     var records: Array = state["memories"]
     var location := [cell.x, cell.y]
     for record in records:
@@ -35,6 +37,7 @@ static func advance(state: Dictionary, tick: int) -> void:
     state["last_memory_tick"] = tick
     if units <= 0:
         return
+    state["risk_revision"] = int(state.get("risk_revision", 0)) + 1
     var records: Array = state["memories"]
     for i in range(records.size() - 1, -1, -1):
         var record: Dictionary = records[i]
@@ -45,7 +48,7 @@ static func advance(state: Dictionary, tick: int) -> void:
 static func risk(state: Dictionary, cell: Vector2i) -> int:
     var result := 0
     for record in state["memories"]:
-        if record["kind"] not in ["danger", "damage", "witness_damage"]:
+        if record["kind"] not in THREAT_EVENTS:
             continue
         var distance: int = absi(cell.x - int(record["cell"][0])) + absi(cell.y - int(record["cell"][1]))
         if distance <= 2:

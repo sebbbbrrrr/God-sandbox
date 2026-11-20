@@ -1,14 +1,18 @@
 extends RefCounted
+const BLOCKED_TERRAIN := [0, 4]
+const UNSAFE_TERRAIN := [0, 4, 5]
+const INTERESTING_TERRAIN := [3, 6]
 
+const GOALS := ["explore", "rest", "seek_safety", "avoid_danger", "socialize", "seek_settlement", "investigate", "return_familiar"]
 const Nav = preload("res://scripts/ai/navigation.gd")
 const Memory = preload("res://scripts/ai/memory.gd")
 const Perception = preload("res://scripts/ai/perception.gd")
 const Relations = preload("res://scripts/ai/relationships.gd")
 
-static func candidate(goal: String, score: int, target: Vector2i, target_id: int = 0) -> Dictionary:
-    return {"goal": goal, "score": score, "target": [target.x, target.y], "target_id": target_id}
+static func candidate(goal: String, score: int, target: Vector2i, target_id: int = 0) -> Array:
+    return [GOALS.find(goal), score, target.x, target.y, target_id]
 
-static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nearby: Array, urgent: bool) -> void:
+static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nearby: Array, urgent: bool, known_index: Variant = null, diagnostics: bool = true) -> void:
     var pos := Vector2i(person["x"], person["y"])
     var traits: Dictionary = state["personality"]
     var emotions: Dictionary = state["emotions"]
@@ -26,13 +30,13 @@ static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nea
     var unfamiliar_score := -100000
     var offset: int = (int(person["id"]) + int(world.tick) / 90) % 8
     var view: Dictionary = world.ai_context.view(world, pos)
-    var index := Perception.belief_index(state)
+    var index: Dictionary = Perception.belief_index(state) if known_index == null else known_index
     for j in range(8):
         var cell: Vector2i = pos + Perception.RAYS[(j + offset) % 8]
-        if not view["observed"].has(cell) or int(view["observed"][cell]) in [0, 4]:
+        if not view["observed"].has(cell) or int(view["observed"][cell]) in BLOCKED_TERRAIN:
             continue
         var risk: int = Nav.hazard_cost(world, state, cell)
-        var known: int = int(index[cell]["visits"]) if index.has(cell) else 0
+        var known: int = int(index[cell.x + cell.y * 96]["visits"]) if index.has(cell.x + cell.y * 96) else 0
         var score: int = 30 - known * 3 - risk - j
         if score > horizon_score:
             horizon_score = score
@@ -54,7 +58,7 @@ static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nea
                 if horizon == pos:
                     horizon = cell
     for fact in state["beliefs"]:
-        if int(fact["confidence"]) < 20 or int(fact["terrain"]) in [0, 4, 5]:
+        if int(fact["confidence"]) < 20 or int(fact["terrain"]) in UNSAFE_TERRAIN:
             continue
         var cell := Vector2i(fact["cell"][0], fact["cell"][1])
         var distance := Nav.manhattan(pos, cell)
@@ -70,7 +74,7 @@ static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nea
                 settlement_score = score
                 settlement = cell
         if int(fact["visits"]) == 0 and distance > 0:
-            var score: int = 20 - distance - risk + (8 if int(fact["terrain"]) in [3, 6] else 0)
+            var score: int = 20 - distance - risk + (8 if int(fact["terrain"]) in INTERESTING_TERRAIN else 0)
             if score > unfamiliar_score:
                 unfamiliar_score = score
                 unfamiliar = cell
@@ -104,10 +108,11 @@ static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nea
             partner_cell = other_cell
     # Familiar people have remembered positions, never live global tracking.
     for tie in state["relationships"]:
-        if int(world.tick) - int(tie["last_tick"]) > 300 or Relations.preference(tie) <= 10:
+        var preference := Relations.preference(tie)
+        if int(world.tick) - int(tie["last_tick"]) > 300 or preference <= 10:
             continue
         var cell := Vector2i(tie["last_cell"][0], tie["last_cell"][1])
-        var score: int = Relations.preference(tie) - Nav.manhattan(pos, cell) * 4 - (int(world.tick) - int(tie["last_tick"])) / 12
+        var score: int = preference - Nav.manhattan(pos, cell) * 4 - (int(world.tick) - int(tie["last_tick"])) / 12
         if score > partner_score:
             partner_score = score
             partner = int(tie["id"])
@@ -123,24 +128,38 @@ static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nea
                 distance = Nav.manhattan(cell, disliked)
                 away = cell
         options.append(candidate("avoid_danger", 180, away))
-    var best: Dictionary = options[0]
+    var best: Array = options[0]
     for option in options:
-        option["score"] += int(state["learned"].get(option["goal"], 0))
-        if option["goal"] == state["goal"]:
-            option["score"] += 18 + (12 if int(world.tick) < int(state["commit_until"]) else 0)
-        if int(option["score"]) > int(best["score"]):
+        option[1] += int(state["learned"].get(GOALS[option[0]], 0))
+        if GOALS[option[0]] == state["goal"]:
+            option[1] += 18 + (12 if int(world.tick) < int(state["commit_until"]) else 0)
+        if int(option[1]) > int(best[1]):
             best = option
-    state["utilities"] = options
+    var trace := PackedInt32Array()
+    trace.resize(options.size() * 5)
+    var cursor := 0
+    for option in options:
+        for value in option:
+            trace[cursor] = value
+            cursor += 1
+    state["utility_rows"] = trace
+    state["utilities"] = describe(trace) if diagnostics else []
     var old_target := Vector2i(state["target"][0], state["target"][1])
     var invalid_target: bool = not world.is_walkable(old_target.x, old_target.y)
     var reached: bool = state["target"] == [pos.x, pos.y]
-    if best["goal"] != state["goal"] or reached or int(world.tick) >= int(state["commit_until"]) or urgent or invalid_target:
-        if state["target"] != best["target"] or state["goal"] != best["goal"]:
+    if GOALS[best[0]] != state["goal"] or reached or int(world.tick) >= int(state["commit_until"]) or urgent or invalid_target:
+        if (int(state["target"][0]) != int(best[2]) or int(state["target"][1]) != int(best[3])) or state["goal"] != GOALS[best[0]]:
             state["route"] = []
-        state["goal"] = best["goal"]
-        state["target"] = best["target"].duplicate()
-        state["target_id"] = best["target_id"]
+        state["goal"] = GOALS[best[0]]
+        state["target"] = [best[2], best[3]]
+        state["target_id"] = best[4]
         state["commit_until"] = int(world.tick) + 36
     state["last_decision"] = int(world.tick)
     state["next_decision"] = int(world.tick) + 12 + int(person["id"]) % 4 * 3
     world.ai_context.metrics["decisions"] += 1
+
+static func describe(rows: PackedInt32Array) -> Array:
+    var result: Array = []
+    for i in range(0, rows.size(), 5):
+        result.append({"goal":GOALS[rows[i]], "score":rows[i + 1], "target":[rows[i + 2], rows[i + 3]], "target_id":rows[i + 4]})
+    return result

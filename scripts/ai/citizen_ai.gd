@@ -1,5 +1,9 @@
 extends RefCounted
 class_name CitizenAI
+const THREAT_EVENTS := ["danger", "damage", "witness_damage"]
+const POSITIVE_EVENTS := ["healed", "support", "friendly", "discovery"]
+const NEGATIVE_EVENTS := ["damage", "danger", "witness_damage"]
+const DISCOVERY_GOALS := ["explore", "investigate", "seek_settlement", "return_familiar"]
 
 # All authoritative cognition uses integer simulated time, stable IDs and bounded data.
 const Emotions = preload("res://scripts/ai/emotions.gd")
@@ -29,10 +33,10 @@ static func create_state(world_seed: int, person_id: int, tick: int) -> Dictiona
         "diligence": trait_value(world_seed, person_id, 3),
         "aggression": trait_value(world_seed, person_id, 4),
         "caution": trait_value(world_seed, person_id, 5)}
-    return {"id": person_id, "personality": traits, "needs": {"fatigue": 0, "social": 0, "safety": 0},
+    return {"risk_revision": 0, "id": person_id, "personality": traits, "needs": {"fatigue": 0, "social": 0, "safety": 0},
         "emotions": Emotions.create(traits), "memories": [], "relationships": [],
         "beliefs": [], "learned": Learning.create(), "goal": GOAL_EXPLORE,
-        "target": [-1, -1], "target_id": 0, "route": [], "utilities": [],
+        "target": [-1, -1], "target_id": 0, "route": [], "utilities": [], "utility_rows": PackedInt32Array(),
         "last_decision": tick, "next_decision": tick + person_id % 12,
         "last_needs_tick": tick, "last_emotion_tick": tick, "last_memory_tick": tick,
         "last_social_decay": tick, "last_belief_tick": tick, "last_learning_tick": tick,
@@ -65,13 +69,13 @@ static func event(world: RefCounted, person: Dictionary, kind: String, cell: Vec
             actor_id = 0
     var state: Dictionary = world.citizen_ai_by_id[str(person["id"])]
     world.ai_context.risk_maps.erase(int(person["id"]))
-    if kind in ["danger", "damage", "witness_damage"]:
+    if kind in THREAT_EVENTS:
         Perception.observe(state, cell, world.at(cell.x, cell.y), world.tick)
     Emotions.react(state, kind, strength, world.tick)
-    var positive: bool = kind in ["healed", "support", "friendly", "discovery"]
+    var positive: bool = kind in POSITIVE_EVENTS
     Memory.remember(state, kind, cell, world.tick, [actor_id] if actor_id > 0 else [],
         strength, strength if positive else -strength, mini(100, strength + 30))
-    if kind in ["damage", "danger", "witness_damage"]:
+    if kind in NEGATIVE_EVENTS:
         state["needs"]["safety"] = mini(100, int(state["needs"]["safety"]) + strength)
         state["danger_cell"] = [cell.x, cell.y]
         state["last_hazard_tick"] = int(world.tick)
@@ -82,10 +86,11 @@ static func event(world: RefCounted, person: Dictionary, kind: String, cell: Vec
     if actor_id > 0 and actor_id != int(person["id"]):
         Relations.encounter(state, actor_id, cell, world.tick, kind)
 
-static func sense(world: RefCounted, person: Dictionary, state: Dictionary) -> void:
+static func sense(world: RefCounted, person: Dictionary, state: Dictionary) -> Dictionary:
     var pos := Vector2i(person["x"], person["y"])
     var index := Perception.belief_index(state)
-    var first_visit: bool = not index.has(pos) or int(index[pos]["visits"]) == 0
+    var key := pos.x + pos.y * 96
+    var first_visit: bool = not index.has(key) or int(index[key]["visits"]) == 0
     var view: Dictionary = world.ai_context.view(world, pos)
     Perception.observe(state, pos, int(view["terrain"]), world.tick, true, index, false)
     for cell in view["observed"]:
@@ -94,16 +99,18 @@ static func sense(world: RefCounted, person: Dictionary, state: Dictionary) -> v
     for cell in view["hazards"]:
         Perception.observe(state, cell, world.ASH, world.tick, false, index, false)
         hazard = cell
-    Perception.finish_observation(state)
+    Perception.finish_observation(state, index)
     if not world.is_walkable(pos.x, pos.y):
         hazard = pos
     if hazard.x >= 0 and (state["danger_cell"] != [hazard.x, hazard.y] or int(world.tick) - int(state["last_hazard_tick"]) >= 30):
         event(world, person, "danger", hazard, 35)
-    if first_visit and not Nav.danger_near(world, pos) and int(world.tick) - int(state["last_outcome_tick"]) >= 30 and state["goal"] in ["explore", "investigate", "seek_settlement", "return_familiar"]:
+    if first_visit and not Nav.danger_near(world, pos) and int(world.tick) - int(state["last_outcome_tick"]) >= 30 and state["goal"] in DISCOVERY_GOALS:
         Learning.reinforce(state, state["goal"], 3)
         Memory.remember(state, "discovery", pos, world.tick, [], 12, 15, 20)
         Emotions.react(state, "discovery", 8, world.tick)
         state["last_outcome_tick"] = int(world.tick)
+
+    return index
 
 static func interact(world: RefCounted, person: Dictionary, other: Dictionary) -> bool:
     if int(person["id"]) == int(other["id"]) or int(person["hp"]) <= 0 or int(other["hp"]) <= 0:
@@ -141,7 +148,7 @@ static func interact(world: RefCounted, person: Dictionary, other: Dictionary) -
     world.ai_context.metrics["interactions"] += 1
     return true
 
-static func step(world: RefCounted, person: Dictionary, state: Dictionary) -> void:
+static func step(world: RefCounted, person: Dictionary, state: Dictionary, scheduled: bool = false) -> void:
     advance_needs(state, world.tick)
     Emotions.advance(state, world.tick)
     Memory.advance(state, world.tick)
@@ -151,10 +158,14 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary) -> vo
     var pos := Vector2i(person["x"], person["y"])
     var urgent: bool = Nav.danger_near(world, pos) or not world.is_walkable(pos.x, pos.y)
     var think: bool = int(world.tick) >= int(state["next_decision"]) or (urgent and state["goal"] != GOAL_SAFE)
+    if think and scheduled and not urgent and not world.ai_context.routine_grants.has(int(person["id"])):
+        world.ai_context.metrics["deferred_decisions"] += 1
+        think = false
     if think:
-        sense(world, person, state)
+        world.ai_context.metrics["urgent_decisions" if urgent else "routine_decisions"] += 1
+        var index := sense(world, person, state)
         var nearby: Array = world.ai_context.nearby(world, person)
-        Decisions.choose(world, person, state, nearby, urgent)
+        Decisions.choose(world, person, state, nearby, urgent, index, false)
         if not urgent and int(world.tick) >= int(state["next_social_tick"]):
             var preferred: Dictionary = {}
             var preference := -100000
@@ -207,5 +218,5 @@ static func validate_state(data: Variant, seed: int, id: int, tick: int) -> Dict
 
 static func inspect(state: Dictionary) -> Dictionary:
     return {"goal": state["goal"], "target": state["target"], "emotions": state["emotions"],
-        "utilities": state["utilities"], "relationships": state["relationships"],
+        "utilities": Decisions.describe(state["utility_rows"]) if not state["utility_rows"].is_empty() else state["utilities"], "relationships": state["relationships"],
         "memories": state["memories"], "beliefs": state["beliefs"], "learned": state["learned"]}.duplicate(true)

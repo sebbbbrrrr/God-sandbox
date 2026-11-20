@@ -1,6 +1,8 @@
 extends RefCounted
 class_name SandboxSimulation
 
+const SaveStore = preload("res://scripts/ai/save_store.gd")
+const SaveCodec = preload("res://scripts/ai/save_codec.gd")
 const AI = preload("res://scripts/ai/citizen_ai.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
@@ -27,13 +29,14 @@ var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
 
-func _init(world_seed: int = 424242) -> void:
+func _init(world_seed: int = 424242, initialize_world: bool = true) -> void:
     seed = world_seed
     rng = RandomNumberGenerator.new()
     rng.seed = seed
     terrain.resize(WIDTH * HEIGHT)
-    generate_world()
-    spawn_initial_population()
+    if initialize_world:
+        generate_world()
+        spawn_initial_population()
 
 func generate_world() -> void:
     var elevation := FastNoiseLite.new()
@@ -77,6 +80,15 @@ func is_walkable(x: int, y: int) -> bool:
     var i := index_of(x, y)
     return i >= 0 and terrain[i] != OCEAN and terrain[i] != MOUNTAIN
 
+func set_terrain_cell(x: int, y: int, type: int) -> bool:
+    var idx := index_of(x, y)
+    if idx < 0 or type < OCEAN or type > TOWN or terrain[idx] == type:
+        return false
+    terrain[idx] = type
+    ai_context.terrain_dirty = true
+    ai_context.local_views.clear()
+    return true
+
 func add_citizen(x: int, y: int, nation: int) -> bool:
     if not is_walkable(x, y) or citizens.size() >= MAX_PEOPLE:
         return false
@@ -89,7 +101,7 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         "age": 0
     })
     citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
-    ai_context.added(citizens[-1])
+    ai_context.added(citizens[-1], citizen_ai_by_id[str(next_id)])
     next_id += 1
     return true
 
@@ -109,15 +121,11 @@ func spawn_initial_population() -> void:
 func step() -> void:
     tick += 1
     ai_context.begin_tick(self)
-    for citizen in citizens:
+    for id in ai_context.update_slots[posmod(-tick, 3)]:
+        var citizen: Dictionary = ai_context.people[id]
         if citizen["hp"] <= 0:
             continue
-        if (tick + citizen["id"]) % 3 != 0:
-            continue
-        var id_key := str(citizen["id"])
-        if not citizen_ai_by_id.has(id_key):
-            citizen_ai_by_id[id_key] = AI.create_state(seed, int(citizen["id"]), tick)
-        AI.step(self, citizen, citizen_ai_by_id[id_key])
+        AI.step(self, citizen, ai_context.minds[id], true)
         citizen["age"] += 1
     if tick % 150 == 0:
         grow_settlements()
@@ -130,7 +138,7 @@ func grow_settlements() -> void:
         var bx := clampi(center.x + rng.randi_range(-5, 5), 0, WIDTH - 1)
         var by := clampi(center.y + rng.randi_range(-5, 5), 0, HEIGHT - 1)
         if is_walkable(bx, by) and at(bx, by) != BEACH:
-            terrain[index_of(bx, by)] = TOWN
+            set_terrain_cell(bx, by, TOWN)
         if citizens.size() < MAX_PEOPLE:
             add_citizen(center.x, center.y, nation)
 
@@ -140,14 +148,14 @@ func apply_power(power: int, x: int, y: int) -> bool:
     if idx == -1:
         return false
     ai_context.local_views.clear()
-    ai_context.risk_maps.clear()
+    ai_context.terrain_dirty = true
     match power:
         0:
-            terrain[idx] = MEADOW
+            set_terrain_cell(x, y, MEADOW)
         1:
             if terrain[idx] == OCEAN:
                 return false
-            terrain[idx] = ASH
+            set_terrain_cell(x, y, ASH)
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 1 and abs(citizen["y"] - y) <= 1:
                     citizen["hp"] = maxi(0, citizen["hp"] - 30)
@@ -157,7 +165,7 @@ func apply_power(power: int, x: int, y: int) -> bool:
         2:
             if terrain[idx] == OCEAN:
                 return false
-            terrain[idx] = FOREST
+            set_terrain_cell(x, y, FOREST)
         3:
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 2 and abs(citizen["y"] - y) <= 2:
@@ -168,28 +176,28 @@ func apply_power(power: int, x: int, y: int) -> bool:
         4:
             return add_citizen(x, y, citizens.size() % 2)
         5:
-            terrain[idx] = OCEAN
+            set_terrain_cell(x, y, OCEAN)
         _:
             return false
     return true
 
-func snapshot() -> Dictionary:
+func snapshot(legacy: bool = false) -> Dictionary:
     return {
-        "version": 3, "seed": seed, "tick": tick, "next_id": next_id,
-        "ai_version": 2, "citizen_ai_by_id": citizen_ai_by_id.duplicate(true),
+        "version": 3 if legacy else 4, "seed": seed, "tick": tick, "next_id": next_id,
+        "ai_version": 2 if legacy else 3, "citizen_ai_by_id": citizen_ai_by_id.duplicate(true) if legacy else SaveCodec.encode(citizen_ai_by_id),
         "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens.duplicate(true),
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
-        "rng_state": str(rng.state)
+        "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     var version := int(data.get("version", -1))
-    if version not in [1, 2, 3] or (version == 3 and int(data.get("ai_version", -1)) != 2):
+    if version not in [1, 2, 3, 4] or (version == 3 and int(data.get("ai_version", -1)) != 2) or (version == 4 and int(data.get("ai_version", -1)) != 3):
         return null
     var raw := Marshalls.base64_to_raw(str(data.get("terrain", "")))
     if raw.size() != WIDTH * HEIGHT:
         return null
-    var result := SandboxSimulation.new(int(data.get("seed", 424242)))
+    var result := SandboxSimulation.new(int(data.get("seed", 424242)), false)
     result.terrain = raw
     result.tick = maxi(0, int(data.get("tick", 0)))
     result.citizens.clear()
@@ -214,6 +222,11 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 "age": maxi(0, int(person.get("age", 0)))
             })
     var stored_ai: Dictionary = data.get("citizen_ai_by_id", {}) if version >= 2 and data.get("citizen_ai_by_id", {}) is Dictionary else {}
+    if version == 4:
+        var expanded: Variant = SaveCodec.decode(data.get("citizen_ai_by_id"))
+        if expanded == null:
+            return null
+        stored_ai = expanded
     var highest_id := 0
     for person in result.citizens:
         var person_id: int = int(person["id"])
@@ -235,5 +248,19 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
             if saved_capitals[i] is Array and saved_capitals[i].size() == 2:
                 result.capitals[i] = Vector2i(int(saved_capitals[i][0]), int(saved_capitals[i][1]))
     result.rng.state = int(data.get("rng_state", result.rng.state))
+    result.ai_context.routine_budget = clampi(int(data.get("routine_budget", 96)), 1, MAX_PEOPLE)
     result.ai_context.begin_tick(result)
     return result
+
+# Preparation runs on the simulation thread; the returned buffer owns all saved data.
+func prepare_save_bytes() -> PackedByteArray:
+    return SaveStore.prepare(self)
+
+func save_atomic(path: String) -> Error:
+    return SaveStore.replace(path, prepare_save_bytes())
+
+static func load_file(path: String) -> SandboxSimulation:
+    if not FileAccess.file_exists(path):
+        return null
+    var data: Variant = SaveStore.decode(FileAccess.get_file_as_bytes(path))
+    return from_snapshot(data) if data is Dictionary else null

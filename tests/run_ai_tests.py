@@ -12,6 +12,9 @@ TESTS = {
     "simulation_test.gd": "SIMULATION_TESTS_PASSED",
     "citizen_ai_test.gd": "CITIZEN_AI_TESTS_PASSED",
     "citizen_cognition_test.gd": "COGNITION_TESTS_PASSED",
+    "citizen_ai_500_trace.gd": "AI_BEHAVIOURAL_TRACE_PASSED",
+    "citizen_ai_trace.gd": "AI_BEHAVIOURAL_TRACE_PASSED",
+    "citizen_scalability_test.gd": "SCALABILITY_TESTS_PASSED",
 }
 
 
