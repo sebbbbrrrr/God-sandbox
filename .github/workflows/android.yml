@@ -2,7 +2,7 @@ name: God Sandbox Android APK
 
 on:
   push:
-    branches: [main, dev/phase1-pixel-art]
+    branches: [main, dev/phase1-pixel-art, feature/mobile-hud-redesign]
   workflow_dispatch:
 
 permissions:
