@@ -189,6 +189,9 @@ func update_security(world: RefCounted) -> void:
     for key in family_security.keys():
         if world.households.family_for(int(key)).is_empty():
             family_security.erase(key)
+    for key in household_preferences.keys():
+        if world.households.family_for(int(key)).is_empty():
+            household_preferences.erase(key)
 
 func try_conception(world: RefCounted) -> void:
     if world.citizens.size() >= world.MAX_PEOPLE:
@@ -371,6 +374,7 @@ func archive_dead(world: RefCounted) -> void:
             if int(partners[partner_key]) == int(person["id"]):
                 partners.erase(partner_key)
         pregnancies.erase(key)
+        last_birth.erase(key)
         world.citizen_ai_by_id.erase(key)
         world.citizens.remove_at(i)
         changed = true
