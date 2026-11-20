@@ -23,6 +23,8 @@ func _initialize() -> void:
     ok = check(a.households.occupancy(a, 300) == 2 and
         int(a.citizens[0]["home_id"]) == 300,
         "two members occupy real beds in a completed house") and ok
+    provision_family(a, int(a.citizens[0]["household_id"]), 3)
+    provision_family(b, int(b.citizens[0]["household_id"]), 3)
     ok = check(a.register_birth(12, 12, 0, first, second) and
         b.register_birth(12, 12, 0, first, second),
         "newborn joins parents only when their home has free beds") and ok
