@@ -42,7 +42,7 @@ func _has_worker(nation: int) -> bool:
     return false
 
 func _total_in_nation(world: RefCounted, nation: int, item_id: String) -> int:
-    var amount := world.inventory.held("settlement:" + str(nation), item_id)
+    var amount: int = world.inventory.held("settlement:" + str(nation), item_id)
     for serial in instances:
         var instance: Dictionary = instances[serial]
         if str(instance["item_id"]) != item_id:
@@ -335,7 +335,7 @@ func _do_job(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             if not _site(world, nation) and world.inventory.consume(world,
                     "citizen:" + id, {"wood": WORKSITE_WOOD, "stone": WORKSITE_STONE},
                     int(person["id"]), "tool_area"):
-                var site := world.capitals[nation]
+                var site: Vector2i = world.capitals[nation]
                 world.construction.houses.append({"id": world.construction.next_building_id,
                     "type": "tool_area", "capacity": 0, "nation": nation,
                     "x": site.x, "y": site.y, "built_tick": int(world.tick)})
