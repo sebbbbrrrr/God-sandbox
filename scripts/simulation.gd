@@ -11,6 +11,7 @@ const Households = preload("res://scripts/ai/households.gd")
 const Food = preload("res://scripts/ai/food_survival.gd")
 const Demography = preload("res://scripts/ai/autonomous_demography.gd")
 const Occupations = preload("res://scripts/ai/era_occupations.gd")
+const Inventory = preload("res://scripts/items/physical_inventory.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -39,6 +40,7 @@ var households := Households.new()
 var food := Food.new()
 var demography := Demography.new()
 var occupations := Occupations.new()
+var inventory := Inventory.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -48,6 +50,9 @@ func _init(world_seed: int = 424242, initialize_world: bool = true) -> void:
     rng = RandomNumberGenerator.new()
     rng.seed = seed
     terrain.resize(WIDTH * HEIGHT)
+    # Legacy stockpile access aliases the authoritative settlement balances.
+    for nation in range(2):
+        construction.stockpiles[nation] = inventory.stockpile(nation)
     if initialize_world:
         generate_world()
         spawn_initial_population()
@@ -100,6 +105,7 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
         return false
     terrain[idx] = type
     construction.on_terrain_changed(self, x, y)
+    inventory.on_terrain_changed(self, x, y)
     households.dirty = true
     food.on_terrain_changed(self, x, y)
     ai_context.terrain_dirty = true
@@ -255,7 +261,7 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot(),
         "households": households.snapshot(),
         "food": food.snapshot(), "demography": demography.snapshot(),
-        "occupations": occupations.snapshot()
+        "occupations": occupations.snapshot(), "inventory": inventory.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -343,6 +349,17 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     result.construction.load_state(data.get("construction", {}))
     result.ai_context.begin_tick(result)
+    # v1-v4 worlds are accepted. Only absent D2 state permits migration;
+    # corrupted present ledgers must fail closed rather than mint duplicates.
+    if data.has("inventory"):
+        if not result.inventory.load_state(result, data["inventory"]):
+            return null
+    else:
+        result.inventory.import_legacy(result)
+    for nation in range(2):
+        result.construction.stockpiles[nation] = result.inventory.stockpile(nation)
+    if not result.inventory.ledger_ok():
+        return null
     if not result.households.load_state(result, data.get("households", null)):
         return null
     if not result.food.load_state(data.get("food", null)):
