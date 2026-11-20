@@ -271,18 +271,18 @@ func create_farm(world: RefCounted, nation: int) -> bool:
         plot = Vector2i(int(reused["x"]), int(reused["y"]))
     depots[nation]["grain"] = int(depots[nation]["grain"]) - 1
     planted["grain"] = int(planted["grain"]) + 1
-    var yield: int = 5
+    var crop_yield: int = 5
     if bool(techniques[nation].get("irrigation", false)):
-        yield += 2
+        crop_yield += 2
     if reused.is_empty():
         farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
             "sown_tick": world.tick, "ready_tick": world.tick + 240,
-            "fertility": 5, "yield": yield, "harvested": false})
+            "fertility": 5, "yield": crop_yield, "harvested": false})
         next_farm_id += 1
     else:
         reused["sown_tick"] = world.tick
         reused["ready_tick"] = world.tick + 240
-        reused["yield"] = yield
+        reused["yield"] = crop_yield
         reused["harvested"] = false
     return true
 
