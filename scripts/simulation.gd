@@ -280,7 +280,11 @@ func apply_power(power: int, x: int, y: int) -> bool:
         4:
             return add_citizen(x, y, citizens.size() % 2)
         5:
-            set_terrain_cell(x, y, OCEAN)
+            # Occupied structures sustain flood damage; bulldozing their
+            # footprint into OCEAN would bypass structural integrity entirely.
+            if not construction.destruction.apply_hazard_at(construction, self,
+                    Vector2i(x, y), "flood", 3):
+                set_terrain_cell(x, y, OCEAN)
         _:
             return false
     return true
