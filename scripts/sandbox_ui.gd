@@ -8,6 +8,7 @@ signal brush_changed(index: int)
 signal pause_pressed
 signal speed_pressed
 signal save_pressed
+signal items_pressed
 
 const INK := Color("#172825")
 const SURFACE := Color("#1b2d2b")
@@ -61,6 +62,7 @@ var pause_button: Button
 var speed_button: Button
 var palette_button: Button
 var hand_button: Button
+var items_button: Button
 var active_button: Button
 var dock_brush_button: Button
 var category_bar: HBoxContainer
@@ -214,18 +216,26 @@ func _make_interface() -> void:
     var dock_row := HBoxContainer.new()
     dock_row.add_theme_constant_override("separation", 6)
     dock_panel.add_child(dock_row)
-    hand_button = _button("Hand", "hand", 74)
-    palette_button = _button("Powers", "tools", 104)
-    active_button = _button("Choose power", "", 60)
+    hand_button = _button("Hand", "hand", 68)
+    items_button = _button("Items", "", 66)
+    palette_button = _button("Powers", "tools", 91)
+    active_button = _button("Choose power", "", 45)
     active_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     dock_brush_button = _button("M", "", 43)
-    for b in [hand_button, palette_button, active_button, dock_brush_button]:
+    for b in [hand_button, items_button, palette_button, active_button, dock_brush_button]:
         b.custom_minimum_size.y = 50
         dock_row.add_child(b)
     hand_button.pressed.connect(func() -> void:
         _animate_press(hand_button)
         _choose_power(-1)
         open_palette(false)
+    )
+    items_button.pressed.connect(func() -> void:
+        _animate_press(items_button)
+        _choose_power(-1)
+        open_palette(false)
+        hide_inspector()
+        items_pressed.emit()
     )
     palette_button.pressed.connect(func() -> void:
         _animate_press(palette_button)
