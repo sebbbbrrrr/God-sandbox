@@ -196,7 +196,7 @@ func update_security(world: RefCounted) -> void:
     for family in world.households.families:
         var key := str(family["id"])
         var current: int = 0
-        var living := world.households.member_count(world, family)
+        var living: int = world.households.member_count(world, family)
         if living <= 0:
             continue
         var stored: int = world.food.total(world.food.pantry_for(int(family["id"])))
