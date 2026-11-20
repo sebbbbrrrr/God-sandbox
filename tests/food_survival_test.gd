@@ -78,7 +78,13 @@ func _initialize() -> void:
     a.tick = int(farm["ready_tick"])
     a.ai_context.begin_tick(a)
     var farming_worker: Dictionary = a.citizens[3]
-    a.food.jobs.erase(str(farming_worker["id"]))
+    var previous_job: Dictionary = a.food.jobs.get(str(farming_worker["id"]), {})
+    if not previous_job.is_empty():
+        # Test setup must account for physical cargo when changing a job.
+        var cargo: int = int(previous_job.get("amount", 0))
+        if cargo > 0:
+            a.food.lost[str(previous_job["type"])] += cargo
+        a.food.jobs.erase(str(farming_worker["id"]))
     var produced_before: int = int(a.food.produced["grain"])
     var growth := 0
     while growth < 80 and int(a.food.produced["grain"]) == produced_before:
@@ -94,7 +100,7 @@ func _initialize() -> void:
         stores["grain"] = int(stores["grain"]) + 1
         a.food.produced["grain"] += 1
     var first: Dictionary = a.citizens[0]
-    first["hunger"] = 48
+    first["hunger"] = 80
     var start := int(first["hunger"])
     first["x"] = 12
     first["y"] = 12
