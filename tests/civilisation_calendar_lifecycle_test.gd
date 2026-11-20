@@ -46,6 +46,9 @@ func _initialize() -> void:
     a.set_terrain_cell(13, 12, World.TOWN)
     a.construction.houses.append({"id": 1, "nation": 0, "x": 13, "y": 12,
         "capacity": 6, "built_tick": a.tick})
+    ok = check(a.households.form_household(a, pa, pb),
+        "living parents form a persistent household") and ok
+    a.households.reconcile(a)
     ok = check(a.register_birth(12, 12, 0, pa, pb),
         "registered birth requires eligible living parents and a shelter") and ok
     var baby: Dictionary = a.citizens[-1]
