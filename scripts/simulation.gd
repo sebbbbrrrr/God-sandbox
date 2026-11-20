@@ -155,13 +155,12 @@ func spawn_initial_population() -> void:
 
 func step() -> void:
     tick += 1
-    lifecycle.on_year_boundary(self)
+    lifecycle.on_tick(self)
     ai_context.begin_tick(self)
     construction.prune(self)
     construction.plan(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
-        lifecycle.update_person(self, citizen)
         if citizen["hp"] <= 0:
             continue
         AI.step(self, citizen, ai_context.minds[id], true)
