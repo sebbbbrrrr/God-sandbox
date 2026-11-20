@@ -2,6 +2,7 @@ extends RefCounted
 ## Observes *authoritative* completed construction work, not rendered poses.
 ## Does not mutate world, construction jobs, resource counters, or simulation RNG.
 const WorkVisuals = preload("res://scripts/construction/citizen_work_visuals.gd")
+const LivingWorldAudio = preload("res://scripts/audio/living_world_audio.gd")
 const MAX_EVENTS_PER_STEP := 4
 var _last_tick := -1
 var _site_progress := {}
@@ -68,8 +69,8 @@ func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
             var location := Vector2i(int(site["x"]), int(site["y"]))
             if absi(cell.x - location.x) > 1 or absi(cell.y - location.y) > 1:
                 continue
-            var point := living.world_to_screen(cell, origin, cell_pixels)
-            if not living.screen_visible(point, viewport_size, panel_height):
+            var point := LivingWorldAudio.world_to_screen(cell, origin, cell_pixels)
+            if not LivingWorldAudio.screen_visible(point, viewport_size, panel_height):
                 continue
             var action: String = WorkVisuals._build_action(world, site, animation_clock)
             var audio_action := classify_build_action(action)
@@ -100,8 +101,8 @@ func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
                 action = str(job["kind"])
             if action == "":
                 continue
-            var point := living.world_to_screen(positions[job_id], origin, cell_pixels)
-            if living.screen_visible(point, viewport_size, panel_height):
+            var point := LivingWorldAudio.world_to_screen(positions[job_id], origin, cell_pixels)
+            if LivingWorldAudio.screen_visible(point, viewport_size, panel_height):
                 if living.on_work_marker(audio, action, int(job_id), int(world.tick), point):
                     emitted += 1
     # Detect completed repairs even when a job is removed in the same tick.
