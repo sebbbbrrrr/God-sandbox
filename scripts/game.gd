@@ -104,6 +104,15 @@ func _process(delta: float) -> void:
         render_accum = 0.0
         queue_redraw()
 
+# VisibleRect may be zero during headless SceneTree initialization. The
+# configured game canvas is the safe fallback; mobile always uses its real size.
+func ui_size() -> Vector2:
+    var actual: Vector2 = get_viewport_rect().size
+    if actual.x < 1.0 or actual.y < 1.0:
+        return Vector2(float(ProjectSettings.get_setting("display/window/size/viewport_width", 480)),
+            float(ProjectSettings.get_setting("display/window/size/viewport_height", 850)))
+    return actual
+
 func toolbar_height() -> float:
     return 188.0
 
@@ -111,11 +120,11 @@ func tile_size() -> float:
     return 16.0 * zoom
 
 func world_origin() -> Vector2:
-    var sz := get_viewport_rect().size
+    var sz := ui_size()
     return Vector2(sz.x * 0.5, (sz.y - toolbar_height()) * 0.5) - camera_center * tile_size()
 
 func _draw() -> void:
-    var sz := get_viewport_rect().size
+    var sz := ui_size()
     draw_rect(Rect2(Vector2.ZERO, sz), Color("#123d59"))
     draw_terrain(sz)
     draw_world_items(sz)
@@ -238,7 +247,7 @@ func editable_power() -> bool:
     return Brush.is_terrain_power(selected_power)
 
 func inside_world(position: Vector2) -> bool:
-    var size := get_viewport_rect().size
+    var size := ui_size()
     return position.x >= 0 and position.x < size.x and position.y >= 50.0 and position.y < size.y - toolbar_height()
 
 func screen_to_tile(position: Vector2) -> Vector2i:
@@ -335,7 +344,7 @@ func inspector_input(event: InputEvent) -> void:
                 inspector_touch_moved = true
         elif event.index == inspector_touch_id:
             if not inspector_touch_moved:
-                inspector.tap(world, event.position, get_viewport_rect().size, toolbar_height())
+                inspector.tap(world, event.position, ui_size(), toolbar_height())
             inspector_touch_id = -1
             inspector_scroll_pixels = 0.0
         queue_redraw()
@@ -349,15 +358,15 @@ func inspector_input(event: InputEvent) -> void:
             if absf(inspector_scroll_pixels) >= inspector.ROW_HEIGHT:
                 var steps := int(floor(absf(inspector_scroll_pixels) / inspector.ROW_HEIGHT))
                 inspector.scroll_by(world, -steps if inspector_scroll_pixels > 0.0 else steps,
-                    get_viewport_rect().size, toolbar_height())
+                    ui_size(), toolbar_height())
                 inspector_scroll_pixels = fmod(inspector_scroll_pixels, inspector.ROW_HEIGHT)
             queue_redraw()
     elif event is InputEventMouseButton:
         if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-            inspector.tap(world, event.position, get_viewport_rect().size, toolbar_height())
+            inspector.tap(world, event.position, ui_size(), toolbar_height())
         elif event.pressed and event.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
             inspector.scroll_by(world, -1 if event.button_index == MOUSE_BUTTON_WHEEL_UP else 1,
-                get_viewport_rect().size, toolbar_height())
+                ui_size(), toolbar_height())
         queue_redraw()
     elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
         inspector.close()
@@ -474,8 +483,8 @@ func _input(event: InputEvent) -> void:
                 if last_pinch_distance > 1.0 and distance > 1.0:
                     var world_under_fingers := (centroid - world_origin()) / tile_size()
                     zoom = clampf(zoom * distance / last_pinch_distance, 0.5, 4.0)
-                    var screen_center := Vector2(get_viewport_rect().size.x * 0.5,
-                        (get_viewport_rect().size.y - toolbar_height()) * 0.5)
+                    var screen_center := Vector2(ui_size().x * 0.5,
+                        (ui_size().y - toolbar_height()) * 0.5)
                     camera_center = world_under_fingers - (centroid - screen_center) / tile_size()
                     camera_center.x = clampf(camera_center.x, 0.0, float(world.WIDTH))
                     camera_center.y = clampf(camera_center.y, 0.0, float(world.HEIGHT))
@@ -531,7 +540,7 @@ func _input(event: InputEvent) -> void:
         queue_redraw()
 
 func tapped(position: Vector2) -> void:
-    var sz := get_viewport_rect().size
+    var sz := ui_size()
     if position.y < 50:
         if position.x > sz.x - 60:
             simulation_speed = 2 if simulation_speed == 1 else (4 if simulation_speed == 2 else 1)
