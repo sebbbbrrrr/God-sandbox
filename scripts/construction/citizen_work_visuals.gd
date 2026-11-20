@@ -53,26 +53,26 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             continue
         if kind == "gather":
             if phase == "source":
-                var target: Array = task.get("target", [])
-                if target.size() == 2 and int(person["x"]) == int(target[0]) and int(person["y"]) == int(target[1]):
+                var gather_target: Array = task.get("target", [])
+                if gather_target.size() == 2 and int(person["x"]) == int(gather_target[0]) and int(person["y"]) == int(gather_target[1]):
                     var material := str(task.get("material", "wood"))
                     _action(canvas, p, size, t, "chop" if material in ["wood", "plant_fibre"] else "mine")
             elif phase == "depot":
-                var depot: Vector2i = world.capitals[int(person["nation"])]
-                if int(person["x"]) == depot.x and int(person["y"]) == depot.y:
+                var gather_depot: Vector2i = world.capitals[int(person["nation"])]
+                if int(person["x"]) == gather_depot.x and int(person["y"]) == gather_depot.y:
                     _action(canvas, p, size, t, "unload")
             continue
-        var target := Vector2i(-999, -999)
+        var destination := Vector2i(-999, -999)
         var site: Dictionary = {}
         if kind in ["repair", "demolish"]:
             var house: Dictionary = world.construction.building_by_id(int(task.get("building_id", 0)))
             if not house.is_empty():
-                target = Vector2i(int(house["x"]), int(house["y"]))
+                destination = Vector2i(int(house["x"]), int(house["y"]))
         else:
             site = world.construction.site_by_id(int(task.get("project_id", 0)))
             if not site.is_empty():
-                target = Vector2i(int(site["x"]), int(site["y"]))
-        var nearby := absi(int(person["x"]) - target.x) <= 1 and absi(int(person["y"]) - target.y) <= 1
+                destination = Vector2i(int(site["x"]), int(site["y"]))
+        var nearby := absi(int(person["x"]) - destination.x) <= 1 and absi(int(person["y"]) - destination.y) <= 1
         if phase == "depot":
             var depot: Vector2i = world.capitals[int(person["nation"])]
             if int(person["x"]) == depot.x and int(person["y"]) == depot.y:
