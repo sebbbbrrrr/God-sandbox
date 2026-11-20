@@ -49,6 +49,9 @@ func _initialize() -> void:
     ok = check(a.households.form_household(a, pa, pb),
         "living parents form a persistent household") and ok
     a.households.reconcile(a)
+    var family_id: int = int(a.citizens[0]["household_id"])
+    a.food.pantry_for(family_id)["grain"] = 3
+    a.food.produced["grain"] += 3
     ok = check(a.register_birth(12, 12, 0, pa, pb),
         "registered birth requires eligible living parents and a shelter") and ok
     var baby: Dictionary = a.citizens[-1]
