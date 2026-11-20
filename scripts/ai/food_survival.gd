@@ -398,7 +398,8 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
                 if food == "":
                     jobs.erase(id)
                     return true
-                var number: int = mini(2, int(depots[nation][food]))
+                var trained: int = world.occupations.skill_tier(person, "food_courier")
+                var number: int = mini(2 + (1 if trained >= 2 else 0), int(depots[nation][food]))
                 depots[nation][food] = int(depots[nation][food]) - number
                 job["type"] = food
                 job["amount"] = number
@@ -446,14 +447,17 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         for farm in farms:
             if int(farm["id"]) == int(job["farm_id"]) and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
                 var available: int = maxi(0, int(farm["yield"]) - int(farm.get("collected", 0)))
-                amount = mini(CARRY_AMOUNT, available)
+                var farm_tier: int = world.occupations.skill_tier(person, "crop_farmer")
+                amount = mini(CARRY_AMOUNT + (1 if farm_tier >= 2 else 0), available)
                 farm["collected"] = int(farm.get("collected", 0)) + amount
                 if int(farm["collected"]) >= int(farm["yield"]):
                     farm["harvested"] = true
                     farm["fertility"] = maxi(0, int(farm["fertility"]) - 1)
                 break
     else:
-        amount = mini(CARRY_AMOUNT, resource_left(world, source))
+        var harvest_role: String = "fisher" if str(job["type"]) == "fish" else "forager"
+        var skill_tier: int = world.occupations.skill_tier(person, harvest_role)
+        amount = mini(CARRY_AMOUNT + (1 if skill_tier >= 2 else 0), resource_left(world, source))
         if amount > 0:
             var key := str(world.index_of(source.x, source.y))
             wild_taken[key] = int(wild_taken.get(key, 0)) + amount
