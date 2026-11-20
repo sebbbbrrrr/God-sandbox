@@ -1,0 +1,2917 @@
+{
+  "schema_version": 1,
+  "scope": "first 100 foundational item definitions",
+  "notes": "first_era is historical appearance metadata only; no calendar unlock. Production is blocked by actual knowledge, skill, station, materials and work actions.",
+  "items": [
+    {
+      "id": "wood",
+      "name": "Wood",
+      "category": "resource",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "gather",
+      "biome": "forest",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "wood"
+      ]
+    },
+    {
+      "id": "stone",
+      "name": "Stone",
+      "category": "resource",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 3,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "gather",
+      "biome": "mountain",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "stone"
+      ]
+    },
+    {
+      "id": "flint",
+      "name": "Flint",
+      "category": "resource",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 3,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "gather",
+      "biome": "mountain",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "stone"
+      ]
+    },
+    {
+      "id": "clay",
+      "name": "Clay",
+      "category": "resource",
+      "first_era": 1,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "gather",
+      "biome": "river",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "earth"
+      ]
+    },
+    {
+      "id": "sand",
+      "name": "Sand",
+      "category": "resource",
+      "first_era": 1,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "gather",
+      "biome": "beach",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "earth"
+      ]
+    },
+    {
+      "id": "reeds",
+      "name": "Reeds",
+      "category": "resource",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "gather",
+      "biome": "wetland",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "plant"
+      ]
+    },
+    {
+      "id": "plant_fibre",
+      "name": "Plant Fibre",
+      "category": "resource",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "gather",
+      "biome": "forest",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "plant"
+      ]
+    },
+    {
+      "id": "bone",
+      "name": "Bone",
+      "category": "resource",
+      "first_era": 1,
+      "material": "bone",
+      "physical": {
+        "mass_kg": 0.8,
+        "durability": 50,
+        "flammability": 0.1,
+        "hardness": 50
+      },
+      "acquisition": "gather",
+      "biome": "wildlife",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "bone"
+      ]
+    },
+    {
+      "id": "hide",
+      "name": "Hide",
+      "category": "resource",
+      "first_era": 1,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 1,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "gather",
+      "biome": "wildlife",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "leather"
+      ]
+    },
+    {
+      "id": "fresh_water",
+      "name": "Fresh Water",
+      "category": "resource",
+      "first_era": 1,
+      "material": "water",
+      "physical": {
+        "mass_kg": 1,
+        "durability": 0,
+        "flammability": 0,
+        "hardness": 0
+      },
+      "acquisition": "gather",
+      "biome": "river",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "water"
+      ]
+    },
+    {
+      "id": "berries",
+      "name": "Berries",
+      "category": "resource",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "gather",
+      "biome": "forest",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "food"
+      ]
+    },
+    {
+      "id": "mushrooms",
+      "name": "Mushrooms",
+      "category": "resource",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "gather",
+      "biome": "forest",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "food"
+      ]
+    },
+    {
+      "id": "raw_fish",
+      "name": "Raw Fish",
+      "category": "resource",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "gather",
+      "biome": "coast",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "food"
+      ]
+    },
+    {
+      "id": "raw_meat",
+      "name": "Raw Meat",
+      "category": "resource",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "gather",
+      "biome": "wildlife",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "food"
+      ]
+    },
+    {
+      "id": "grain",
+      "name": "Grain",
+      "category": "resource",
+      "first_era": 2,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "gather",
+      "biome": "meadow",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "food"
+      ]
+    },
+    {
+      "id": "medicinal_herb",
+      "name": "Medicinal Herb",
+      "category": "resource",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "gather",
+      "biome": "forest",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "plant"
+      ]
+    },
+    {
+      "id": "copper_ore",
+      "name": "Copper Ore",
+      "category": "resource",
+      "first_era": 3,
+      "material": "ore",
+      "physical": {
+        "mass_kg": 3.8,
+        "durability": 80,
+        "flammability": 0,
+        "hardness": 80
+      },
+      "acquisition": "gather",
+      "biome": "mountain",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "ore"
+      ]
+    },
+    {
+      "id": "tin_ore",
+      "name": "Tin Ore",
+      "category": "resource",
+      "first_era": 3,
+      "material": "ore",
+      "physical": {
+        "mass_kg": 3.8,
+        "durability": 80,
+        "flammability": 0,
+        "hardness": 80
+      },
+      "acquisition": "gather",
+      "biome": "mountain",
+      "recipe": null,
+      "use_ability": "",
+      "tags": [
+        "resource",
+        "ore"
+      ]
+    },
+    {
+      "id": "wood_plank",
+      "name": "Wood Plank",
+      "category": "material",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "wood"
+      ]
+    },
+    {
+      "id": "timber_beam",
+      "name": "Timber Beam",
+      "category": "material",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 3
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "wood"
+      ]
+    },
+    {
+      "id": "knapped_flint",
+      "name": "Knapped Flint",
+      "category": "material",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 3,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "flint": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "stone"
+      ]
+    },
+    {
+      "id": "cordage",
+      "name": "Cordage",
+      "category": "material",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "plant_fibre": 3
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "plant"
+      ]
+    },
+    {
+      "id": "tanned_leather",
+      "name": "Tanned Leather",
+      "category": "material",
+      "first_era": 2,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 1,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "hide": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "leather"
+      ]
+    },
+    {
+      "id": "woven_cloth",
+      "name": "Woven Cloth",
+      "category": "material",
+      "first_era": 2,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "plant_fibre": 4
+        },
+        "output": 1,
+        "station": "workshop",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "plant"
+      ]
+    },
+    {
+      "id": "charcoal",
+      "name": "Charcoal",
+      "category": "material",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "wood"
+      ]
+    },
+    {
+      "id": "clay_brick",
+      "name": "Clay Brick",
+      "category": "material",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay": 2,
+          "sand": 1
+        },
+        "output": 1,
+        "station": "kiln",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "earth"
+      ]
+    },
+    {
+      "id": "bronze_ingot",
+      "name": "Bronze Ingot",
+      "category": "material",
+      "first_era": 3,
+      "material": "metal",
+      "physical": {
+        "mass_kg": 4,
+        "durability": 95,
+        "flammability": 0,
+        "hardness": 95
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "copper_ore": 3,
+          "tin_ore": 1,
+          "charcoal": 1
+        },
+        "output": 1,
+        "station": "smelter",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": "bronze_working"
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "metal"
+      ]
+    },
+    {
+      "id": "flour",
+      "name": "Flour",
+      "category": "material",
+      "first_era": 2,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "grain": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "material",
+        "food"
+      ]
+    },
+    {
+      "id": "stone_axe",
+      "name": "Stone Axe",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "knapped_flint": 1,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "woodcutting",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "flint_knife",
+      "name": "Flint Knife",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "knapped_flint": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "carving",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "stone_pick",
+      "name": "Stone Pick",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "stone": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "quarrying",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "hammerstone",
+      "name": "Hammerstone",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "stone": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "knapping",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "bone_needle",
+      "name": "Bone Needle",
+      "category": "tool",
+      "first_era": 1,
+      "material": "bone",
+      "physical": {
+        "mass_kg": 0.48,
+        "durability": 50,
+        "flammability": 0.1,
+        "hardness": 50
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "bone": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "sewing",
+      "tags": [
+        "tool",
+        "bone"
+      ]
+    },
+    {
+      "id": "wooden_hoe",
+      "name": "Wooden Hoe",
+      "category": "tool",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "crop_cultivation",
+      "tags": [
+        "tool",
+        "wood"
+      ]
+    },
+    {
+      "id": "stone_sickle",
+      "name": "Stone Sickle",
+      "category": "tool",
+      "first_era": 2,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "knapped_flint": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "fishing_rod",
+      "name": "Fishing Rod",
+      "category": "tool",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "cordage": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "angling",
+      "tags": [
+        "tool",
+        "wood"
+      ]
+    },
+    {
+      "id": "fishing_net",
+      "name": "Fishing Net",
+      "category": "tool",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.36,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "cordage": 4,
+          "reeds": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "net_fishing",
+      "tags": [
+        "tool",
+        "plant"
+      ]
+    },
+    {
+      "id": "flint_scraper",
+      "name": "Flint Scraper",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "flint": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "wooden_shovel",
+      "name": "Wooden Shovel",
+      "category": "tool",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "wood"
+      ]
+    },
+    {
+      "id": "hand_saw",
+      "name": "Hand Saw",
+      "category": "tool",
+      "first_era": 2,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "knapped_flint": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "stone_hammer",
+      "name": "Stone Hammer",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "stone": 1,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "spindle",
+      "name": "Spindle",
+      "category": "tool",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "wood"
+      ]
+    },
+    {
+      "id": "stone_mortar",
+      "name": "Stone Mortar",
+      "category": "tool",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "stone": 3
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "stone"
+      ]
+    },
+    {
+      "id": "bronze_axe",
+      "name": "Bronze Axe",
+      "category": "tool",
+      "first_era": 3,
+      "material": "metal",
+      "physical": {
+        "mass_kg": 2.4,
+        "durability": 95,
+        "flammability": 0,
+        "hardness": 95
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "bronze_ingot": 1
+        },
+        "output": 1,
+        "station": "forge",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": "bronze_working"
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "metal"
+      ]
+    },
+    {
+      "id": "bronze_sickle",
+      "name": "Bronze Sickle",
+      "category": "tool",
+      "first_era": 3,
+      "material": "metal",
+      "physical": {
+        "mass_kg": 2.4,
+        "durability": 95,
+        "flammability": 0,
+        "hardness": 95
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "bronze_ingot": 1
+        },
+        "output": 1,
+        "station": "forge",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": "bronze_working"
+      },
+      "use_ability": "",
+      "tags": [
+        "tool",
+        "metal"
+      ]
+    },
+    {
+      "id": "wooden_plough",
+      "name": "Wooden Plough",
+      "category": "tool",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 5,
+          "cordage": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "soil_tilling",
+      "tags": [
+        "tool",
+        "wood"
+      ]
+    },
+    {
+      "id": "wooden_club",
+      "name": "Wooden Club",
+      "category": "weapon",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "weapon",
+        "wood"
+      ]
+    },
+    {
+      "id": "wooden_spear",
+      "name": "Wooden Spear",
+      "category": "weapon",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "spear_handling",
+      "tags": [
+        "weapon",
+        "wood"
+      ]
+    },
+    {
+      "id": "flint_spear",
+      "name": "Flint Spear",
+      "category": "weapon",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "knapped_flint": 1,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "weapon",
+        "stone"
+      ]
+    },
+    {
+      "id": "sling",
+      "name": "Sling",
+      "category": "weapon",
+      "first_era": 2,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "cordage": 2,
+          "tanned_leather": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "sling_accuracy",
+      "tags": [
+        "weapon",
+        "leather"
+      ]
+    },
+    {
+      "id": "shortbow",
+      "name": "Shortbow",
+      "category": "weapon",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "cordage": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "archery",
+      "tags": [
+        "weapon",
+        "wood"
+      ]
+    },
+    {
+      "id": "arrows",
+      "name": "Arrows",
+      "category": "weapon",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 1.2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "knapped_flint": 2,
+          "plant_fibre": 1
+        },
+        "output": 6,
+        "station": "",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "weapon",
+        "wood"
+      ]
+    },
+    {
+      "id": "bronze_dagger",
+      "name": "Bronze Dagger",
+      "category": "weapon",
+      "first_era": 3,
+      "material": "metal",
+      "physical": {
+        "mass_kg": 2.4,
+        "durability": 95,
+        "flammability": 0,
+        "hardness": 95
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "bronze_ingot": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "forge",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": "bronze_working"
+      },
+      "use_ability": "",
+      "tags": [
+        "weapon",
+        "metal"
+      ]
+    },
+    {
+      "id": "bronze_spear",
+      "name": "Bronze Spear",
+      "category": "weapon",
+      "first_era": 3,
+      "material": "metal",
+      "physical": {
+        "mass_kg": 2.4,
+        "durability": 95,
+        "flammability": 0,
+        "hardness": 95
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "bronze_ingot": 1,
+          "wood": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "forge",
+        "skill": "stone_toolmaker",
+        "min_skill_xp": 0,
+        "capability": "bronze_working"
+      },
+      "use_ability": "",
+      "tags": [
+        "weapon",
+        "metal"
+      ]
+    },
+    {
+      "id": "hide_cloak",
+      "name": "Hide Cloak",
+      "category": "clothing",
+      "first_era": 1,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 0.35,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "hide": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "leather"
+      ]
+    },
+    {
+      "id": "hide_tunic",
+      "name": "Hide Tunic",
+      "category": "clothing",
+      "first_era": 1,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 0.35,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "hide": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "leather"
+      ]
+    },
+    {
+      "id": "linen_tunic",
+      "name": "Linen Tunic",
+      "category": "clothing",
+      "first_era": 2,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.21,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "woven_cloth": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "workshop",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "plant"
+      ]
+    },
+    {
+      "id": "leather_sandals",
+      "name": "Leather Sandals",
+      "category": "clothing",
+      "first_era": 2,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 0.35,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "tanned_leather": 1,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "leather"
+      ]
+    },
+    {
+      "id": "leather_boots",
+      "name": "Leather Boots",
+      "category": "clothing",
+      "first_era": 2,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 0.35,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "tanned_leather": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "leather"
+      ]
+    },
+    {
+      "id": "leather_belt",
+      "name": "Leather Belt",
+      "category": "clothing",
+      "first_era": 2,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 0.35,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "tanned_leather": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "leather"
+      ]
+    },
+    {
+      "id": "woven_hat",
+      "name": "Woven Hat",
+      "category": "clothing",
+      "first_era": 2,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.21,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "woven_cloth": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "plant"
+      ]
+    },
+    {
+      "id": "bronze_helmet",
+      "name": "Bronze Helmet",
+      "category": "clothing",
+      "first_era": 3,
+      "material": "metal",
+      "physical": {
+        "mass_kg": 1.4,
+        "durability": 95,
+        "flammability": 0,
+        "hardness": 95
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "bronze_ingot": 2,
+          "tanned_leather": 1
+        },
+        "output": 1,
+        "station": "forge",
+        "skill": "basket_weaver",
+        "min_skill_xp": 0,
+        "capability": "bronze_working"
+      },
+      "use_ability": "",
+      "tags": [
+        "clothing",
+        "metal"
+      ]
+    },
+    {
+      "id": "cooked_fish",
+      "name": "Cooked Fish",
+      "category": "food",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "raw_fish": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "cooked_meat",
+      "name": "Cooked Meat",
+      "category": "food",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "raw_meat": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "bread",
+      "name": "Bread",
+      "category": "food",
+      "first_era": 2,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "flour": 2,
+          "fresh_water": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "berry_stew",
+      "name": "Berry Stew",
+      "category": "food",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "berries": 2,
+          "fresh_water": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "mushroom_soup",
+      "name": "Mushroom Soup",
+      "category": "food",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "mushrooms": 2,
+          "fresh_water": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "dried_meat",
+      "name": "Dried Meat",
+      "category": "food",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "raw_meat": 2,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "porridge",
+      "name": "Porridge",
+      "category": "food",
+      "first_era": 2,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "grain": 1,
+          "fresh_water": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "grain_ration",
+      "name": "Grain Ration",
+      "category": "food",
+      "first_era": 2,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "grain": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "herbal_broth",
+      "name": "Herbal Broth",
+      "category": "food",
+      "first_era": 1,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "medicinal_herb": 1,
+          "fresh_water": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "roasted_grain",
+      "name": "Roasted Grain",
+      "category": "food",
+      "first_era": 2,
+      "material": "food",
+      "physical": {
+        "mass_kg": 0.4,
+        "durability": 0,
+        "flammability": 0.2,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "grain": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "forager",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "food",
+        "food"
+      ]
+    },
+    {
+      "id": "bandage",
+      "name": "Bandage",
+      "category": "medicine",
+      "first_era": 2,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "woven_cloth": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "carer",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "basic_first_aid",
+      "tags": [
+        "medicine",
+        "plant"
+      ]
+    },
+    {
+      "id": "herbal_poultice",
+      "name": "Herbal Poultice",
+      "category": "medicine",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "medicinal_herb": 2,
+          "plant_fibre": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "carer",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "medicine",
+        "plant"
+      ]
+    },
+    {
+      "id": "splint",
+      "name": "Splint",
+      "category": "medicine",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "carer",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "medicine",
+        "wood"
+      ]
+    },
+    {
+      "id": "boiled_water",
+      "name": "Boiled Water",
+      "category": "medicine",
+      "first_era": 1,
+      "material": "water",
+      "physical": {
+        "mass_kg": 1,
+        "durability": 0,
+        "flammability": 0,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "fresh_water": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "carer",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "medicine",
+        "water"
+      ]
+    },
+    {
+      "id": "medicinal_tea",
+      "name": "Medicinal Tea",
+      "category": "medicine",
+      "first_era": 1,
+      "material": "water",
+      "physical": {
+        "mass_kg": 1,
+        "durability": 0,
+        "flammability": 0,
+        "hardness": 0
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "fresh_water": 1,
+          "medicinal_herb": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "carer",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "medicine",
+        "water"
+      ]
+    },
+    {
+      "id": "wooden_post",
+      "name": "Wooden Post",
+      "category": "construction",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 3.6,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "timber_beam": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "wood"
+      ]
+    },
+    {
+      "id": "foundation_stones",
+      "name": "Foundation Stones",
+      "category": "construction",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 5.4,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "stone": 4
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "stone"
+      ]
+    },
+    {
+      "id": "thatch_bundle",
+      "name": "Thatch Bundle",
+      "category": "construction",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 1.08,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "reeds": 4,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "plant"
+      ]
+    },
+    {
+      "id": "wattle_panel",
+      "name": "Wattle Panel",
+      "category": "construction",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 3.6,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2,
+          "reeds": 2,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "wood"
+      ]
+    },
+    {
+      "id": "brick_wall_block",
+      "name": "Brick Wall Block",
+      "category": "construction",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 3.24,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay_brick": 4
+        },
+        "output": 1,
+        "station": "mason_yard",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "earth"
+      ]
+    },
+    {
+      "id": "wooden_door",
+      "name": "Wooden Door",
+      "category": "construction",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 3.6,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood_plank": 3,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "wood"
+      ]
+    },
+    {
+      "id": "wooden_shutter",
+      "name": "Wooden Shutter",
+      "category": "construction",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 3.6,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood_plank": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "wood"
+      ]
+    },
+    {
+      "id": "stone_floor_tile",
+      "name": "Stone Floor Tile",
+      "category": "construction",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 5.4,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "stone": 3
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "stone"
+      ]
+    },
+    {
+      "id": "wooden_fence",
+      "name": "Wooden Fence",
+      "category": "construction",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 3.6,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 4,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "construction",
+        "wood"
+      ]
+    },
+    {
+      "id": "clay_pot",
+      "name": "Clay Pot",
+      "category": "household",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay": 2,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "kiln",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "household",
+        "earth"
+      ]
+    },
+    {
+      "id": "woven_basket",
+      "name": "Woven Basket",
+      "category": "household",
+      "first_era": 1,
+      "material": "plant",
+      "physical": {
+        "mass_kg": 0.6,
+        "durability": 28,
+        "flammability": 0.8,
+        "hardness": 28
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "reeds": 3,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "household",
+        "plant"
+      ]
+    },
+    {
+      "id": "wooden_bowl",
+      "name": "Wooden Bowl",
+      "category": "household",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "household",
+        "wood"
+      ]
+    },
+    {
+      "id": "clay_cup",
+      "name": "Clay Cup",
+      "category": "household",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "kiln",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "household",
+        "earth"
+      ]
+    },
+    {
+      "id": "bedroll",
+      "name": "Bedroll",
+      "category": "household",
+      "first_era": 1,
+      "material": "leather",
+      "physical": {
+        "mass_kg": 1,
+        "durability": 48,
+        "flammability": 0.3,
+        "hardness": 48
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "hide": 2,
+          "reeds": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "household",
+        "leather"
+      ]
+    },
+    {
+      "id": "wooden_stool",
+      "name": "Wooden Stool",
+      "category": "household",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood_plank": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "household",
+        "wood"
+      ]
+    },
+    {
+      "id": "torch",
+      "name": "Torch",
+      "category": "household",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 2,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 1,
+          "plant_fibre": 1,
+          "charcoal": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "fire_handling",
+      "tags": [
+        "household",
+        "wood"
+      ]
+    },
+    {
+      "id": "carved_talisman",
+      "name": "Carved Talisman",
+      "category": "cultural",
+      "first_era": 1,
+      "material": "bone",
+      "physical": {
+        "mass_kg": 0.8,
+        "durability": 50,
+        "flammability": 0.1,
+        "hardness": 50
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "bone": 1,
+          "cordage": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "ceremony_facilitator",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "cultural",
+        "bone"
+      ]
+    },
+    {
+      "id": "pigment_pot",
+      "name": "Pigment Pot",
+      "category": "cultural",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay": 1,
+          "berries": 1,
+          "wood": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "ceremony_facilitator",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "cultural",
+        "earth"
+      ]
+    },
+    {
+      "id": "clay_tablet",
+      "name": "Clay Tablet",
+      "category": "cultural",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "ceremony_facilitator",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "cultural",
+        "earth"
+      ]
+    },
+    {
+      "id": "handcart",
+      "name": "Handcart",
+      "category": "transport",
+      "first_era": 2,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 8,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood_plank": 4,
+          "timber_beam": 2,
+          "cordage": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "transport",
+        "wood"
+      ]
+    },
+    {
+      "id": "canoe",
+      "name": "Canoe",
+      "category": "transport",
+      "first_era": 1,
+      "material": "wood",
+      "physical": {
+        "mass_kg": 8,
+        "durability": 65,
+        "flammability": 0.9,
+        "hardness": 65
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "wood": 5,
+          "cordage": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "shelter_builder",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "transport",
+        "wood"
+      ]
+    },
+    {
+      "id": "tally_stones",
+      "name": "Tally Stones",
+      "category": "research",
+      "first_era": 1,
+      "material": "stone",
+      "physical": {
+        "mass_kg": 3,
+        "durability": 90,
+        "flammability": 0,
+        "hardness": 90
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "stone": 2
+        },
+        "output": 1,
+        "station": "",
+        "skill": "oral_mentor",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "counting",
+      "tags": [
+        "research",
+        "stone"
+      ]
+    },
+    {
+      "id": "observation_tablet",
+      "name": "Observation Tablet",
+      "category": "research",
+      "first_era": 2,
+      "material": "earth",
+      "physical": {
+        "mass_kg": 1.8,
+        "durability": 45,
+        "flammability": 0,
+        "hardness": 45
+      },
+      "acquisition": "craft",
+      "biome": "",
+      "recipe": {
+        "inputs": {
+          "clay_tablet": 1,
+          "charcoal": 1
+        },
+        "output": 1,
+        "station": "",
+        "skill": "oral_mentor",
+        "min_skill_xp": 0,
+        "capability": ""
+      },
+      "use_ability": "",
+      "tags": [
+        "research",
+        "earth"
+      ]
+    }
+  ]
+}
