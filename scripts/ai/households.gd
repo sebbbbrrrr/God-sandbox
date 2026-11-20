@@ -7,14 +7,12 @@ const HOME_ASSIGN_RADIUS := 16
 const MAX_HOUSEHOLDS := 1500
 
 var families: Array[Dictionary] = []
+var family_by_id: Dictionary = {}
 var next_id := 1
 var dirty := true
 
 func family_for(id: int) -> Dictionary:
-    for family in families:
-        if int(family["id"]) == id:
-            return family
-    return {}
+    return family_by_id.get(id, {})
 
 func living_person(world: RefCounted, id: int) -> Dictionary:
     var person: Dictionary = world.ai_context.people.get(id, {})
@@ -34,9 +32,11 @@ func on_citizen_added(world: RefCounted, person: Dictionary) -> void:
     var id := next_id
     next_id += 1
     person["household_id"] = id
-    families.append({"id": id, "nation": int(person["nation"]),
+    var family := {"id": id, "nation": int(person["nation"]),
         "members": [int(person["id"])], "home_id": 0,
-        "steward_id": int(person["id"]), "founded_tick": int(world.tick)})
+        "steward_id": int(person["id"]), "founded_tick": int(world.tick)}
+    families.append(family)
+    family_by_id[id] = family
     dirty = true
 
 func member_count(world: RefCounted, family: Dictionary) -> int:
@@ -104,6 +104,7 @@ func form_household(world: RefCounted, first_id: int, second_id: int) -> bool:
     for i in range(families.size()):
         if int(families[i]["id"]) == int(b["id"]):
             families.remove_at(i)
+            family_by_id.erase(int(b["id"]))
             break
     a["home_id"] = retained_home
     a["steward_id"] = first_id
@@ -130,6 +131,7 @@ func join_newborn(world: RefCounted, baby: Dictionary, parent_a: Dictionary, par
     for i in range(families.size() - 1, -1, -1):
         if int(families[i]["id"]) == solo_id:
             families.remove_at(i)
+            family_by_id.erase(solo_id)
             break
     var members: Array = family["members"]
     members.append(int(baby["id"]))
@@ -138,7 +140,7 @@ func join_newborn(world: RefCounted, baby: Dictionary, parent_a: Dictionary, par
     baby["guardian_id"] = int(parent_a["id"])
     baby["carried_by"] = 0
     baby["last_care_tick"] = int(world.tick)
-    dirty = true
+    dirty = bool(raw.get("dirty", true))
     return true
 
 func pick_steward(world: RefCounted, family: Dictionary) -> int:
@@ -235,6 +237,7 @@ func reconcile(world: RefCounted) -> void:
                 survivors.append(int(id))
         family["members"] = survivors
         if survivors.is_empty():
+            family_by_id.erase(int(family["id"]))
             families.remove_at(i)
             continue
         var home := house_by_id(world, int(family["home_id"]))
@@ -327,13 +330,14 @@ func move_guardian(world: RefCounted, guardian: Dictionary, mind: Dictionary, ta
         world.ai_context.moved(guardian, start)
 
 func snapshot() -> Dictionary:
-    return {"version": 1, "families": families.duplicate(true), "next_id": next_id}
+    return {"version": 1, "families": families.duplicate(true), "next_id": next_id, "dirty": dirty}
 
 func load_state(world: RefCounted, raw: Variant) -> bool:
     if raw == null:
         # Existing saves never defined household IDs. Establish one household
         # per living founder without rewriting age or parentage.
         families.clear()
+        family_by_id.clear()
         next_id = 1
         for person in world.citizens:
             if int(person["hp"]) > 0:
@@ -384,6 +388,9 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
         if int(citizen["hp"]) > 0 and not member_ids.has(int(citizen["id"])):
             return false
     families = incoming
+    family_by_id.clear()
+    for family in families:
+        family_by_id[int(family["id"])] = family
     next_id = maxi(max_id + 1, int(raw.get("next_id", 1)))
     for family in families:
         for id in family["members"]:
