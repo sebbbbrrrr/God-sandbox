@@ -26,10 +26,11 @@ func _initialize() -> void:
         a.food.seasonal_capacity(a, fish, "fish") > 0,
         "winter closes certain food sources while fishing remains possible") and ok
     a.tick = 0
+    b.tick = 0
     var family: int = int(a.citizens[0]["household_id"])
-    ok = check(a.food.set_customs(family, {"avoid": ["fish"],
-        "preferred": "fish", "observance": 100, "fast_day": 8,
-        "tradition_id": "locally_chosen_practice"}),
+    var practice := {"avoid": ["fish"], "preferred": "fish", "observance": 100,
+        "fast_day": 8, "tradition_id": "locally_chosen_practice"}
+    ok = check(a.food.set_customs(family, practice) and b.food.set_customs(family, practice),
         "food practices are configurable independently per household") and ok
     ok = check(not a.food.set_customs(family, {"avoid": ["fictional_food"]}),
         "unknown cultural diet resources are rejected") and ok
