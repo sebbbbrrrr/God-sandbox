@@ -296,7 +296,7 @@ func authorizes_exchange(citizen_id: int, target_nation: int, offer: Dictionary,
 # cosmetic connection. Each waypoint is approached by the normal AI movement.
 func _follow_trade_route(world: RefCounted, person: Dictionary, mind: Dictionary,
         job: Dictionary, destination_nation: int) -> bool:
-    var fallback := world.capitals[destination_nation]
+    var fallback: Vector2i = world.capitals[destination_nation]
     if route.size() < 2 or not connected(world):
         return _move(world, person, mind, fallback)
     var final_index: int = 0 if destination_nation == 0 else route.size() - 1
