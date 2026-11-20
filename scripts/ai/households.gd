@@ -374,7 +374,7 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
         var members: Array = []
         for person_id in entry["members"]:
             var pid := int(person_id)
-            if not people.has(pid) or member_ids.has(pid) or int(people[pid]["nation"]) != nation or int(people[pid]["hp"]) <= 0:
+            if not people.has(pid) or member_ids.has(pid) or int(people[pid]["nation"]) != nation:
                 return false
             member_ids[pid] = true
             members.append(pid)
