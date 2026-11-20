@@ -1,0 +1,44 @@
+name: Settlement, Roads and Trade — Godot QA
+on:
+  push:
+    branches:
+      - feature/settlement-roads-trade-economy-b-e
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: civilisation-b-e-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Obtain Godot 4.5.2 Linux
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 "https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip" -o godot.zip
+          unzip -q godot.zip
+          mv Godot_v4.5.2-stable_linux.x86_64 godot
+          chmod +x godot
+          ./godot --headless --version
+      - name: Import all scripts; reject parser errors
+        run: |
+          set -euo pipefail
+          ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/godot-import.log
+          if grep -Ei "SCRIPT ERROR|Parse Error|Failed to load script" /tmp/godot-import.log; then exit 1; fi
+      - name: Economy, construction and save/load regressions
+        run: |
+          set -euo pipefail
+          for test in regional_economy_test universal_construction_test construction_test unified_integration_test; do
+            ./godot --headless --path . --script "res://tests/${test}.gd" 2>&1 | tee "/tmp/${test}.log"
+            if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" "/tmp/${test}.log"; then exit 1; fi
+          done
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regional-economy-logs
+          path: /tmp/*.log
+          if-no-files-found: warn
