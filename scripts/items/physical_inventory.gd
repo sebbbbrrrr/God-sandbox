@@ -64,8 +64,8 @@ func _holder(world: RefCounted, holder_id: String) -> Dictionary:
             if number not in [0, 1]:
                 return {}
             var cell: Vector2i = world.capitals[number]
-            if cell.x < 0:
-                return {}
+            # Unfounded nations still have an empty, persistable reserve; their
+            # off-map capital naturally denies proximity-based transfers.
             return {"kind": "settlement", "owner_id": number, "nation": number,
                 "cell": cell}
         "citizen":
