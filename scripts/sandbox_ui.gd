@@ -215,8 +215,8 @@ func _make_interface() -> void:
     dock_row.add_theme_constant_override("separation", 6)
     dock_panel.add_child(dock_row)
     hand_button = _button("Hand", "hand", 74)
-    palette_button = _button("Powers", "tools", 88)
-    active_button = _button("Explore", "", 60)
+    palette_button = _button("Powers", "tools", 104)
+    active_button = _button("Choose power", "", 60)
     active_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     dock_brush_button = _button("M", "", 43)
     for b in [hand_button, palette_button, active_button, dock_brush_button]:
@@ -443,7 +443,7 @@ func _refresh_selection() -> void:
     _set_selected(hand_button, active_power == -1)
     _set_selected(palette_button, palette_open)
     _set_selected(active_button, active_power != -1)
-    active_button.text = "Explore" if active_power == -1 else POWER_NAMES[active_power]
+    active_button.text = "Choose power" if active_power == -1 else POWER_NAMES[active_power]
     if active_power >= 0:
         active_button.set_meta("hud_icon", POWER_ICONS[active_power])
         active_button.icon = _icon(POWER_ICONS[active_power], true)
