@@ -131,6 +131,25 @@ func _initialize() -> void:
     siblings.demography.find_partner(siblings)
     ok = check(siblings.demography.partners.is_empty(),
         "known close kin cannot be selected as reproductive partners") and ok
+    var separate = World.new(1133, false)
+    for y in range(8, 18):
+        for x in range(8, 18):
+            separate.set_terrain_cell(x, y, World.MEADOW)
+    separate.capitals[0] = Vector2i(12, 12)
+    separate.add_citizen(12, 12, 0)
+    separate.add_citizen(12, 12, 0)
+    separate.set_terrain_cell(13, 12, World.TOWN)
+    separate.set_terrain_cell(14, 12, World.TOWN)
+    separate.construction.houses.append({"id": 11, "nation": 0,
+        "x": 13, "y": 12, "capacity": 1, "built_tick": 0})
+    separate.construction.houses.append({"id": 12, "nation": 0,
+        "x": 14, "y": 12, "capacity": 1, "built_tick": 0})
+    separate.ai_context.begin_tick(separate)
+    separate.households.reconcile(separate)
+    ok = check(int(separate.citizens[0]["home_id"]) == 11 and
+        int(separate.citizens[1]["home_id"]) == 12 and
+        not separate.households.form_household(separate, 1, 2),
+        "household formation cannot make independently sheltered adults homeless") and ok
     var declining = fixture()
     declining.tick = 180
     add_social_history(declining)
