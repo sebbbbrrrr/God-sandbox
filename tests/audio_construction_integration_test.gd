@@ -44,8 +44,14 @@ func _initialize() -> void:
     world.construction.jobs["7"]["amount"] = 1
     world.tick = 3
     _check(bridge.observe(world, living, audio, Vector2.ZERO, 16.0, sz, 0.0, 0.0) == 1,
-        "actual material extraction makes one sound")
+        "actual extraction schedules one contact sound")
+    _check(audio.played.is_empty(), "no premature sound before tool contact")
+    _check(not Bridge.contact_crossed(0.0, 0.1, 7), "wind-up remains silent")
+    _check(bridge.flush_contacts(living, audio, 0.0, 1.4) == 1,
+        "strike marker releases the committed action")
     _check(audio.played == ["work.chop"], "wood extraction routes to axe sound")
+    _check(bridge.flush_contacts(living, audio, 1.4, 2.8) == 0,
+        "recovery/next gesture cannot replay a spent event")
     _check(bridge.observe(world, living, audio, Vector2.ZERO, 16.0, sz, 0.0, 0.0) == 0,
         "same authoritative tick never repeats")
     world.tick = 4
