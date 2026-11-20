@@ -58,6 +58,7 @@ func run() -> void:
     game.paused = true
     game.zoom = 1.0
     game.camera_center = Vector2(48.0, 64.0)
+    game.selected_power = 0 # equipped Raise brush must never paint during pinch
     check(game.camera_view_center().distance_to(game.ui_size() * 0.5) < 0.01,
         "unified HUD and renderer share full screen centre, not old 188px toolbar offset")
     var start_a := Vector2(145.0, 350.0)
@@ -104,6 +105,7 @@ func run() -> void:
     touch(game, 1, tiny_b, false)
     check(game.touches.is_empty() and not game.multi_touch,
         "pinch ends without leaving an active pan or brush gesture")
+    game.selected_power = -1
     var click := Vector2(114, 276)
     assert_pivot(game, click, click,
         func(): mouse_wheel(game, click, true),
