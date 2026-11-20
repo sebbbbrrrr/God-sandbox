@@ -69,9 +69,12 @@ func _on_resized() -> void:
 
 # The latest mobile HUD owns safe-area controls; the terrain extends beneath
 # it, and physics/camera use identical full-viewport coordinate transforms.
+func camera_view_center() -> Vector2:
+    # HUD floats ABOVE the terrain: it does not reduce the camera canvas.
+    return ui_size() * 0.5
+
 func world_origin() -> Vector2:
-    var sz := ui_size()
-    return (sz * 0.5 - camera_center * tile_size()).round()
+    return (camera_view_center() - camera_center * tile_size()).round()
 
 func inside_world(position: Vector2) -> bool:
     var size := ui_size()
