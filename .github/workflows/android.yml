@@ -2,7 +2,7 @@ name: God Sandbox Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev/phase1-pixel-art]
   workflow_dispatch:
 
 permissions:
@@ -37,7 +37,7 @@ jobs:
         run: |
           sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
           sudo apt-get update -qq
-          sudo apt-get install -y unzip
+          sudo apt-get install -y unzip xvfb libgl1-mesa-dri
 
       - name: Download Godot editor and official export templates
         run: |
@@ -72,19 +72,40 @@ jobs:
           export/android/java_sdk_path = "$JAVA_HOME"
           EOF
 
-      - name: Import project and check scripts
-        run: ./godot --headless --editor --path . --import --quit
+      - name: Validate imports, simulation, renderer and touch controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          run_checked() {
+            local label="$1"
+            shift
+            "$@" 2>&1 | tee "build/${label}.log"
+            if grep -E 'SCRIPT ERROR|^ERROR:|FAILED' "build/${label}.log"; then
+              exit 1
+            fi
+          }
+          run_checked import ./godot --headless --editor --path . --import --quit
+          run_checked simulation ./godot --headless --path . --script res://tests/simulation_test.gd
+          run_checked rendering ./godot --headless --path . --script res://tests/rendering_test.gd
+          run_checked input ./godot --headless --path . --script res://tests/input_test.gd
+          run_checked smoke ./godot --headless --path . --quit-after 90
 
-      - name: Run simulation regression tests
-        run: ./godot --headless --path . --script res://tests/simulation_test.gd
-
-      - name: Smoke-test main game scene
-        run: ./godot --headless --path . --quit-after 30
+      - name: Capture actual GL Compatibility gameplay
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s "-screen 0 1280x1800x24" ./godot --path . --rendering-method gl_compatibility --audio-driver Dummy --script res://tests/capture_world.gd 2>&1 | tee build/capture.log
+          if grep -E 'SCRIPT ERROR|^ERROR:|FAILED' build/capture.log; then exit 1; fi
+          test -s tests/captures/world-close.png
 
       - name: Export Android debug APK
         run: |
           mkdir -p build
-          ./godot --headless --path . --export-debug "Android" build/GodSandbox-debug.apk
+          set -euo pipefail
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-debug.apk 2>&1 | tee build/export.log
+          if grep -E 'SCRIPT ERROR|^ERROR:' build/export.log; then exit 1; fi
           test -s build/GodSandbox-debug.apk
           ls -lh build/GodSandbox-debug.apk
 
@@ -94,4 +115,15 @@ jobs:
           name: GodSandbox-Android-debug
           path: build/GodSandbox-debug.apk
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload validation logs and in-engine captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodSandbox-Visual-validation
+          path: |
+            build/*.log
+            tests/captures/*.png
+          if-no-files-found: warn
           retention-days: 14

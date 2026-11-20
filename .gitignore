@@ -10,3 +10,8 @@ export_credentials.cfg
 *.keystore
 *.jks
 .DS_Store
+
+# Recreated by the GL capture/benchmark scripts; curated captures live in docs.
+tests/captures/*.png
+tests/captures/*.json
+tests/captures/*.import

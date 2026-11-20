@@ -1,0 +1,3467 @@
+{
+  "meadow_0": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      0,
+      32,
+      32
+    ]
+  },
+  "meadow_1": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      0,
+      32,
+      32
+    ]
+  },
+  "meadow_2": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      0,
+      32,
+      32
+    ]
+  },
+  "meadow_3": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      0,
+      32,
+      32
+    ]
+  },
+  "forest_0": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      0,
+      32,
+      32
+    ]
+  },
+  "forest_1": {
+    "atlas": "terrain",
+    "rect": [
+      160,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      0,
+      32,
+      32
+    ]
+  },
+  "forest_2": {
+    "atlas": "terrain",
+    "rect": [
+      192,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      0,
+      32,
+      32
+    ]
+  },
+  "forest_3": {
+    "atlas": "terrain",
+    "rect": [
+      224,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      0,
+      32,
+      32
+    ]
+  },
+  "dirt_0": {
+    "atlas": "terrain",
+    "rect": [
+      256,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      0,
+      32,
+      32
+    ]
+  },
+  "dirt_1": {
+    "atlas": "terrain",
+    "rect": [
+      288,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      0,
+      32,
+      32
+    ]
+  },
+  "dirt_2": {
+    "atlas": "terrain",
+    "rect": [
+      320,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      0,
+      32,
+      32
+    ]
+  },
+  "dirt_3": {
+    "atlas": "terrain",
+    "rect": [
+      352,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      0,
+      32,
+      32
+    ]
+  },
+  "ash_0": {
+    "atlas": "terrain",
+    "rect": [
+      384,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      0,
+      32,
+      32
+    ]
+  },
+  "ash_1": {
+    "atlas": "terrain",
+    "rect": [
+      416,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      0,
+      32,
+      32
+    ]
+  },
+  "ash_2": {
+    "atlas": "terrain",
+    "rect": [
+      448,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      0,
+      32,
+      32
+    ]
+  },
+  "ash_3": {
+    "atlas": "terrain",
+    "rect": [
+      480,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      0,
+      32,
+      32
+    ]
+  },
+  "earth_0": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      32,
+      32,
+      32
+    ]
+  },
+  "water_0": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      32,
+      32,
+      32
+    ]
+  },
+  "water_1": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      32,
+      32,
+      32
+    ]
+  },
+  "water_2": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      32,
+      32,
+      32
+    ]
+  },
+  "water_3": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      32,
+      32,
+      32
+    ]
+  },
+  "shallow_0": {
+    "atlas": "terrain",
+    "rect": [
+      160,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      32,
+      32,
+      32
+    ]
+  },
+  "shallow_1": {
+    "atlas": "terrain",
+    "rect": [
+      192,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      32,
+      32,
+      32
+    ]
+  },
+  "shallow_2": {
+    "atlas": "terrain",
+    "rect": [
+      224,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      32,
+      32,
+      32
+    ]
+  },
+  "shallow_3": {
+    "atlas": "terrain",
+    "rect": [
+      256,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      32,
+      32,
+      32
+    ]
+  },
+  "rock_0": {
+    "atlas": "terrain",
+    "rect": [
+      288,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      32,
+      32,
+      32
+    ]
+  },
+  "rock_1": {
+    "atlas": "terrain",
+    "rect": [
+      320,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      32,
+      32,
+      32
+    ]
+  },
+  "rock_2": {
+    "atlas": "terrain",
+    "rect": [
+      352,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      32,
+      32,
+      32
+    ]
+  },
+  "rock_3": {
+    "atlas": "terrain",
+    "rect": [
+      384,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      32,
+      32,
+      32
+    ]
+  },
+  "mountain_0": {
+    "atlas": "terrain",
+    "rect": [
+      416,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      32,
+      32,
+      32
+    ]
+  },
+  "mountain_1": {
+    "atlas": "terrain",
+    "rect": [
+      448,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      32,
+      32,
+      32
+    ]
+  },
+  "mountain_2": {
+    "atlas": "terrain",
+    "rect": [
+      480,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      32,
+      32,
+      32
+    ]
+  },
+  "mountain_3": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      64,
+      32,
+      32
+    ]
+  },
+  "sand_0": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      64,
+      32,
+      32
+    ]
+  },
+  "sand_1": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      64,
+      32,
+      32
+    ]
+  },
+  "sand_2": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      64,
+      32,
+      32
+    ]
+  },
+  "sand_3": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      64,
+      32,
+      32
+    ]
+  },
+  "pine_0": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      0,
+      36,
+      49
+    ],
+    "packed_rect": [
+      512,
+      0,
+      36,
+      49
+    ]
+  },
+  "pine_1": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      0,
+      36,
+      50
+    ],
+    "packed_rect": [
+      576,
+      0,
+      36,
+      50
+    ]
+  },
+  "pine_2": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      0,
+      36,
+      50
+    ],
+    "packed_rect": [
+      640,
+      0,
+      36,
+      50
+    ]
+  },
+  "pine_3": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      0,
+      36,
+      46
+    ],
+    "packed_rect": [
+      704,
+      0,
+      36,
+      46
+    ]
+  },
+  "pine_4": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      0,
+      36,
+      54
+    ],
+    "packed_rect": [
+      768,
+      0,
+      36,
+      54
+    ]
+  },
+  "bush": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      0,
+      25,
+      20
+    ],
+    "packed_rect": [
+      832,
+      0,
+      25,
+      20
+    ]
+  },
+  "flower_bush": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      0,
+      25,
+      20
+    ],
+    "packed_rect": [
+      896,
+      0,
+      25,
+      20
+    ]
+  },
+  "stump": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      0,
+      25,
+      15
+    ],
+    "packed_rect": [
+      960,
+      0,
+      25,
+      15
+    ]
+  },
+  "rock_small": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      64,
+      25,
+      20
+    ],
+    "packed_rect": [
+      512,
+      64,
+      25,
+      20
+    ]
+  },
+  "rock_medium": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      64,
+      25,
+      16
+    ],
+    "packed_rect": [
+      576,
+      64,
+      25,
+      16
+    ]
+  },
+  "rock_tall": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      64,
+      25,
+      21
+    ],
+    "packed_rect": [
+      640,
+      64,
+      25,
+      21
+    ]
+  },
+  "log": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      64,
+      25,
+      16
+    ],
+    "packed_rect": [
+      704,
+      64,
+      25,
+      16
+    ]
+  },
+  "grass": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      64,
+      25,
+      19
+    ],
+    "packed_rect": [
+      768,
+      64,
+      25,
+      19
+    ]
+  },
+  "flowers_white": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      64,
+      25,
+      22
+    ],
+    "packed_rect": [
+      832,
+      64,
+      25,
+      22
+    ]
+  },
+  "flowers_gold": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      64,
+      25,
+      22
+    ],
+    "packed_rect": [
+      896,
+      64,
+      25,
+      22
+    ]
+  },
+  "moss_rock": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      64,
+      25,
+      14
+    ],
+    "packed_rect": [
+      960,
+      64,
+      25,
+      14
+    ]
+  },
+  "hut": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      128,
+      50,
+      43
+    ],
+    "packed_rect": [
+      512,
+      128,
+      50,
+      43
+    ]
+  },
+  "cottage": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      128,
+      50,
+      45
+    ],
+    "packed_rect": [
+      576,
+      128,
+      50,
+      45
+    ]
+  },
+  "workshop": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      128,
+      50,
+      47
+    ],
+    "packed_rect": [
+      640,
+      128,
+      50,
+      47
+    ]
+  },
+  "town_hall": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      128,
+      59,
+      60
+    ],
+    "packed_rect": [
+      704,
+      128,
+      59,
+      60
+    ]
+  },
+  "bridge_wood_h": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      128,
+      32,
+      18
+    ],
+    "packed_rect": [
+      768,
+      128,
+      32,
+      18
+    ]
+  },
+  "bridge_wood_v": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      128,
+      18,
+      32
+    ],
+    "packed_rect": [
+      832,
+      128,
+      18,
+      32
+    ]
+  },
+  "bridge_stone_h": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      128,
+      32,
+      18
+    ],
+    "packed_rect": [
+      896,
+      128,
+      32,
+      18
+    ]
+  },
+  "bridge_stone_v": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      128,
+      18,
+      32
+    ],
+    "packed_rect": [
+      960,
+      128,
+      18,
+      32
+    ]
+  },
+  "fence_h": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      192,
+      25,
+      12
+    ],
+    "packed_rect": [
+      512,
+      192,
+      25,
+      12
+    ]
+  },
+  "fence_v": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      192,
+      10,
+      23
+    ],
+    "packed_rect": [
+      576,
+      192,
+      10,
+      23
+    ]
+  },
+  "well": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      192,
+      21,
+      23
+    ],
+    "packed_rect": [
+      640,
+      192,
+      21,
+      23
+    ]
+  },
+  "barrels": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      192,
+      25,
+      21
+    ],
+    "packed_rect": [
+      704,
+      192,
+      25,
+      21
+    ]
+  },
+  "woodpile": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      192,
+      25,
+      19
+    ],
+    "packed_rect": [
+      768,
+      192,
+      25,
+      19
+    ]
+  },
+  "sign": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      192,
+      16,
+      23
+    ],
+    "packed_rect": [
+      832,
+      192,
+      16,
+      23
+    ]
+  },
+  "citizen_gold": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      192,
+      10,
+      17
+    ],
+    "packed_rect": [
+      896,
+      192,
+      10,
+      17
+    ]
+  },
+  "citizen_rose": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      192,
+      9,
+      17
+    ],
+    "packed_rect": [
+      960,
+      192,
+      9,
+      17
+    ]
+  },
+  "cliff_0": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      512,
+      256,
+      25,
+      24
+    ]
+  },
+  "cliff_1": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      576,
+      256,
+      25,
+      24
+    ]
+  },
+  "cliff_2": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      256,
+      26,
+      24
+    ],
+    "packed_rect": [
+      640,
+      256,
+      26,
+      24
+    ]
+  },
+  "cliff_3": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      704,
+      256,
+      25,
+      24
+    ]
+  },
+  "cliff_4": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      256,
+      26,
+      24
+    ],
+    "packed_rect": [
+      768,
+      256,
+      26,
+      24
+    ]
+  },
+  "cliff_5": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      256,
+      26,
+      24
+    ],
+    "packed_rect": [
+      832,
+      256,
+      26,
+      24
+    ]
+  },
+  "cliff_6": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      896,
+      256,
+      25,
+      24
+    ]
+  },
+  "cliff_7": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      960,
+      256,
+      25,
+      24
+    ]
+  },
+  "fire": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      320,
+      25,
+      23
+    ],
+    "packed_rect": [
+      512,
+      320,
+      25,
+      23
+    ]
+  },
+  "blessing": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      320,
+      21,
+      23
+    ],
+    "packed_rect": [
+      576,
+      320,
+      21,
+      23
+    ]
+  },
+  "ripple": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      320,
+      25,
+      15
+    ],
+    "packed_rect": [
+      640,
+      320,
+      25,
+      15
+    ]
+  },
+  "reeds": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      320,
+      20,
+      23
+    ],
+    "packed_rect": [
+      704,
+      320,
+      20,
+      23
+    ]
+  },
+  "grass_2": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      320,
+      25,
+      19
+    ],
+    "packed_rect": [
+      768,
+      320,
+      25,
+      19
+    ]
+  },
+  "fern": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      320,
+      25,
+      22
+    ],
+    "packed_rect": [
+      832,
+      320,
+      25,
+      22
+    ]
+  },
+  "ledge": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      320,
+      25,
+      16
+    ],
+    "packed_rect": [
+      896,
+      320,
+      25,
+      16
+    ]
+  },
+  "cliff_corner": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      320,
+      23,
+      24
+    ],
+    "packed_rect": [
+      960,
+      320,
+      23,
+      24
+    ]
+  },
+  "meadow_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      512,
+      32,
+      32
+    ]
+  },
+  "meadow_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      512,
+      32,
+      32
+    ]
+  },
+  "forest_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      512,
+      32,
+      32
+    ]
+  },
+  "forest_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      544,
+      32,
+      32
+    ]
+  },
+  "forest_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      544,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      544,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      544,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      576,
+      32,
+      32
+    ]
+  },
+  "dirt_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      576,
+      32,
+      32
+    ]
+  },
+  "ash_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      576,
+      32,
+      32
+    ]
+  },
+  "ash_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      576,
+      32,
+      32
+    ]
+  },
+  "ash_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      576,
+      32,
+      32
+    ]
+  },
+  "ash_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      608,
+      32,
+      32
+    ]
+  },
+  "ash_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      608,
+      32,
+      32
+    ]
+  },
+  "earth_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      608,
+      32,
+      32
+    ]
+  },
+  "earth_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      608,
+      32,
+      32
+    ]
+  },
+  "earth_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      608,
+      32,
+      32
+    ]
+  },
+  "earth_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      608,
+      32,
+      32
+    ]
+  },
+  "earth_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      640,
+      32,
+      32
+    ]
+  },
+  "earth_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      640,
+      32,
+      32
+    ]
+  },
+  "rock_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      640,
+      32,
+      32
+    ]
+  },
+  "rock_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      640,
+      32,
+      32
+    ]
+  },
+  "rock_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      640,
+      32,
+      32
+    ]
+  },
+  "rock_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      640,
+      32,
+      32
+    ]
+  },
+  "rock_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      640,
+      32,
+      32
+    ]
+  },
+  "rock_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      672,
+      32,
+      32
+    ]
+  },
+  "rock_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      672,
+      32,
+      32
+    ]
+  },
+  "shore_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      704,
+      32,
+      32
+    ]
+  },
+  "shore_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      704,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      736,
+      32,
+      32
+    ]
+  },
+  "shallow_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      736,
+      32,
+      32
+    ]
+  },
+  "shore_corner_0": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      736,
+      32,
+      32
+    ]
+  },
+  "shore_corner_1": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      736,
+      32,
+      32
+    ]
+  },
+  "shore_corner_2": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      736,
+      32,
+      32
+    ]
+  },
+  "shore_corner_3": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      736,
+      32,
+      32
+    ]
+  },
+  "coast_cut_1": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      736,
+      32,
+      32
+    ]
+  },
+  "coast_cut_2": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      736,
+      32,
+      32
+    ]
+  },
+  "coast_cut_3": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      736,
+      32,
+      32
+    ]
+  },
+  "coast_cut_4": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      736,
+      32,
+      32
+    ]
+  },
+  "coast_cut_5": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_6": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_7": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_8": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_9": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_10": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_11": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_12": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_13": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_14": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      768,
+      32,
+      32
+    ]
+  },
+  "coast_cut_15": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      768,
+      32,
+      32
+    ]
+  },
+  "path_h": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      768,
+      32,
+      32
+    ]
+  },
+  "path_v": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      768,
+      32,
+      32
+    ]
+  },
+  "path_cross": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      768,
+      32,
+      32
+    ]
+  },
+  "cliff_inner": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      384,
+      32,
+      24
+    ],
+    "packed_rect": [
+      512,
+      384,
+      32,
+      24
+    ]
+  },
+  "cliff_outer": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      384,
+      32,
+      24
+    ],
+    "packed_rect": [
+      576,
+      384,
+      32,
+      24
+    ]
+  },
+  "contact_shadow": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      768,
+      32,
+      32
+    ]
+  },
+  "cliff_east": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      768,
+      32,
+      32
+    ]
+  }
+}

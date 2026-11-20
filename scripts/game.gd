@@ -2,12 +2,8 @@ extends Node2D
 
 const Simulation = preload("res://scripts/simulation.gd")
 const Brush = preload("res://scripts/terrain_brush.gd")
+const Renderer = preload("res://scripts/pixel_world_renderer.gd")
 const SAVE_PATH := "user://world.json"
-const COLORS := [
-    Color("#1e617d"), Color("#dcc490"), Color("#77a45e"),
-    Color("#376f54"), Color("#808783"), Color("#5e5249"), Color("#bf9367")
-]
-const NATION_COLORS := [Color("#f3c16c"), Color("#f08e93")]
 const POWER_NAMES := ["Raise", "Fire", "Forest", "Bless", "Spawn", "Ocean"]
 const POWER_CATEGORIES := [
     [0, 2, 4], [0, 5], [4], [3], [4], [2], [1, 5], [3]
@@ -15,6 +11,7 @@ const POWER_CATEGORIES := [
 const CATEGORY_NAMES := ["Main", "World", "Units", "Life", "Beasts", "Nature", "Chaos", "Other"]
 
 var world: SandboxSimulation
+var world_renderer: PixelWorldRenderer
 var camera_center := Vector2(48, 64)
 var zoom := 1.0
 var paused := false
@@ -45,6 +42,10 @@ func _ready() -> void:
     if world == null:
         world = SandboxSimulation.new(int(Time.get_unix_time_from_system()) % 2147483647)
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
+    world_renderer = Renderer.new()
+    world_renderer.setup(world)
+    add_child(world_renderer)
+    world_renderer.refresh_units()
     font = ThemeDB.fallback_font
     get_viewport().size_changed.connect(queue_redraw)
     queue_redraw()
@@ -86,11 +87,15 @@ func _process(delta: float) -> void:
             sim_accum -= 0.1
             iterations += 1
             autosave_ticks += 1
+        if iterations>0:
+            world_renderer.refresh_units()
         if iterations == 5:
             sim_accum = minf(sim_accum, 0.5)
         if autosave_ticks >= 600:
             autosave_ticks = 0
             save_world()
+    world_renderer.update_view(world_origin(),tile_size(),Rect2(0,50,get_viewport_rect().size.x,get_viewport_rect().size.y-toolbar_height()-50))
+    world_renderer.animate(delta)
     render_accum += delta
     if render_accum >= (1.0 / 30.0):
         render_accum = 0.0
@@ -104,70 +109,12 @@ func tile_size() -> float:
 
 func world_origin() -> Vector2:
     var sz := get_viewport_rect().size
-    return Vector2(sz.x * 0.5, (sz.y - toolbar_height()) * 0.5) - camera_center * tile_size()
+    return (Vector2(sz.x * 0.5, (sz.y - toolbar_height()) * 0.5) - camera_center * tile_size()).round()
 
 func _draw() -> void:
     var sz := get_viewport_rect().size
-    draw_rect(Rect2(Vector2.ZERO, sz), Color("#123d59"))
-    draw_terrain(sz)
-    draw_people(sz)
     draw_brush_preview(sz)
     draw_interface(sz)
-
-func draw_terrain(sz: Vector2) -> void:
-    var ts := tile_size()
-    var origin := world_origin()
-    var min_x := maxi(0, int(floor(-origin.x / ts)) - 1)
-    var max_x := mini(world.WIDTH - 1, int(ceil((sz.x - origin.x) / ts)) + 1)
-    var min_y := maxi(0, int(floor((50.0 - origin.y) / ts)) - 1)
-    var max_y := mini(world.HEIGHT - 1, int(ceil((sz.y - toolbar_height() - origin.y) / ts)) + 1)
-    for y in range(min_y, max_y + 1):
-        for x in range(min_x, max_x + 1):
-            var type: int = world.at(x, y)
-            var p := origin + Vector2(x, y) * ts
-            if p.y + ts < 50.0 or p.y > sz.y - toolbar_height():
-                continue
-            draw_rect(Rect2(p, Vector2(ts + 0.5, ts + 0.5)), COLORS[type])
-            if ts < 8.0:
-                continue
-            var detail := posmod(x * 73 + y * 119 + world.seed, 11)
-            match type:
-                world.OCEAN:
-                    if detail < 2:
-                        draw_line(p + Vector2(ts * 0.12, ts * 0.57),
-                            p + Vector2(ts * 0.65, ts * 0.57), Color("#5e9eac"), maxf(1.0, ts * 0.06))
-                world.MEADOW:
-                    if detail < 3:
-                        draw_line(p + Vector2(ts * 0.4, ts * 0.73),
-                            p + Vector2(ts * 0.33, ts * 0.35), Color("#c1c97d"), maxf(1.0, ts * 0.08))
-                world.FOREST:
-                    draw_circle(p + Vector2(ts * 0.51, ts * 0.55), ts * 0.28, Color("#20563e"))
-                    draw_circle(p + Vector2(ts * 0.40, ts * 0.40), ts * 0.22, Color("#4c9960"))
-                world.MOUNTAIN:
-                    draw_colored_polygon(PackedVector2Array([
-                        p + Vector2(ts * 0.08, ts * 0.88),
-                        p + Vector2(ts * 0.57, ts * 0.12),
-                        p + Vector2(ts * 0.95, ts * 0.88)
-                    ]), Color("#c4c7b6"))
-                world.TOWN:
-                    draw_rect(Rect2(p + Vector2(ts * 0.2, ts * 0.38), Vector2(ts * 0.6, ts * 0.45)), Color("#67503e"))
-                    draw_rect(Rect2(p + Vector2(ts * 0.12, ts * 0.25), Vector2(ts * 0.75, ts * 0.22)), Color("#e5b678"))
-                world.ASH:
-                    draw_circle(p + Vector2(ts * 0.5, ts * 0.5), ts * 0.13, Color("#ee8147"))
-
-func draw_people(sz: Vector2) -> void:
-    var ts := tile_size()
-    var origin := world_origin()
-    var radius := clampf(ts * 0.24, 1.5, 5.0)
-    for citizen in world.citizens:
-        if citizen["hp"] <= 0:
-            continue
-        var p := origin + (Vector2(float(citizen["x"]), float(citizen["y"])) + Vector2(0.5, 0.5)) * ts
-        if p.x < -ts or p.x > sz.x + ts or p.y < 50.0 or p.y > sz.y - toolbar_height():
-            continue
-        draw_circle(p, radius, NATION_COLORS[citizen["nation"]])
-        if ts > 15.0:
-            draw_arc(p, radius, 0.0, TAU, 12, Color("#263a3d"), 0.8)
 
 func label(text_value: String, at_pos: Vector2, size: int = 13, color: Color = Color.WHITE) -> void:
     draw_string(font, at_pos, text_value, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
@@ -180,15 +127,14 @@ func inside_world(position: Vector2) -> bool:
     return position.x >= 0 and position.x < size.x and position.y >= 50.0 and position.y < size.y - toolbar_height()
 
 func screen_to_tile(position: Vector2) -> Vector2i:
-    var value := (position - world_origin()) / tile_size()
-    return Vector2i(floori(value.x), floori(value.y))
+    return world_renderer.tile_at((position-world_origin())*32.0/tile_size())
 
 func draw_brush_preview(sz: Vector2) -> void:
     if not editable_power() or not preview_visible or not inside_world(pointer_position) or touches.size() >= 2:
         return
     var cell := screen_to_tile(pointer_position)
     var radius: int = BRUSH_RADII[brush_index]
-    var world_point := world_origin() + (Vector2(cell) + Vector2(0.5, 0.5)) * tile_size()
+    var world_point := world_origin() + world_renderer.tile_center(cell) * tile_size() / 32.0
     var pixel_radius := (float(radius) + 0.5) * tile_size()
     var paint_color := Color("#a9e7ed") if selected_power == 5 else Color("#e8dc9f")
     draw_circle(world_point, pixel_radius, Color(paint_color, 0.22))
@@ -206,7 +152,7 @@ func draw_interface(sz: Vector2) -> void:
     label("%dx" % simulation_speed, Vector2(sz.x - 43, 30), 14)
     var top := sz.y - toolbar_height()
     draw_rect(Rect2(0, top, sz.x, toolbar_height()), Color("#203432"))
-    var mode_name := "HAND  /  Navigate & inspect" if selected_power == -1 else "POWER  /  " + POWER_NAMES[selected_power]
+    var mode_name: String = "HAND  /  Navigate & inspect" if selected_power == -1 else "POWER  /  " + POWER_NAMES[selected_power]
     label(mode_name, Vector2(12, top + 21), 13, Color("#f4e5c5"))
     var cw := (sz.x - 12.0) / float(CATEGORY_NAMES.size())
     for i in range(CATEGORY_NAMES.size()):
@@ -411,4 +357,5 @@ func tapped(position: Vector2) -> void:
         paint_segment(cell, cell)
     else:
         world.apply_power(selected_power, cell.x, cell.y)
+        world_renderer.add_power_effect(selected_power,cell)
         queue_redraw()
