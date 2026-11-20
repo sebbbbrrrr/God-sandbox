@@ -130,12 +130,15 @@ func register_birth(x: int, y: int, nation: int, parent_a: int, parent_b: int) -
             parents.append(citizen)
     if parents.size() != 2:
         return false
-    var sheltered := false
+    var available_beds := 0
     for house in construction.houses:
         if int(house["nation"]) == nation and absi(int(house["x"]) - x) + absi(int(house["y"]) - y) <= 3:
-            sheltered = true
-            break
-    if not sheltered or not add_citizen(x, y, nation):
+            available_beds += maxi(0, int(house.get("capacity", 0)))
+    var nearby_residents := 0
+    for citizen in citizens:
+        if int(citizen["nation"]) == nation and int(citizen["hp"]) > 0 and absi(int(citizen["x"]) - x) + absi(int(citizen["y"]) - y) <= 3:
+            nearby_residents += 1
+    if available_beds <= nearby_residents or not add_citizen(x, y, nation):
         return false
     lifecycle.register_newborn(self, citizens[-1], parent_a, parent_b)
     return true
