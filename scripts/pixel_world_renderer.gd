@@ -352,22 +352,52 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         decor.add("path_join_%d" % path,p)
     var salt := variation(x,y,world.seed+17,100)
     if type == world.TOWN or is_capital:
+        var nation: int = Architecture.nation_at(world, cell)
+        var age: int = int(architecture_ages[nation]) if nation >= 0 else 1
+        age = maxi(1, age)
         if is_capital or building_cells.has(cell) or facility_cells.has(cell):
             var facility: String = str(facility_cells.get(cell, ""))
-            var building: String = "workshop_a" if facility == "tool_area" else \
-                ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else \
-                BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
+            var role := "tool_area" if facility == "tool_area" else (
+                "capital" if is_capital else "ordinary")
+            var building: String = Architecture.sprite(age, role, x, y, world.seed)
             if physical_buildings.has(cell):
                 var actual: Dictionary = physical_buildings[cell]
-                var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
-                building = str(definition.get("visual", {}).get("sprite", building)) if str(actual.get("type", "")) != "tool_area" else "workshop_a"
-            prop(objects,building,p+Vector2(16,27))
+                var definition_id := str(actual.get("definition_id", ""))
+                # Keep actual house IDs, occupancy, material costs, age of
+                # construction and lifecycle state; change only the art.
+                if definition_id in ["primitive_shelter", "timber_hut"]:
+                    building = Architecture.sprite(age, definition_id, x, y, world.seed)
+                elif str(actual.get("type", "")) == "tool_area":
+                    building = Architecture.sprite(age, "tool_area", x, y, world.seed)
+                else:
+                    var definition: Dictionary = world.construction.catalogue.definition(definition_id)
+                    building = str(definition.get("visual", {}).get("sprite", building))
+            prop(objects, building, p + Vector2(16, 27))
             if detail > 0:
-                prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
-                prop(decor,"garden" if v%2==0 else "crops",p+Vector2(7,31),0.58)
-                if detail==2:prop(objects,["handcart","crates","hay","chopping_block"][v],p+Vector2(29,28),0.6)
+                if age == 1:
+                    prop(decor, "branches" if v % 2 == 0 else "rock_small",
+                        p + Vector2(17, 32), 0.6)
+                    prop(decor, "stump" if v % 2 == 0 else "woodpile",
+                        p + Vector2(7, 31), 0.5)
+                    if detail == 2:
+                        prop(objects, "log" if v % 2 == 0 else "rock_medium",
+                            p + Vector2(29, 28), 0.45)
+                else:
+                    var wall := "fence_gate" if age <= 2 else (
+                        "stone_wall_h" if age <= 4 else "fence_vertical")
+                    prop(decor, wall, p + Vector2(17, 32), 0.65)
+                    prop(decor, "garden" if v % 2 == 0 else "crops",
+                        p + Vector2(7, 31), 0.58)
+                    if detail == 2:
+                        var accessory := "hay" if age == 2 else (
+                            "crates" if age < 5 else "handcart")
+                        prop(objects, accessory, p + Vector2(29, 28), 0.55)
         elif detail > 0:
-            prop(decor,["garden","crops","well_open","well_roof"][v],p+Vector2(16,28),0.78)
+            var ambient := ["branches", "stump", "rock_small", "woodpile"][v] if age == 1 else (
+                ["garden", "crops", "well_open", "hay"][v] if age == 2 else (
+                ["garden", "well_open", "crates", "stone_wall_h"][v] if age <= 4 else
+                ["garden", "crops", "well_open", "well_roof"][v]))
+            prop(decor, ambient, p + Vector2(16, 28), 0.68)
         return
     if type == world.FOREST:
         if (detail > 0 or salt < 40) and not path_cells.has(cell):
