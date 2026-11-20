@@ -85,14 +85,15 @@ func _initialize() -> void:
             Vector2i(12, 12), w.tick, "friendly")
         Relations.encounter(w.citizen_ai_by_id[str(student_id)], teacher_id,
             Vector2i(12, 12), w.tick, "friendly")
-    w.tick = 180
+    # The earlier job-planning tick scheduled the next pass for tick 181.
+    w.tick = 181
     w.ai_context.begin_tick(w)
     occupations.on_tick(w)
     ok = check(occupations.apprenticeships.has(str(student_id)),
         "observed trust and relevant mentor expertise create a local apprenticeship") and ok
     var student_before := occupations.xp_for(pupil, "forager")
     var tutor_before := occupations.xp_for(teacher, "oral_mentor")
-    w.tick = 270
+    w.tick = 271
     w.ai_context.begin_tick(w)
     ok = check(occupations.training_step(w, teacher,
         w.citizen_ai_by_id[str(teacher_id)]) and
