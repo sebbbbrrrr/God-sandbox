@@ -63,7 +63,8 @@ func _plan_connection(world: RefCounted) -> void:
     var origin := world.index_of(a.x, a.y)
     var destination := world.index_of(b.x, b.y)
     var frontier: Array[int] = [origin]
-    var parent: Dictionary = {origin: -1}
+    var parent: Dictionary = {}
+    parent[origin] = -1
     var head := 0
     # Deterministic bounded BFS runs only when a connection is needed or was
     # invalidated. Never run per citizen or per frame.
