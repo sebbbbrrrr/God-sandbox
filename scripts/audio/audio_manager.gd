@@ -16,7 +16,26 @@ const DEFINITIONS := {
     "world.bless": {"bus": "Citizens", "duration": 0.24, "tone": 730.0, "noise": 0.05, "gain": -16.0},
     "world.fire": {"bus": "Disasters", "duration": 0.30, "tone": 95.0, "noise": 0.83, "gain": -11.0},
     "citizen.step": {"bus": "Citizens", "duration": 0.06, "tone": 100.0, "noise": 0.75, "gain": -20.0},
-    "construction.hit": {"bus": "Construction", "duration": 0.09, "tone": 290.0, "noise": 0.48, "gain": -14.0}
+    "construction.hit": {"bus": "Construction", "duration": 0.09, "tone": 290.0, "noise": 0.48, "gain": -14.0},
+    "citizen.step.grass": {"bus": "Citizens", "duration": 0.055, "tone": 125.0, "noise": 0.8, "gain": -22.0},
+    "citizen.step.sand": {"bus": "Citizens", "duration": 0.075, "tone": 80.0, "noise": 0.92, "gain": -22.0},
+    "citizen.step.stone": {"bus": "Citizens", "duration": 0.06, "tone": 350.0, "noise": 0.42, "gain": -21.0},
+    "citizen.step.wood": {"bus": "Citizens", "duration": 0.08, "tone": 210.0, "noise": 0.32, "gain": -21.0},
+    "work.chop": {"bus": "Construction", "duration": 0.12, "tone": 185.0, "noise": 0.45, "gain": -15.0},
+    "work.mine": {"bus": "Construction", "duration": 0.15, "tone": 510.0, "noise": 0.55, "gain": -15.0},
+    "work.saw": {"bus": "Construction", "duration": 0.20, "tone": 390.0, "noise": 0.85, "gain": -18.0},
+    "work.dig": {"bus": "Construction", "duration": 0.14, "tone": 140.0, "noise": 0.76, "gain": -18.0},
+    "work.deliver": {"bus": "Construction", "duration": 0.12, "tone": 190.0, "noise": 0.38, "gain": -17.0},
+    "work.build": {"bus": "Construction", "duration": 0.11, "tone": 270.0, "noise": 0.46, "gain": -15.0},
+    "work.repair": {"bus": "Construction", "duration": 0.11, "tone": 290.0, "noise": 0.45, "gain": -16.0},
+    "work.demolish": {"bus": "Construction", "duration": 0.21, "tone": 115.0, "noise": 0.82, "gain": -14.0},
+    "ambient.forest": {"bus": "Ambience", "duration": 0.85, "tone": 625.0, "noise": 0.60, "gain": -26.0},
+    "ambient.ocean": {"bus": "Ambience", "duration": 1.0, "tone": 115.0, "noise": 0.96, "gain": -25.0},
+    "ambient.settlement": {"bus": "Ambience", "duration": 0.65, "tone": 230.0, "noise": 0.67, "gain": -26.0},
+    "ambient.wilderness": {"bus": "Ambience", "duration": 0.7, "tone": 420.0, "noise": 0.75, "gain": -28.0},
+    "weather.rain": {"bus": "Environment", "duration": 0.9, "tone": 135.0, "noise": 0.98, "gain": -25.0},
+    "weather.wind": {"bus": "Environment", "duration": 0.8, "tone": 95.0, "noise": 0.94, "gain": -26.0},
+    "weather.thunder": {"bus": "Environment", "duration": 0.9, "tone": 70.0, "noise": 0.82, "gain": -13.0}
 }
 const POWER_EVENTS := ["world.raise", "world.fire", "world.forest", "world.bless", "world.spawn", "world.ocean"]
 const VOICE_LIMITS := {"battery": 10, "balanced": 20, "high": 40}
@@ -130,7 +149,7 @@ func emit_event(event_id: String, screen_position: Vector2, spatial: bool = true
         return _drop(event_id, "offscreen")
     var now := Time.get_ticks_msec()
     # Paint strokes can generate hundreds of mutations per frame; cap audio separately.
-    var cooldown := 75 if event_id.begins_with("world.") else 25
+    var cooldown := 75 if event_id.begins_with("world.") else (300 if event_id.begins_with("work.") else (1000 if event_id.begins_with("ambient.") or event_id.begins_with("weather.") else 45))
     if now - int(_last_event_ms.get(event_id, -100000)) < cooldown:
         return _drop(event_id, "cooldown")
     _last_event_ms[event_id] = now
