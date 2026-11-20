@@ -24,7 +24,9 @@ static func prepare(world: RefCounted) -> PackedByteArray:
     var view := {"version":3, "ai_version":2, "seed":world.seed, "tick":world.tick, "next_id":world.next_id,
         "citizen_ai_by_id":minds, "citizens":world.citizens, "terrain":Marshalls.raw_to_base64(world.terrain),
         "capitals":[[world.capitals[0].x,world.capitals[0].y],[world.capitals[1].x,world.capitals[1].y]],
-        "rng_state":str(world.rng.state), "routine_budget":world.ai_context.routine_budget}
+        "rng_state":str(world.rng.state), "routine_budget":world.ai_context.routine_budget,
+        "construction":world.construction.snapshot(), "calendar":world.calendar.snapshot(),
+        "lifecycle":world.lifecycle.snapshot()}
     # No yield, callbacks or threads between borrowing state and producing the immutable byte buffer.
     var payload := var_to_bytes(view)
     var header := PackedByteArray(MAGIC)
