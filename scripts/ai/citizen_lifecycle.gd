@@ -84,6 +84,16 @@ func update_person(world: RefCounted, person: Dictionary) -> void:
         append_event(world, person, "life_stage_changed",
             {"from": previous, "to": latest, "age_years": age})
 
+func on_tick(world: RefCounted) -> void:
+    # Canonical biological transitions happen on the exact birthday tick,
+    # independent of staggered cognitive AI scheduling.
+    on_year_boundary(world)
+    for person in world.citizens:
+        if int(person["hp"]) <= 0:
+            record_death(world, person, "injury")
+        elif (int(world.tick) - int(person["birth_tick"])) % Calendar.TICKS_PER_YEAR == 0:
+            update_person(world, person)
+
 func on_year_boundary(world: RefCounted) -> void:
     if int(world.tick) % Calendar.TICKS_PER_YEAR != 0:
         return
