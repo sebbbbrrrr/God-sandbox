@@ -1,14 +1,14 @@
 extends RefCounted
 # Pure visual selection. The simulation's locally adopted technology determines
 # visual age; sprites never unlock jobs, construction or item production.
-const ORDINARY := [
+const ORDINARY = [
     ["lean_to", "hide_tent", "branch_hut", "stone_shelter", "communal_canopy", "drying_rack"],
     ["wattle_house", "longhouse", "granary", "mud_store", "farmstead"],
     ["mudbrick_house", "courtyard_house", "granary", "market_court", "watch_post"],
     ["stone_villa", "courtyard_house", "tiled_workshop", "barracks"],
     ["half_timber_house", "stone_cottage", "granary", "guildhall"]
 ]
-const CENTRES := ["hearth_circle", "meeting_lodge", "civic_hall", "colonnade", "guildhall"]
+const CENTRES = ["hearth_circle", "meeting_lodge", "civic_hall", "colonnade", "guildhall"]
 
 static func visual_age(world: RefCounted, nation: int) -> int:
     if nation not in [0, 1]:
