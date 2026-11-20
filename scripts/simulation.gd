@@ -8,6 +8,7 @@ const Construction = preload("res://scripts/ai/construction_economy.gd")
 const Calendar = preload("res://scripts/ai/sim_calendar.gd")
 const Lifecycle = preload("res://scripts/ai/citizen_lifecycle.gd")
 const Households = preload("res://scripts/ai/households.gd")
+const Food = preload("res://scripts/ai/food_survival.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -33,6 +34,7 @@ var construction := Construction.new()
 var calendar := Calendar.new()
 var lifecycle := Lifecycle.new()
 var households := Households.new()
+var food := Food.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -95,6 +97,7 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
     terrain[idx] = type
     construction.on_terrain_changed(self, x, y)
     households.dirty = true
+    food.on_terrain_changed(self, x, y)
     ai_context.terrain_dirty = true
     ai_context.local_views.clear()
     return true
@@ -108,7 +111,8 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         "x": x,
         "y": y,
         "hp": 100,
-        "age": 0
+        "age": 0,
+        "hunger": 0, "next_food_tick": tick + 120 + next_id % 40
     })
     lifecycle.initialise_founder(citizens[-1], seed, tick)
     households.on_citizen_added(self, citizens[-1])
@@ -142,6 +146,12 @@ func register_birth(x: int, y: int, nation: int, parent_a: int, parent_b: int) -
         return false
     if not households.has_room(self, int(family["home_id"]), 1):
         return false
+    # Nutrition must support both parents and the newborn; environmental
+    # pressure, not the current calendar year or a fixed religion, is decisive.
+    if int(adults[0].get("hunger", 0)) >= 40 or int(adults[1].get("hunger", 0)) >= 40:
+        return false
+    if food.total(food.pantry_for(int(family["id"]))) < 2:
+        return false
     if not add_citizen(x, y, nation):
         return false
     lifecycle.register_newborn(self, citizens[-1], parent_a, parent_b)
@@ -167,6 +177,8 @@ func step() -> void:
     ai_context.begin_tick(self)
     construction.prune(self)
     households.reconcile(self)
+    food.on_tick(self)
+    food.on_tick_households(self)
     construction.plan(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
@@ -228,7 +240,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget,
         "construction": construction.snapshot(),
         "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot(),
-        "households": households.snapshot()
+        "households": households.snapshot(),
+        "food": food.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -260,7 +273,9 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
             var restored_citizen: Dictionary = {
                 "id": int(person.get("id", 0)), "nation": clampi(int(person.get("nation", 0)), 0, 1),
                 "x": x, "y": y, "hp": clampi(int(person.get("hp", 100)), 0, 100),
-                "age": maxi(0, int(person.get("age", 0)))
+                "age": maxi(0, int(person.get("age", 0))),
+                "hunger": clampi(int(person.get("hunger", 0)), 0, 100),
+                "next_food_tick": int(person.get("next_food_tick", result.tick + 120 + incoming_id % 40))
             }
             if person.has("birth_tick"):
                 restored_citizen["birth_tick"] = int(person["birth_tick"])
@@ -311,6 +326,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     result.construction.load_state(data.get("construction", {}))
     result.ai_context.begin_tick(result)
     if not result.households.load_state(result, data.get("households", null)):
+        return null
+    if not result.food.load_state(data.get("food", null)):
         return null
     return result
 

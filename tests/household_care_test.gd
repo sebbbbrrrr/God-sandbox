@@ -23,6 +23,8 @@ func _initialize() -> void:
     ok = check(a.households.occupancy(a, 300) == 2 and
         int(a.citizens[0]["home_id"]) == 300,
         "two members occupy real beds in a completed house") and ok
+    provision_family(a, int(a.citizens[0]["household_id"]), 3)
+    provision_family(b, int(b.citizens[0]["household_id"]), 3)
     ok = check(a.register_birth(12, 12, 0, first, second) and
         b.register_birth(12, 12, 0, first, second),
         "newborn joins parents only when their home has free beds") and ok
@@ -119,6 +121,7 @@ func _initialize() -> void:
     limit.households.form_household(limit, left, right)
     add_house(limit, 301, 2)
     limit.households.reconcile(limit)
+    provision_family(limit, int(limit.citizens[0]["household_id"]), 3)
     ok = check(not limit.register_birth(12, 12, 0, left, right),
         "a completely full home cannot accommodate a newborn") and ok
     limit.construction.houses[0]["capacity"] = 3
@@ -154,6 +157,10 @@ func add_house(world, id: int, capacity: int) -> void:
     world.construction.houses.append({"id": id, "nation": 0,
         "x": 13, "y": 12, "capacity": capacity, "built_tick": world.tick})
     world.households.dirty = true
+
+func provision_family(world, household_id: int, amount: int) -> void:
+    world.food.pantry_for(household_id)["grain"] += amount
+    world.food.produced["grain"] += amount
 
 func check(condition: bool, name: String) -> bool:
     if not condition:
