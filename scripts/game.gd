@@ -3,6 +3,7 @@ extends Node2D
 const Simulation = preload("res://scripts/simulation.gd")
 const Brush = preload("res://scripts/terrain_brush.gd")
 const AudioManagerScript = preload("res://scripts/audio/audio_manager.gd")
+const LivingWorldAudio = preload("res://scripts/audio/living_world_audio.gd")
 const SAVE_PATH := "user://world.json"
 const COLORS := [
     Color("#1e617d"), Color("#dcc490"), Color("#77a45e"),
@@ -41,6 +42,7 @@ var render_accum := 0.0
 var autosave_ticks := 0
 var font: Font
 var game_audio: Node
+var living_audio = LivingWorldAudio.new()
 
 func _ready() -> void:
     world = load_world()
@@ -52,6 +54,7 @@ func _ready() -> void:
     game_audio.name = "GameAudio"
     add_child(game_audio)
     game_audio.configure_listener(get_viewport_rect().size, toolbar_height())
+    living_audio.reset()
     get_viewport().size_changed.connect(_on_viewport_resized)
     queue_redraw()
 
@@ -98,9 +101,15 @@ func _process(delta: float) -> void:
             autosave_ticks += 1
         if iterations == 5:
             sim_accum = minf(sim_accum, 0.5)
+        if iterations > 0:
+            living_audio.observe_movement(world, game_audio, world_origin(), tile_size(),
+                get_viewport_rect().size, toolbar_height(), simulation_speed > 1)
         if autosave_ticks >= 600:
             autosave_ticks = 0
             save_world()
+    if not paused:
+        living_audio.observe_ambience(world, game_audio, camera_center, world_origin(),
+            tile_size(), get_viewport_rect().size, toolbar_height(), Time.get_ticks_msec())
     render_accum += delta
     if render_accum >= (1.0 / 30.0):
         render_accum = 0.0

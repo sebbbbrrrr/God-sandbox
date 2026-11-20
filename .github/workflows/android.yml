@@ -83,6 +83,9 @@ jobs:
       - name: Run audio foundation regression tests
         run: ./godot --headless --path . --script res://tests/audio_phase_a_test.gd
 
+      - name: Run living-world audio regression tests
+        run: ./godot --headless --path . --script res://tests/audio_phase_b_test.gd
+
       - name: Smoke-test main game scene
         run: ./godot --headless --path . --quit-after 30
 
