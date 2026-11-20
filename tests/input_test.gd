@@ -28,6 +28,7 @@ func run() -> void:
     root.content_scale_size=Vector2i(480,850)
     var game := TestGame.new()
     root.add_child(game)
+    check(bool(ProjectSettings.get_setting("input_devices/pointing/emulate_mouse_from_touch")), "Android GUI buttons require touch-to-mouse emulation")
     game.paused=true
     game.brush_index=0
     game.selected_power=0
@@ -99,6 +100,15 @@ func run() -> void:
     var units_before:=0
     for row in game.world_renderer.unit_rows: units_before+=row.keys.size()
     game.selected_power=4
+    var emulated_press := InputEventMouseButton.new()
+    emulated_press.device = InputEvent.DEVICE_ID_EMULATION
+    emulated_press.button_index = MOUSE_BUTTON_LEFT
+    emulated_press.position = point
+    emulated_press.pressed = true
+    game._input(emulated_press)
+    emulated_press.pressed = false
+    game._input(emulated_press)
+    check(game.world.citizens.size() == units_before, "synthesized touchscreen mouse cannot double-apply world powers")
     game.tapped(point)
     var units_after:=0
     for row in game.world_renderer.unit_rows: units_after+=row.keys.size()
