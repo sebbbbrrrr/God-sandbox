@@ -25,7 +25,7 @@ var weather: SandboxWeather
 var weather_overlay: PixelWeatherOverlay
 var sway_clock := 0.0
 var sway_accum := 0.0
-const SWAY_INTERVAL := 1.0 / 12.0
+const SWAY_INTERVAL := 1.0 / 15.0
 var detail := 1
 var visible_rect := Rect2()
 var visible_chunks := 0
@@ -387,7 +387,7 @@ func refresh_units() -> void:
         row.queue_redraw()
 
 func animate(delta: float) -> void:
-    # Animate the small visible vegetation pass at 12 Hz, never the static
+    # Animate the small visible vegetation pass at 15 Hz, never the static
     # chunks. Phase transitions follow saved simulation ticks.
     weather.set_time(float(world.tick) * 0.1)
     sway_clock += maxf(0.0, delta)

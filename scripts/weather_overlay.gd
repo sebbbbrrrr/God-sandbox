@@ -29,7 +29,7 @@ func _draw() -> void:
         var h := posmod(i * 1103515245 + world_seed * 97, 2147483647)
         var x := view.position.x + fposmod(float(posmod(h, 10007)) * 0.137 +
                 clock * slant * 3.0, view.size.x)
-        var y := view.position.y + fposmod(float(posmod(h / 97, 10009)) * 0.111 +
+        var y := view.position.y + fposmod(float(posmod(floori(float(h) / 97.0), 10009)) * 0.111 +
                 clock * velocity * (0.8 + float(i % 5) * 0.08), view.size.y)
         var start := Vector2(roundf(x), roundf(y))
         draw_line(start, start + Vector2(slant, 5.0 + rain * 5.0), color, 1.0, false)

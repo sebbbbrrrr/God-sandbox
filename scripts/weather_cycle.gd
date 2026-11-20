@@ -24,7 +24,7 @@ func set_time(value: float) -> void:
     seconds = maxf(0.0, value)
     var segment := floori(seconds / PHASE_SECONDS)
     phase_index = posmod(segment, NAMES.size())
-    var previous := posmod(segment - 1, NAMES.size())
+    var previous := phase_index if segment == 0 else posmod(segment - 1, NAMES.size())
     var transition := smoothstep(0.0, TRANSITION_SECONDS, fposmod(seconds, PHASE_SECONDS))
     var baseline := lerpf(float(WIND[previous]), float(WIND[phase_index]), transition)
     var gust := 1.0 + 0.14 * sin(seconds * 0.67 + float(posmod(seed, 97))) + 0.08 * sin(seconds * 1.39)

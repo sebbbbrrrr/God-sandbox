@@ -24,6 +24,8 @@ func run() -> void:
     var weather_sample := renderer.weather
     weather_sample.set_time(75.0 + 20.0)
     check(weather_sample.description()=="Breezy" and weather_sample.wind_strength>0.1,"breezy weather follows deterministic phases")
+    weather_sample.set_time(0.0)
+    check(weather_sample.description()=="Calm" and is_zero_approx(weather_sample.rain_strength),"new worlds start in calm weather")
     weather_sample.set_time(225.0 + 20.0)
     check(weather_sample.rain_strength>0.4,"rain reaches the renderer without changing terrain")
     weather_sample.set_time(375.0 + 20.0)
@@ -142,6 +144,8 @@ func run() -> void:
     renderer.update_view(Vector2(-400,-800),32,Rect2(0,0,480,600))
     renderer.animate(1.0)
     check(renderer.effects.keys.size()<=96,"bounded water animation")
+    world.set_terrain(5,5,Sim.FOREST)
+    renderer.build_chunk(renderer.chunks[Vector2i(0,0)])
     var vegetation_count := 0
     for chunk in renderer.chunks.values():
         for row in chunk.wind_rows:
