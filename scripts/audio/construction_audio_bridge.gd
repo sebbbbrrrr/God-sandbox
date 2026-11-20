@@ -28,7 +28,7 @@ static func classify_build_action(action: String) -> String:
         return "build"
     return ""
 
-func observe(world: Object, living: RefCounted, audio: Node, origin: Vector2,
+func observe(world, living, audio, origin: Vector2,
         cell_pixels: float, viewport_size: Vector2, panel_height: float,
         animation_clock: float) -> int:
     if int(world.tick) == _last_tick:
@@ -139,7 +139,7 @@ static func contact_crossed(previous_clock: float, current_clock: float, worker_
     var after: float = (current_clock + offset) * 4.5
     return int(floor((after - 2.1) / TAU)) > int(floor((before - 2.1) / TAU))
 
-func flush_contacts(living: RefCounted, audio: Node, previous_clock: float,
+func flush_contacts(living, audio, previous_clock: float,
         current_clock: float) -> int:
     var played := 0
     var remove: Array = []
