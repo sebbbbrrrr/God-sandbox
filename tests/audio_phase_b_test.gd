@@ -5,7 +5,7 @@ const Simulation = preload("res://scripts/simulation.gd")
 var failed := false
 
 class FakeAudio:
-    extends RefCounted
+    extends Node
     var events: Array[String] = []
     func emit_event(event_id: String, _point: Vector2, _spatial: bool = true) -> bool:
         events.append(event_id)
