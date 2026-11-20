@@ -64,6 +64,14 @@ func _initialize() -> void:
         not a.construction.jobs.has(str(baby["id"])),
         "infants do not wander independently or work") and ok
     var json_saved = World.from_snapshot(a.snapshot())
+    if json_saved != null and json_saved.snapshot() != a.snapshot():
+        var expected: Dictionary = a.snapshot()
+        var observed: Dictionary = json_saved.snapshot()
+        for field in expected:
+            if expected[field] != observed.get(field, null):
+                print("D2_LIFECYCLE_DIFF_FIELD=", field)
+                print("D2_LIFECYCLE_EXPECTED=", str(expected[field]).substr(0, 500))
+                print("D2_LIFECYCLE_OBSERVED=", str(observed.get(field, null)).substr(0, 500))
     ok = check(json_saved != null and json_saved.snapshot() == a.snapshot(),
         "JSON snapshot keeps calendar, lifecycles and events") and ok
     var packed: PackedByteArray = a.prepare_save_bytes()
