@@ -18,8 +18,8 @@ func _initialize() -> void:
         add_social_history(world)
         world.demography.find_partner(world)
         world.households.reconcile(world)
-    var first := a.citizens[0]
-    var second := a.citizens[1]
+    var first: Dictionary = a.citizens[0]
+    var second: Dictionary = a.citizens[1]
     var family_id: int = int(first["household_id"])
     ok = check(a.demography.partners[str(first["id"])] == int(second["id"]) and
         int(first["household_id"]) == int(second["household_id"]),
@@ -206,6 +206,8 @@ func _initialize() -> void:
         "surviving parent can deliver while preserving deceased parentage") and ok
     var before_archive: int = bereaved.citizens.size()
     bereaved.tick = Calendar.TICKS_PER_YEAR * 4
+    for survivor in bereaved.citizens:
+        bereaved.lifecycle.update_person(bereaved,survivor)
     bereaved.demography.archive_dead(bereaved)
     ok = check(bereaved.citizens.size() == before_archive - 1 and
         bereaved.demography.tombstones.size() == 1 and
@@ -241,6 +243,7 @@ func fixture():
     for person in w.citizens:
         person["birth_tick"] = -25 * Calendar.TICKS_PER_YEAR
         person["life_stage"] = "adult"
+        w.demography.set_household_preferences(int(person["household_id"]), {"partnership_interest":55})
     w.set_terrain_cell(13, 12, World.TOWN)
     w.construction.houses.append({"id": 11, "nation": 0, "x": 13,
         "y": 12, "capacity": 4, "built_tick": 0})

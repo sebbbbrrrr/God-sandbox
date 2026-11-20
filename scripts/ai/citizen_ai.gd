@@ -160,6 +160,8 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     if str(person.get("life_stage", "adult")) == "infant":
         return
     var urgent: bool = Nav.danger_near(world, pos) or not world.is_walkable(pos.x, pos.y)
+    if urgent and world.construction.jobs.has(str(person["id"])):
+        world.construction.tasks.interrupt(world.construction, world, str(person["id"]))
     # Young dependents cannot perform adult construction jobs. Their safety
     # responses remain active during hazards.
     if not urgent and world.lifecycle.dependent_step(world, person, state):

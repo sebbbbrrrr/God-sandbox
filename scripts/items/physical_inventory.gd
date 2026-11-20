@@ -15,6 +15,8 @@ var minted: Dictionary = {}
 var consumed: Dictionary = {}
 var destroyed: Dictionary = {}
 var events: Array[Dictionary] = []
+var reservations: Dictionary = {}
+var reserved_totals: Dictionary = {} # holder -> item totals; no linear scan per transfer
 
 func _init() -> void:
     ensure_settlements()
@@ -76,6 +78,12 @@ func _holder(world: RefCounted, holder_id: String) -> Dictionary:
                 return {}
             return {"kind": "citizen", "owner_id": number, "nation": int(person["nation"]),
                 "cell": Vector2i(int(person["x"]), int(person["y"]))}
+        "site":
+            var site: Dictionary = world.construction.site_by_id(number)
+            if site.is_empty():
+                return {}
+            return {"kind": "site", "owner_id": number, "nation": int(site["nation"]),
+                "cell": Vector2i(int(site["x"]), int(site["y"]))}
         "ground":
             if number < 0 or number >= world.WIDTH * world.HEIGHT:
                 return {}
@@ -99,7 +107,7 @@ func _access(holder: Dictionary, actor: Dictionary, as_source: bool) -> bool:
             # require the recipient to be present (receiver consent is D3 AI).
             return int(holder["owner_id"]) == int(actor["owner_id"]) if as_source else \
                 int(holder["nation"]) == int(actor["nation"])
-        "settlement":
+        "settlement", "site":
             return int(holder["nation"]) == int(actor["nation"])
         "ground":
             return true
@@ -133,7 +141,7 @@ func _log(world: RefCounted, action: String, source: String, target: String, uni
 # All-or-nothing transaction. Physical custody and actor permissions are
 # checked at the time of transfer; neither side may be remotely accessed.
 func transfer(world: RefCounted, source: String, target: String,
-        units: Dictionary, actor_id: int, exact_serial: String = "") -> bool:
+        units: Dictionary, actor_id: int, exact_serial: String = "", reservation_id: String = "") -> bool:
     if source == target or not _bundle_valid(units):
         return false
     var actor_person := _person(world, actor_id)
@@ -148,12 +156,25 @@ func transfer(world: RefCounted, source: String, target: String,
         return false
     if not _access(from, actor, true) or not _access(to, actor, false):
         return false
+    if reservation_id != "":
+        var claim: Dictionary = reservations.get(reservation_id, {})
+        if str(claim.get("holder", "")) != source or target != "citizen:" + str(actor_id):
+            return false
+        var site: Dictionary = world.construction.site_by_id(int(reservation_id.trim_prefix("site:")))
+        if site.is_empty() or int(site["nation"]) != int(actor["nation"]):
+            return false
+        for item_id in units:
+            if int(claim.get("units", {}).get(item_id, 0)) < int(units[item_id]):
+                return false
     var original: Dictionary = balances.get(source, {})
     var target_items: Dictionary = balances.get(target, {})
     var updated: Dictionary = target_items.duplicate()
     for item_id in units:
         var qty := int(units[item_id])
-        if int(original.get(item_id, 0)) < qty or int(updated.get(item_id, 0)) > MAX_STACK - qty:
+        var allowed := available(source, str(item_id))
+        if reservation_id != "":
+            allowed += int(reservations[reservation_id]["units"].get(item_id, 0))
+        if allowed < qty or int(updated.get(item_id, 0)) > MAX_STACK - qty:
             return false
         updated[item_id] = int(updated.get(item_id, 0)) + qty
     if str(to["kind"]) == "citizen" and _weight(updated) > MAX_CARRY_KG:
@@ -171,6 +192,10 @@ func transfer(world: RefCounted, source: String, target: String,
         if int(original[item_id]) == 0 and not (source.begins_with("settlement:") and item_id in ["wood", "stone"]):
             original.erase(item_id)
         dst[item_id] = int(dst.get(item_id, 0)) + qty
+    if reservation_id != "":
+        for item_id in units:
+            reservations[reservation_id]["units"][item_id] -= int(units[item_id])
+            reserved_totals[source][item_id] -= int(units[item_id])
     world.toolmaking.move_instances(source, target, units, exact_serial)
     _log(world, "transfer", source, target, units)
     return true
@@ -220,7 +245,7 @@ func consume(world: RefCounted, holder_id: String, units: Dictionary, actor_id: 
         return false
     var inventory: Dictionary = balances.get(holder_id, {})
     for item_id in units:
-        if int(inventory.get(item_id, 0)) < int(units[item_id]):
+        if available(holder_id, str(item_id)) < int(units[item_id]):
             return false
     if not world.toolmaking.can_move(holder_id, units):
         return false
@@ -318,7 +343,7 @@ func prototype_knapping(world: RefCounted, actor_id: int) -> bool:
             world.occupations.has_capability(world, nation, "stone_working"):
         return false
     var store: Dictionary = stockpile(nation)
-    if int(store.get("flint", 0)) < 1 or int(store.get("stone", 0)) < 1 or \
+    if available("settlement:" + str(nation), "flint") < 1 or available("settlement:" + str(nation), "stone") < 1 or \
             int(store.get("knapped_flint", 0)) >= MAX_STACK:
         return false
     if not world.occupations.grant_capability(world, nation, "stone_working", "experiment"):
@@ -356,7 +381,10 @@ func craft_at(world: RefCounted, item_id: String, actor_id: int) -> bool:
         return false
     var store: Dictionary = stockpile(nation)
     var context: Dictionary = catalogue.context_for_citizen(world, person, item_id)
-    if not catalogue.can_craft(item_id, store, context):
+    var spendable := store.duplicate()
+    for ingredient in spendable:
+        spendable[ingredient] = available("settlement:" + str(nation), str(ingredient))
+    if not catalogue.can_craft(item_id, spendable, context):
         return false
     if item_id == "knapped_flint":
         var ability_context: Dictionary = catalogue.context_for_citizen(world, person, "knapping", true)
@@ -389,7 +417,8 @@ func craft_at(world: RefCounted, item_id: String, actor_id: int) -> bool:
 func snapshot() -> Dictionary:
     return {"version": VERSION, "balances": balances.duplicate(true),
         "minted": minted.duplicate(true), "consumed": consumed.duplicate(true),
-        "destroyed": destroyed.duplicate(true), "events": events.duplicate(true)}
+        "destroyed": destroyed.duplicate(true), "events": events.duplicate(true),
+        "reservations": reservations.duplicate(true)}
 
 func _valid_counts(source: Variant) -> bool:
     if not source is Dictionary or source.size() > catalogue.items.size():
@@ -397,7 +426,7 @@ func _valid_counts(source: Variant) -> bool:
     for item_id in source:
         if not item_id is String or not catalogue.items.has(item_id):
             return false
-        if typeof(source[item_id]) != TYPE_INT or int(source[item_id]) < 0 or int(source[item_id]) > MAX_STACK * MAX_STORES:
+        if not _integer_count(source[item_id]) or int(source[item_id]) < 0 or int(source[item_id]) > MAX_STACK * MAX_STORES:
             return false
     return true
 
@@ -418,7 +447,7 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
             if not item_id is String or not catalogue.items.has(item_id):
                 return false
             var qty := int(contents[item_id])
-            if typeof(contents[item_id]) != TYPE_INT or qty < 0 or qty > MAX_STACK or (qty == 0 and not (holder_id.begins_with("settlement:") and item_id in ["wood", "stone"])):
+            if not _integer_count(contents[item_id]) or qty < 0 or qty > MAX_STACK or (qty == 0 and not (holder_id.begins_with("settlement:") and item_id in ["wood", "stone"])):
                 return false
         if holder_id.begins_with("citizen:") and _weight(contents) > MAX_CARRY_KG:
             return false
@@ -441,6 +470,24 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
     events.clear()
     for row in audit:
         events.append(row.duplicate(true))
+    reservations = raw.get("reservations", {}).duplicate(true)
+    reserved_totals.clear()
+    for key in reservations:
+        if not str(key).begins_with("site:"):
+            return false
+        var claim: Variant = reservations[key]
+        if not claim is Dictionary or not _valid_counts(claim.get("units")) or \
+                world.construction.site_by_id(int(str(key).trim_prefix("site:"))).is_empty():
+            return false
+        var holder := str(claim.get("holder", ""))
+        if not holder.begins_with("settlement:") or _holder(world, holder).is_empty():
+            return false
+        if not reserved_totals.has(holder):
+            reserved_totals[holder] = {}
+        for item in claim["units"]:
+            reserved_totals[holder][item] = int(reserved_totals[holder].get(item, 0)) + int(claim["units"][item])
+            if int(reserved_totals[holder][item]) > held(holder, str(item)):
+                return false
     if not ledger_ok():
         balances = previous["balances"]
         minted = previous["minted"]
@@ -469,3 +516,60 @@ func ledger_ok() -> bool:
                 int(consumed.get(item_id, 0)) + int(destroyed.get(item_id, 0)):
             return false
     return true
+
+# Reservations protect shared physical stock from construction, crafting and UI withdrawals.
+func available(holder: String, item: String) -> int:
+    return held(holder, item) - int(reserved_totals.get(holder, {}).get(item, 0))
+
+func reserve(key: String, holder: String, units: Dictionary) -> bool:
+    if reservations.has(key) or not holder.begins_with("settlement:") or not _bundle_valid(units):
+        return false
+    for item in units:
+        if available(holder, str(item)) < int(units[item]):
+            return false
+    reservations[key] = {"holder": holder, "units": units.duplicate(true)}
+    if not reserved_totals.has(holder):
+        reserved_totals[holder] = {}
+    for item in units:
+        reserved_totals[holder][item] = int(reserved_totals[holder].get(item, 0)) + int(units[item])
+    return true
+
+func release_reservation(key: String) -> void:
+    var claim: Dictionary = reservations.get(key, {})
+    if claim.is_empty():
+        return
+    var holder := str(claim["holder"])
+    for item in claim["units"]:
+        reserved_totals[holder][item] -= int(claim["units"][item])
+    reservations.erase(key)
+
+# Closing a site leaves unused goods at its actual location, never in a remote depot.
+func close_site(world: RefCounted, site: Dictionary, salvage: Dictionary) -> bool:
+    var holder := "site:" + str(site["id"])
+    var ground := "ground:" + str(world.index_of(int(site["x"]), int(site["y"])))
+    var loose: Dictionary = balances.get(holder, {})
+    var combined := loose.duplicate()
+    for item in salvage:
+        if int(salvage[item]) < 0 or int(salvage[item]) > int(consumed.get(item,0)):
+            return false
+        combined[item] = int(combined.get(item,0)) + int(salvage[item])
+    if not combined.is_empty() and not balances.has(ground) and balances.size() >= MAX_STORES:
+        return false
+    for item in combined:
+        if int(combined[item]) + held(ground,str(item)) > MAX_STACK:
+            return false
+    # All preconditions precede mutation, including salvage capacity checks.
+    release_reservation(holder)
+    if not combined.is_empty() and not balances.has(ground):
+        balances[ground] = {}
+    for item in combined:
+        balances[ground][item] = int(balances[ground].get(item,0)) + int(combined[item])
+    for item in salvage:
+        consumed[item] = int(consumed[item]) - int(salvage[item])
+    balances.erase(holder)
+    _log(world,"site_recovery",holder,ground,combined)
+    return true
+
+# Godot JSON decodes integral numbers as floats; reject fractional/nonfinite input.
+func _integer_count(value: Variant) -> bool:
+    return typeof(value) == TYPE_INT or (typeof(value) == TYPE_FLOAT and is_finite(value) and value == floor(value))

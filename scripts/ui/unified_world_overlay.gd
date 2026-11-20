@@ -1,6 +1,7 @@
 extends Node2D
 # Unified front-end overlay: world-space item sprites at layer 5;
 # modal item inspector at layer 20. Both read the D4 physical ledger.
+const ConstructionVisuals = preload("res://scripts/construction/construction_visuals.gd")
 const Art = preload("res://scripts/ui/item_pixel_art.gd")
 const InspectorOverlay = preload("res://scripts/ui/item_overlay.gd")
 var game: Node2D
@@ -14,6 +15,7 @@ func _draw() -> void:
             InspectorOverlay.draw_panel(self, game.font, game.world, game.inspector,
                 game.ui_size(), game.toolbar_height())
         return
+    ConstructionVisuals.draw(self, game)
     var world: SandboxSimulation = game.world
     var size: Vector2 = game.ui_size()
     var ts: float = game.tile_size()

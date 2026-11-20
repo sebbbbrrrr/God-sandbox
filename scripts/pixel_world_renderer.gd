@@ -25,6 +25,8 @@ var walks: CitizenWalk
 var walk_draw_accum := 0.0
 var rendered_building_count := -1
 var facility_cells: Dictionary = {}
+var physical_buildings: Dictionary = {}
+var physical_footprints: Dictionary = {}
 var effects: PixelCommands
 var weather: SandboxWeather
 var weather_overlay: PixelWeatherOverlay
@@ -335,6 +337,10 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
             var building: String = "workshop_a" if facility == "tool_area" else \
                 ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else \
                 BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
+            if physical_buildings.has(cell):
+                var actual: Dictionary = physical_buildings[cell]
+                var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
+                building = str(definition.get("visual", {}).get("sprite", building)) if str(actual.get("type", "")) != "tool_area" else "workshop_a"
             prop(objects,building,p+Vector2(16,27))
             if detail > 0:
                 prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
@@ -380,7 +386,15 @@ func rebuild_paths() -> void:
     town_cells.clear()
     building_cells.clear()
     facility_cells.clear()
+    physical_buildings.clear()
+    physical_footprints.clear()
     for house in world.construction.houses:
+        var anchor := Vector2i(int(house["x"]), int(house["y"]))
+        physical_buildings[anchor] = house
+        var definition: Dictionary = world.construction.catalogue.definition(str(house.get("definition_id", "primitive_shelter")))
+        for footprint_cell in world.construction.placement.footprint(definition,anchor,int(house.get("orientation",0))):
+            physical_footprints[footprint_cell] = true
+        building_cells[anchor] = true
         if str(house.get("type", "")) == "tool_area":
             facility_cells[Vector2i(int(house["x"]), int(house["y"]))] = "tool_area"
     rendered_building_count = world.construction.houses.size()
@@ -414,6 +428,8 @@ func rebuild_paths() -> void:
                 previous=point
     # Local deterministic minima reserve a one-cell gap between large building footprints.
     for cell in town_cells:
+        if physical_footprints.has(cell):
+            continue
         var priority := variation(cell.x,cell.y,world.seed+71,100000)
         var anchor := true
         for dy in range(-1,2):

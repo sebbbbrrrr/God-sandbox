@@ -44,7 +44,7 @@ func _initialize() -> void:
     ok = check(not a.register_birth(12, 12, 0, pa, pb),
         "birth requires an existing nearby shelter") and ok
     a.set_terrain_cell(13, 12, World.TOWN)
-    a.construction.houses.append({"id": 1, "nation": 0, "x": 13, "y": 12,
+    a.construction.houses.append({"id": 10001, "nation": 0, "x": 13, "y": 12,
         "capacity": 6, "built_tick": a.tick})
     ok = check(a.households.form_household(a, pa, pb),
         "living parents form a persistent household") and ok

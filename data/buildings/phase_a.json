@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "buildings": [
+    {
+      "id": "primitive_shelter",
+      "display_name": "Timber and stone shelter",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 6,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 1,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 3,
+          "materials": {
+            "wood": 2,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 6,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [
+        "timber_hut"
+      ],
+      "conversions": [
+        "timber_hut"
+      ],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "hut_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "timber_hut",
+      "display_name": "Worked timber dwelling",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "stone_working"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 6,
+        "stone": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 10,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 1,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 6,
+          "materials": {
+            "wood": 5,
+            "stone": 2
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 3,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 8,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "cottage_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    }
+  ]
+}
