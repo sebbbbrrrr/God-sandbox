@@ -4,6 +4,8 @@ class_name PixelWorldRenderer
 const Atlas = preload("res://scripts/pixel_atlas.gd")
 const Chunk = preload("res://scripts/pixel_chunk.gd")
 const Commands = preload("res://scripts/pixel_commands.gd")
+const Weather = preload("res://scripts/weather_cycle.gd")
+const RainOverlay = preload("res://scripts/weather_overlay.gd")
 const TILE := 32
 const CHUNK := 16
 const RISE := 12
@@ -19,6 +21,11 @@ var atlas: PixelAtlas
 var chunks: Dictionary = {}
 var unit_rows: Array[PixelCommands] = []
 var effects: PixelCommands
+var weather: SandboxWeather
+var weather_overlay: PixelWeatherOverlay
+var sway_clock := 0.0
+var sway_accum := 0.0
+const SWAY_INTERVAL := 1.0 / 15.0
 var detail := 1
 var visible_rect := Rect2()
 var visible_chunks := 0
@@ -36,6 +43,8 @@ var previous_screen_tile := -1.0
 
 func setup(simulation: SandboxSimulation) -> void:
     world = simulation
+    weather = Weather.new(world.seed)
+    weather.set_time(float(world.tick) * 0.1)
     atlas = Atlas.new()
     texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     z_index = -1000
@@ -57,6 +66,9 @@ func setup(simulation: SandboxSimulation) -> void:
     effects.atlas = atlas
     effects.z_index = 500
     add_child(effects)
+    weather_overlay = RainOverlay.new()
+    weather_overlay.z_index = 501
+    add_child(weather_overlay)
     world.terrain_changed.connect(invalidate_cell)
     rebuild_paths()
 
@@ -122,6 +134,7 @@ func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> voi
     var a := (screen_rect.position-position) / scale
     var b := (screen_rect.end-position) / scale
     visible_rect = Rect2(a,b-a).grow(64)
+    weather_overlay.update_weather(visible_rect, sway_clock, weather.rain_strength, weather.wind_direction, world.seed)
     detail = 0 if screen_tile < 13 else (1 if screen_tile < 30 else 2)
     if paths_dirty:
         rebuild_paths()
@@ -146,6 +159,10 @@ func build_chunk(chunk: PixelChunk) -> void:
             build_cell(chunk,x,y)
     if detail==0:
         bake_distant_chunk(chunk)
+    for row in chunk.wind_rows:
+        row.sway_time = sway_clock
+        row.wind_strength = weather.wind_strength
+        row.wind_x = weather.wind_direction.x
     chunk.finish(detail)
 
 func bake_distant_chunk(chunk: PixelChunk) -> void:
@@ -155,7 +172,9 @@ func bake_distant_chunk(chunk: PixelChunk) -> void:
     var offset := Vector2(chunk.coord)*CHUNK*TILE-Vector2.ONE*96
     var ordered: Array[PixelCommands] = []
     ordered.append_array(chunk.layers)
-    ordered.append_array(chunk.rows)
+    for i in range(chunk.rows.size()):
+        ordered.append(chunk.rows[i])
+        ordered.append(chunk.wind_rows[i])
     for layer in ordered:
         for i in range(layer.keys.size()):
             var part := atlas.miniature(layer.keys[i],layer.sizes[i],layer.tints[i])
@@ -180,6 +199,7 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var cliffs := chunk.layers[3]
     var decor := chunk.layers[4]
     var objects: PixelCommands = chunk.rows[y % CHUNK]
+    var vegetation: PixelCommands = chunk.wind_rows[y % CHUNK]
     if type == world.OCEAN:
         water.add("water_%d" % v,Vector2(x*TILE,y*TILE))
         var shores: int = (~int(neighbour_masks[world.OCEAN])) & 15
@@ -263,14 +283,18 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         if (detail > 0 or salt < 40) and not path_cells.has(cell):
             var tree: String = TREE_SPECIES[variation(x,y,world.seed,TREE_SPECIES.size())]
             var offset := Vector2(9+variation(x,y,world.seed+3,12),24+variation(x,y,world.seed+4,7))
-            prop(objects,tree,p+offset,0.87+v*0.06)
+            prop(vegetation,tree,p+offset,0.87+v*0.06,Color.WHITE,1.0)
         if detail == 2 and salt < 26:
-            prop(decor,SMALL_PLANTS[variation(x,y,world.seed,SMALL_PLANTS.size())],p+Vector2(5,28),0.55)
+            var plant: String = SMALL_PLANTS[variation(x,y,world.seed,SMALL_PLANTS.size())]
+            if plant in ["fern_cluster","wildflowers","tall_grass"]:
+                prop(vegetation,plant,p+Vector2(5,28),0.55,Color.WHITE,0.5)
+            else:
+                prop(decor,plant,p+Vector2(5,28),0.55)
     elif type == world.MEADOW:
         if salt < 7 and detail > 0 and not path_cells.has(cell):
-            prop(objects,["oak","birch","beech","maple"][v],p+Vector2(17,28),0.78)
+            prop(vegetation,["oak","birch","beech","maple"][v],p+Vector2(17,28),0.78,Color.WHITE,0.95)
         elif salt < 20 and detail > 0:
-            prop(decor,["berry_shrub","tall_grass","wildflowers","sapling_leaf"][v],p+Vector2(16,28),0.6)
+            prop(vegetation,["berry_shrub","tall_grass","wildflowers","sapling_leaf"][v],p+Vector2(16,28),0.6,Color.WHITE,0.55)
         elif salt < 23 and detail == 2:
             prop(decor,["moss_log","fallen_tree","sapling_pine","dead_tree"][v],p+Vector2(18,26),0.6)
     elif type == world.MOUNTAIN:
@@ -280,7 +304,7 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         prop(objects,"dead_tree",p+Vector2(17,29),0.72,Color(0.66,0.61,0.58))
     if type == world.BEACH and detail > 0 and salt < 27:
         prop(decor,["driftwood","coastal_stones","pebbles","shells"][v],p+Vector2(16,28),0.62)
-        if salt < 9 and ocean_mask:prop(objects,"wet_reeds" if v%2==0 else "cattails",p+Vector2(26,29),0.65)
+        if salt < 9 and ocean_mask:prop(vegetation,"wet_reeds" if v%2==0 else "cattails",p+Vector2(26,29),0.65,Color.WHITE,0.65)
     if south_drop>0 and detail==2 and salt<25:
         prop(objects,"cliff_debris",p+Vector2(18,TILE+south_drop*RISE),0.55)
     if salt >= 93 and type != world.ASH and detail > 0:
@@ -343,11 +367,11 @@ func rebuild_paths() -> void:
     for chunk in chunks.values(): chunk.dirty=true
     paths_dirty=false
 
-func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0, tint: Color = Color.WHITE) -> void:
+func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0, tint: Color = Color.WHITE, sway: float = 0.0) -> void:
     var sz := atlas.size_of(key)*factor
     if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall"):
         layer.add("ground_shadow",(foot-Vector2(sz.x*0.43,9)).round(),Vector2(sz.x,14).round())
-    layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint)
+    layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint,sway)
 
 func refresh_units() -> void:
     for row in unit_rows:
@@ -363,6 +387,19 @@ func refresh_units() -> void:
         row.queue_redraw()
 
 func animate(delta: float) -> void:
+    # Animate the small visible vegetation pass at 15 Hz, never the static
+    # chunks. Phase transitions follow saved simulation ticks.
+    weather.set_time(float(world.tick) * 0.1)
+    sway_clock += maxf(0.0, delta)
+    sway_accum += maxf(0.0, delta)
+    if sway_accum >= SWAY_INTERVAL:
+        sway_accum = fmod(sway_accum, SWAY_INTERVAL)
+        for chunk in chunks.values():
+            if not chunk.visible or detail == 0:
+                continue
+            for row in chunk.wind_rows:
+                row.set_wind(sway_clock, weather.wind_strength, weather.wind_direction.x)
+        weather_overlay.update_weather(visible_rect, sway_clock, weather.rain_strength, weather.wind_direction, world.seed)
     effect_clock += delta
     if effect_clock < 0.25:
         return
@@ -376,7 +413,7 @@ func animate(delta: float) -> void:
                 break
             if world.at(x,y)==world.OCEAN and variation(x,y,world.seed,17)==0:
                 var p := Vector2(x*TILE+effect_phase*2,y*TILE+16)
-                effects.add("ripple",p,Vector2(14,5),Color(0.65,0.91,0.94,0.22+effect_phase*0.06))
+                effects.add("ripple",p,Vector2(14,5),Color(0.65,0.91,0.94,0.22+effect_phase*0.06 + weather.wind_strength*0.12))
                 count+=1
     effects.queue_redraw()
 
