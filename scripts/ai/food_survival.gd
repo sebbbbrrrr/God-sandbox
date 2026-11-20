@@ -416,6 +416,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         if move(world, person, mind, target):
             var food: String = str(job["type"])
             pantry_for(int(family["id"]))[food] += int(job["amount"])
+            world.occupations.on_real_work(world, person, "food_courier", int(job["amount"]))
             jobs.erase(id)
             mind["route"] = []
         return true
@@ -453,6 +454,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     job["amount"] = amount
     job["phase"] = "depot"
     produced[str(job["type"])] += amount
+    var completed_role: String = "crop_farmer" if str(job["kind"]) == "farm" else (
+        "fisher" if str(job["type"]) == "fish" else "forager")
+    world.occupations.on_real_work(world, person, completed_role, amount)
     mind["route"] = []
     return true
 
