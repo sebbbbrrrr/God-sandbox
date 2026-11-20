@@ -113,6 +113,7 @@ func form_household(world: RefCounted, first_id: int, second_id: int) -> bool:
     a["home_id"] = retained_home
     world.food.on_household_merge(int(a["id"]), int(b["id"]),
         original_home > 0 and original_home == second_home)
+    world.demography.on_household_merge(int(a["id"]), int(b["id"]))
     a["steward_id"] = first_id
     for id in members:
         var member := living_person(world, int(id))
@@ -146,7 +147,7 @@ func join_newborn(world: RefCounted, baby: Dictionary, parent_a: Dictionary, par
     baby["guardian_id"] = int(parent_a["id"])
     baby["carried_by"] = 0
     baby["last_care_tick"] = int(world.tick)
-    dirty = bool(raw.get("dirty", true))
+    dirty = true
     return true
 
 func pick_steward(world: RefCounted, family: Dictionary) -> int:
