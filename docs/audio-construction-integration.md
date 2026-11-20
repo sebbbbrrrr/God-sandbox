@@ -17,7 +17,7 @@ Development branch `feature/audio-construction-integrated`, based on `feature/se
 
 ## Boundaries
 - Real rain/thunder/wind event hooks remain reserved in `living_world_audio.gd`; the separate weather branch was not merged.
-- Sound samples are small procedural placeholders, not verified realistic field recordings.
+- Ten original 16 kHz mono WAV foley samples are now committed in `assets/audio/foley/` and automatically imported for selected live events. They are purpose-generated, shaped-noise samples (not recordings); remaining event IDs retain the procedural fallback. They should undergo creative listening/mastering review before shipping.
 - The audio observer does not create citizens, materials, jobs, labour, transactions, or world edits. Volume/preferences are saved separately in `user://audio_settings.cfg`.
 - Only actions with a visible event marker or an observable authoritative state delta generate work audio; one-tick jobs which are created and removed within the same observation window may not sound. Missing sounds are preferable to invented work.
 - Dynamic mixing/ambience blending and fully animated tool-contact event markers are future sound polish tasks.
@@ -29,3 +29,9 @@ The dedicated GitHub Actions workflow `.github/workflows/audio-construction-andr
 **Do not claim passing tests, an exported APK, or Huawei P30 playback until a successful workflow run and phone test establish them.**
 
 Suggested device acceptance: 1×, 2×, 4× and pause/resume with ≥500 citizens, construction resource extraction and delivery, stage advances, touch pan/zoom, headphone/speaker switching, silent setting persistence; profile dropped voices, frame time and memory.
+
+## Original sound asset pass
+The committed short WAV library covers chopping, mining, sawing, digging, building, material delivery, grass/stone footsteps, UI selection and the fire god power. Each is a discrete original generated asset with no third-party licensing dependency. Dedicated `tests/audio_sample_test.gd` validates import and playback resource types. The importer must run before these tests. All unlisted events retain fallback. This is an implementation foundation, **not** a claim of professional recorded ambience or complete sonic polish.
+
+## Current CI blocker
+At the last check, the GitHub connector returned **zero workflow runs and zero statuses** for this branch head. No Godot executable or Android SDK was available in the execution container. Consequently there is no verifiable passing Godot build or debug APK to link. Run `.github/workflows/audio-construction-android.yml` on the branch (or push a new commit if Actions triggers are enabled); use the exported `GodSandbox-Integrated-Audio-Android-debug` artifact only after the workflow succeeds. Device speaker/headphone and latency testing must then occur on Huawei P30.
