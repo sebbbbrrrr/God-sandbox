@@ -124,7 +124,10 @@ func _process(delta: float) -> void:
     var real_delta: float = maxf(0.0, delta)
     visual_refresh_accum += real_delta
     if not paused:
+        var old_audio_clock := work_visual_clock
         work_visual_clock += real_delta * float(simulation_speed)
+        construction_audio.flush_contacts(living_audio, game_audio,
+            old_audio_clock, work_visual_clock)
     hud_refresh_accum += real_delta
     if not paused:
         # Bound accumulated work after a device stall rather than trying to
