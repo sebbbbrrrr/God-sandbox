@@ -25,6 +25,19 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
             canvas.draw_line(p + Vector2(5, 27) * scale, p + Vector2(width / scale - 5, 10) * scale, timber, maxf(1, scale * 2))
         if stage >= 2:
             canvas.draw_colored_polygon(PackedVector2Array([p + Vector2(2, 12) * scale, p + Vector2(width / scale / 2, 3) * scale, p + Vector2(width / scale - 2, 12) * scale]), colour)
+        # Incremental details use actual work completed; never visual-clock progress.
+        var built := clampf(1.0 - float(site["remaining_labour"]) / maxf(1.0, float(row["labour"])), 0.0, 1.0)
+        var placed := int(floor(built * 7.0))
+        for plank in range(placed):
+            var px := 7.0 + float(plank % 4) * 5.0
+            var py := 15.0 + float(plank / 4) * 5.0
+            canvas.draw_rect(Rect2((p + Vector2(px, py) * scale).round(),
+                Vector2(4, 2) * scale), Color("#a97b55"))
+        if stage >= 1:
+            for beam in range(3):
+                var bx := 7.0 + float(beam) * (width / scale - 14.0) / 2.0
+                canvas.draw_line(p + Vector2(bx, 25) * scale,
+                    p + Vector2(bx, 12) * scale, timber, maxf(1.0, scale * 1.5))
         # Stage markers are derived exclusively from real work progress.
         var fraction := float(site["progress"]) / float(row["labour"])
         canvas.draw_rect(Rect2(p + Vector2(3, 30) * scale, Vector2((width - 6 * scale) * fraction, maxf(1, scale))), colour)
