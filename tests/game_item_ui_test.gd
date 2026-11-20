@@ -4,6 +4,7 @@ const World = preload("res://scripts/simulation.gd")
 
 func _initialize() -> void:
     var ok := true
+    root.size = Vector2i(480, 850) # Headless runners default to a tiny viewport.
     var game = Game.new()
     root.add_child(game)
     game.world = scene_world()
@@ -11,6 +12,8 @@ func _initialize() -> void:
     game.selected_power = -1
     var cell := Vector2i(20, 20)
     var center := game.world_origin() + (Vector2(cell) + Vector2(0.5, 0.5)) * game.tile_size()
+    print("D4_VIEWPORT_DEBUG size=", game.get_viewport_rect().size,
+        " center=", center, " hit=", game.screen_to_tile(center), " inside=", game.inside_world(center))
     ok = check(game.inside_world(center) and game.screen_to_tile(center) == cell,
         "tap-to-inspect maps pixel coordinates to actual citizen tile") and ok
     game.tapped(center)
