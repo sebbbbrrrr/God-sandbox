@@ -303,8 +303,11 @@ func delivery_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
         return false
     var family: Dictionary = world.households.family_for(int(person["household_id"]))
     var house: Dictionary = world.households.house_by_id(world, int(family.get("home_id", 0)))
-    if house.is_empty():
-        return true # no instant delivery to nonexistent housing
+    if house.is_empty() or not world.households.has_room(world, int(family.get("home_id", 0)), 1):
+        return false # keep working / seeking shelter rather than deadlocking
+    if int(person["hp"]) < 50 or int(person.get("hunger", 0)) >= 70 or (
+            world.food.total(world.food.pantry_for(int(family["id"]))) < 2):
+        return false # mother can continue gathering food until safe to deliver
     var home := Vector2i(int(house["x"]), int(house["y"]))
     var pos := Vector2i(int(person["x"]), int(person["y"]))
     if Nav.manhattan(pos, home) > 1:
