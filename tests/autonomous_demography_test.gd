@@ -40,6 +40,13 @@ func _initialize() -> void:
     var due: int = int(a.demography.pregnancies[key]["due_tick"])
     ok = check(due == 180 + 1800 and a.citizens.size() == 2,
         "conception records a future due tick, not an instant newborn") and ok
+    var integrated = World.from_snapshot(a.snapshot())
+    integrated.tick = due - 1
+    for i in range(5):
+        integrated.step()
+    ok = check(integrated.citizens.size() == 3 and
+        integrated.demography.pregnancies.is_empty(),
+        "live simulation scheduler delivers at the proper gestational age") and ok
     var prior_pantry: int = a.food.total(a.food.pantry_for(family_id))
     var stored: Dictionary = a.snapshot()
     var loaded = World.from_snapshot(stored)
@@ -71,6 +78,30 @@ func _initialize() -> void:
     ok = check(a.demography.pregnancies.is_empty(),
         "postnatal birth spacing prevents immediate repeat pregnancy") and ok
     ok = check(a.food.ledger_ok(), "family population changes conserve food") and ok
+    var due_without_food = fixture()
+    due_without_food.tick = 180
+    add_social_history(due_without_food)
+    due_without_food.demography.find_partner(due_without_food)
+    due_without_food.households.reconcile(due_without_food)
+    due_without_food.demography.update_security(due_without_food)
+    due_without_food.demography.try_conception(due_without_food)
+    var due_carrier: Dictionary = due_without_food.citizens[0] if bool(
+        due_without_food.citizens[0]["can_gestate"]) else due_without_food.citizens[1]
+    due_without_food.tick = int(due_without_food.demography.pregnancies[str(
+        due_carrier["id"])]["due_tick"])
+    due_without_food.food.pantry_for(int(due_carrier["household_id"]))["grain"] = 0
+    due_without_food.ai_context.begin_tick(due_without_food)
+    ok = check(not due_without_food.demography.delivery_step(due_without_food,
+        due_carrier, due_without_food.citizen_ai_by_id[str(due_carrier["id"])]) and
+        due_without_food.demography.pregnancies.size() == 1,
+        "food crisis postpones delivery without trapping survival work") and ok
+    var emergency = fixture()
+    emergency.citizens[1]["hunger"] = 60
+    emergency.ai_context.begin_tick(emergency)
+    ok = check(emergency.food.work_step(emergency, emergency.citizens[1],
+        emergency.citizen_ai_by_id[str(emergency.citizens[1]["id"])]) and
+        emergency.food.jobs.has(str(emergency.citizens[1]["id"])),
+        "food scarcity recruits a hungry non-specialist into physical foraging") and ok
     var declining = fixture()
     declining.tick = 180
     add_social_history(declining)
