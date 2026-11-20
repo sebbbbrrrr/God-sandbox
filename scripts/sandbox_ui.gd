@@ -96,7 +96,7 @@ func _panel_style(raised: bool = false) -> StyleBoxFlat:
 
 func _button_style(selected: bool, hovered: bool = false) -> StyleBoxFlat:
     var s := StyleBoxFlat.new()
-    s.bg_color = GOLD if selected else (Color("#476154") if hovered else SURFACE_RAISED)
+    s.bg_color = GOLD if selected else (Color("#456256") if hovered else Color("#243b35"))
     s.set_corner_radius_all(10)
     s.set_content_margin_all(5)
     if selected:
@@ -277,7 +277,7 @@ func _make_interface() -> void:
     category_scroll.add_child(category_bar)
     for i in range(CATEGORIES.size()):
         var index := i
-        var tab := _button(CATEGORIES[i], "", 74)
+        var tab := _button(CATEGORIES[i], "", 62)
         tab.custom_minimum_size.y = 36
         tab.add_theme_font_size_override("font_size", 11)
         category_bar.add_child(tab)
@@ -336,7 +336,7 @@ func _make_interface() -> void:
         hide_inspector()
     )
     inspector_body = _label("", 13, IVORY)
-    inspector_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    inspector_body.autowrap_mode = TextServer.AUTOWRAP_OFF
     inspector_body.clip_text = false
     inspector_body.custom_minimum_size.y = 116
     inspect_col.add_child(inspector_body)
@@ -596,7 +596,7 @@ func _layout() -> void:
         palette_panel.position = Vector2(palette_x, _palette_y() if palette_open else dock_panel.position.y + 8)
     else:
         palette_panel.position.x = palette_x
-    inspector_panel.size = Vector2(minf(size_view.x - 22, 290), inspector_panel.get_combined_minimum_size().y)
+    inspector_panel.size = Vector2(minf(size_view.x - 22, 290), 208.0)
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
     modal_dim.size = size_view
