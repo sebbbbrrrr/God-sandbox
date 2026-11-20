@@ -90,12 +90,10 @@ func on_tick(engine, world) -> void:
         return
     var ids: Array = fires.keys()
     ids.sort()
-    var inspected := 0
-    # Bound work even if 32 buildings are simultaneously burning.
-    for id in ids:
-        if inspected >= MAX_FIRE_UPDATES:
-            break
-        inspected += 1
+    var inspected := mini(MAX_FIRE_UPDATES, ids.size())
+    # Rotating deterministic cursor: 12 slots/tick, no starvation when 32 burn.
+    for i in range(inspected):
+        var id = ids[(_cursor + i) % ids.size()]
         if not fires.has(id):
             continue
         var house: Dictionary = engine.building_by_id(int(id))
@@ -131,6 +129,8 @@ func on_tick(engine, world) -> void:
             candidates += 1
             if resistance(other.get("materials", {})) <= 11 and int(state["intensity"]) >= 2:
                 ignite(engine, world, other_id, maxi(1, int(state["intensity"]) - 1))
+
+    _cursor = (_cursor + inspected) % maxi(1, ids.size())
 
 func snapshot() -> Dictionary:
     return {"version": 1, "fires": fires.duplicate(true), "rubble": rubble.duplicate(true)}
