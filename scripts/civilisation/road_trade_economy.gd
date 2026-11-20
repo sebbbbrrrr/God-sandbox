@@ -60,8 +60,8 @@ func _plan_connection(world: RefCounted) -> void:
     if not world.is_walkable(a.x, a.y) or not world.is_walkable(b.x, b.y):
         route_status = "missing_capital"
         return
-    var origin := world.index_of(a.x, a.y)
-    var destination := world.index_of(b.x, b.y)
+    var origin: int = world.index_of(a.x, a.y)
+    var destination: int = world.index_of(b.x, b.y)
     var frontier: Array[int] = [origin]
     var parent: Dictionary = {}
     parent[origin] = -1
@@ -88,7 +88,7 @@ func _plan_connection(world: RefCounted) -> void:
         route.clear()
         return
     var candidate: Array = []
-    var cursor := destination
+    var cursor: int = destination
     while cursor != -1 and candidate.size() < MAX_ROUTE_CELLS:
         candidate.push_front([cursor % world.WIDTH, cursor / world.WIDTH])
         cursor = int(parent.get(cursor, -1))
@@ -173,10 +173,10 @@ func on_terrain_changed(world: RefCounted, x: int, y: int) -> void:
 func _update_prices(world: RefCounted) -> void:
     for nation in range(2):
         var board := {}
-        var stock := world.inventory.settlement_inventory(nation)
+        var stock: Dictionary = world.inventory.settlement_inventory(nation)
         for good in GOODS:
             var quantity := int(stock.get(good, 0))
-            var shortage := world.construction.missing_material(nation) == good
+            var shortage: bool = world.construction.missing_material(nation) == good
             board[good] = clampi(100 + (80 if shortage else 0) - mini(65, quantity * 9), 35, 300)
         prices[nation] = board
 
