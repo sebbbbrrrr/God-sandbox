@@ -205,7 +205,18 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var surface := variation(x,y,world.seed,variants)
     # Stable broad patches enrich colour without changing the material or sampling scale.
     var shade := 0.97 + variation(x/7,y/7,world.seed,7)*0.01 if type in [world.MEADOW,world.FOREST] else 1.0
-    ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
+    # One simulation cell remains 32px, but nearby ground is drawn as four
+    # independent 16px subtiles. This matches the finer pixel density of
+    # vegetation/buildings without changing brushes, saves or pathfinding.
+    # Distant zoom keeps one tile per cell for the baked-chunk fast path.
+    if detail == 0:
+        ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
+    else:
+        for sy in range(2):
+            for sx in range(2):
+                var subvariant := variation(x*2+sx,y*2+sy,world.seed,variants)
+                ground.add("%s_%d" % [family,subvariant],
+                    p+Vector2(sx*16,sy*16),Vector2(16,16),Color(shade,shade,shade))
     if type == world.MOUNTAIN and variation(x,y,world.seed+27,7)==0:
         ground.add("mountain_%d" % v,p)
     var ocean_mask: int = neighbour_masks[world.OCEAN]
