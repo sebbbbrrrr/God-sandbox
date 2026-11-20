@@ -167,6 +167,8 @@ func tile_at(pixel: Vector2) -> Vector2i:
     return base
 
 func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> void:
+    if world.construction.houses.size() != rendered_building_count:
+        paths_dirty = true
     if not view_dirty and not paths_dirty and position==origin.round() and previous_screen_tile==screen_tile and previous_screen_rect==screen_rect:
         return
     previous_screen_tile=screen_tile
@@ -328,8 +330,11 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         decor.add("path_join_%d" % path,p)
     var salt := variation(x,y,world.seed+17,100)
     if type == world.TOWN or is_capital:
-        if is_capital or building_cells.has(cell):
-            var building: String = ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
+        if is_capital or building_cells.has(cell) or facility_cells.has(cell):
+            var facility: String = str(facility_cells.get(cell, ""))
+            var building: String = "workshop_a" if facility == "tool_area" else \
+                ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else \
+                BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
             prop(objects,building,p+Vector2(16,27))
             if detail > 0:
                 prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
@@ -374,6 +379,11 @@ func rebuild_paths() -> void:
     path_barriers.clear()
     town_cells.clear()
     building_cells.clear()
+    facility_cells.clear()
+    for house in world.construction.houses:
+        if str(house.get("type", "")) == "tool_area":
+            facility_cells[Vector2i(int(house["x"]), int(house["y"]))] = "tool_area"
+    rendered_building_count = world.construction.houses.size()
     for y in range(world.HEIGHT):
         for x in range(world.WIDTH):
             if world.at(x,y)!=world.TOWN: continue
