@@ -393,10 +393,14 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
                             "crates" if age < 5 else "handcart")
                         prop(objects, accessory, p + Vector2(29, 28), 0.55)
         elif detail > 0:
-            var ambient := ["branches", "stump", "rock_small", "woodpile"][v] if age == 1 else (
-                ["garden", "crops", "well_open", "hay"][v] if age == 2 else (
-                ["garden", "well_open", "crates", "stone_wall_h"][v] if age <= 4 else
-                ["garden", "crops", "well_open", "well_roof"][v]))
+            var ambient_options: Array = ["branches", "stump", "rock_small", "woodpile"]
+            if age == 2:
+                ambient_options = ["garden", "crops", "well_open", "hay"]
+            elif age <= 4 and age >= 3:
+                ambient_options = ["garden", "well_open", "crates", "stone_wall_h"]
+            elif age == 5:
+                ambient_options = ["garden", "crops", "well_open", "well_roof"]
+            var ambient: String = str(ambient_options[v])
             prop(decor, ambient, p + Vector2(16, 28), 0.68)
         return
     if type == world.FOREST:
