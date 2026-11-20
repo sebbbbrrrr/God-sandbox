@@ -73,6 +73,11 @@ func _ready() -> void:
     hud.speed_pressed.connect(_cycle_speed)
     hud.save_pressed.connect(save_world)
     hud.items_pressed.connect(_open_items)
+    hud.audio_volume_changed.connect(game_audio.set_master)
+    hud.audio_muted_changed.connect(game_audio.set_muted)
+    hud.audio_quality_changed.connect(game_audio.set_quality)
+    hud.set_audio_preferences(game_audio.master_volume, game_audio.muted,
+        game_audio.quality)
     hud.set_active_power(selected_power)
     hud.set_brush(brush_index)
 
