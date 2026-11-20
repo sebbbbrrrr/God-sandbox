@@ -1,16 +1,16 @@
-name: D4 Android Debug APK QA
+name: Unified God Sandbox Android APK QA
 
 on:
   push:
     branches:
-      - feature/item-visualisation-interaction-d4
+      - integration/unified-god-sandbox-android-20261120
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: d4-debug-apk-${{ github.ref }}
+  group: unified-debug-apk-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -84,17 +84,22 @@ jobs:
           done
       - name: Smoke-test game scene
         run: ./godot --headless --path . --quit-after 30
+      - name: Validate unified scene and physics/economy integration
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tests/unified_integration_test.gd 2>&1 | tee /tmp/unified_integration_test.log
+          if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" /tmp/unified_integration_test.log; then exit 1; fi
       - name: Export Android debug APK
         run: |
           set -euo pipefail
           mkdir -p build
-          ./godot --headless --path . --export-debug "Android" build/GodSandbox-D4-debug.apk
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-Unified-debug.apk
           test -s build/GodSandbox-D4-debug.apk
           ls -lh build/GodSandbox-D4-debug.apk
       - name: Upload D4 debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: GodSandbox-D4-Android-debug
+          name: GodSandbox-Unified-Android-debug
           path: build/GodSandbox-D4-debug.apk
           if-no-files-found: error
           retention-days: 14
@@ -102,10 +107,11 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: d4-android-debug-logs
+          name: unified-android-debug-logs
           path: |
             /tmp/d4-import.log
             /tmp/item_inspector_test.log
             /tmp/game_item_ui_test.log
+    /tmp/unified_integration_test.log
           if-no-files-found: warn
           retention-days: 7
