@@ -71,6 +71,7 @@ func record_death(world: RefCounted, person: Dictionary, cause: String) -> void:
     person["death_cause"] = cause
     append_event(world, person, "died", {"cause": cause,
         "age_years": world.calendar.age_years(int(person["birth_tick"]), int(world.tick))})
+    world.households.dirty = true
 
 func update_person(world: RefCounted, person: Dictionary) -> void:
     if int(person["hp"]) <= 0:
@@ -122,13 +123,10 @@ func dependent_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> 
     var age: int = world.calendar.age_years(int(person["birth_tick"]), int(world.tick))
     if age < 3:
         return true  # infants need carrying; no artificial independent movement
-    var parents: Array = person.get("parent_ids", [])
-    var guardian: Dictionary = {}
-    for parent_id in parents:
-        var candidate: Dictionary = world.ai_context.people.get(int(parent_id), {})
-        if not candidate.is_empty() and int(candidate["hp"]) > 0 and int(candidate["nation"]) == int(person["nation"]):
-            guardian = candidate
-            break
+    var guardian: Dictionary = world.ai_context.people.get(int(person.get("guardian_id", 0)), {})
+    if not guardian.is_empty() and (int(guardian["hp"]) <= 0 or
+            int(guardian["household_id"]) != int(person.get("household_id", 0))):
+        guardian = {}
     if guardian.is_empty():
         return true  # orphan care/household assignment is a later slice
     var here := Vector2i(int(person["x"]), int(person["y"]))

@@ -7,6 +7,7 @@ const AI = preload("res://scripts/ai/citizen_ai.gd")
 const Construction = preload("res://scripts/ai/construction_economy.gd")
 const Calendar = preload("res://scripts/ai/sim_calendar.gd")
 const Lifecycle = preload("res://scripts/ai/citizen_lifecycle.gd")
+const Households = preload("res://scripts/ai/households.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -31,6 +32,7 @@ var ai_context := AI.Perception.new()
 var construction := Construction.new()
 var calendar := Calendar.new()
 var lifecycle := Lifecycle.new()
+var households := Households.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -92,6 +94,7 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
         return false
     terrain[idx] = type
     construction.on_terrain_changed(self, x, y)
+    households.dirty = true
     ai_context.terrain_dirty = true
     ai_context.local_views.clear()
     return true
@@ -108,6 +111,7 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         "age": 0
     })
     lifecycle.initialise_founder(citizens[-1], seed, tick)
+    households.on_citizen_added(self, citizens[-1])
     citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
     ai_context.added(citizens[-1], citizen_ai_by_id[str(next_id)])
     next_id += 1
@@ -120,27 +124,28 @@ func register_birth(x: int, y: int, nation: int, parent_a: int, parent_b: int) -
         return false
     if citizens.size() >= MAX_PEOPLE:
         return false
-    var parents: Array[Dictionary] = []
+    var adults: Array[Dictionary] = []
     for citizen in citizens:
         if int(citizen["id"]) in [parent_a, parent_b]:
             if int(citizen["hp"]) <= 0 or int(citizen["nation"]) != nation or calendar.age_years(int(citizen["birth_tick"]), tick) < 18:
                 return false
             if absi(int(citizen["x"]) - x) + absi(int(citizen["y"]) - y) > 3:
                 return false
-            parents.append(citizen)
-    if parents.size() != 2:
+            adults.append(citizen)
+    if adults.size() != 2 or int(adults[0]["household_id"]) != int(adults[1]["household_id"]):
         return false
-    var available_beds := 0
-    for house in construction.houses:
-        if int(house["nation"]) == nation and absi(int(house["x"]) - x) + absi(int(house["y"]) - y) <= 3:
-            available_beds += maxi(0, int(house.get("capacity", 0)))
-    var nearby_residents := 0
-    for citizen in citizens:
-        if int(citizen["nation"]) == nation and int(citizen["hp"]) > 0 and absi(int(citizen["x"]) - x) + absi(int(citizen["y"]) - y) <= 3:
-            nearby_residents += 1
-    if available_beds <= nearby_residents or not add_citizen(x, y, nation):
+    var family: Dictionary = households.family_for(int(adults[0]["household_id"]))
+    if family.is_empty() or int(family["home_id"]) <= 0:
+        return false
+    var house: Dictionary = households.house_by_id(self, int(family["home_id"]))
+    if house.is_empty() or int(house["nation"]) != nation or absi(int(house["x"]) - x) + absi(int(house["y"]) - y) > 3:
+        return false
+    if not households.has_room(self, int(family["home_id"]), 1):
+        return false
+    if not add_citizen(x, y, nation):
         return false
     lifecycle.register_newborn(self, citizens[-1], parent_a, parent_b)
+    households.join_newborn(self, citizens[-1], adults[0], adults[1])
     return true
 
 func spawn_initial_population() -> void:
@@ -161,6 +166,7 @@ func step() -> void:
     lifecycle.on_tick(self)
     ai_context.begin_tick(self)
     construction.prune(self)
+    households.reconcile(self)
     construction.plan(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
@@ -197,6 +203,9 @@ func apply_power(power: int, x: int, y: int) -> bool:
             set_terrain_cell(x, y, FOREST)
         3:
             for citizen in citizens:
+                # Bless heals the living; it does not silently undo a recorded death.
+                if int(citizen["hp"]) <= 0:
+                    continue
                 if abs(citizen["x"] - x) <= 2 and abs(citizen["y"] - y) <= 2:
                     var restored_hp: int = 100 - int(citizen["hp"])
                     citizen["hp"] = 100
@@ -218,7 +227,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
         "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget,
         "construction": construction.snapshot(),
-        "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot()
+        "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot(),
+        "households": households.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -258,6 +268,12 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 restored_citizen["life_stage"] = person.get("life_stage", "adult")
                 restored_citizen["death_tick"] = person.get("death_tick", -1)
                 restored_citizen["death_cause"] = person.get("death_cause", "")
+            restored_citizen["household_id"] = int(person.get("household_id", 0))
+            restored_citizen["home_id"] = int(person.get("home_id", 0))
+            restored_citizen["guardian_id"] = int(person.get("guardian_id", 0))
+            restored_citizen["carried_by"] = int(person.get("carried_by", 0))
+            restored_citizen["last_care_tick"] = int(person.get("last_care_tick", result.tick))
+            restored_citizen["care_visits"] = int(person.get("care_visits", 0))
             result.lifecycle.migrate_citizen(restored_citizen, result.seed, result.tick)
             result.citizens.append(restored_citizen)
     var stored_ai: Dictionary = data.get("citizen_ai_by_id", {}) if version >= 2 and data.get("citizen_ai_by_id", {}) is Dictionary else {}
@@ -294,6 +310,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     result.construction.load_state(data.get("construction", {}))
     result.ai_context.begin_tick(result)
+    if not result.households.load_state(result, data.get("households", null)):
+        return null
     return result
 
 # Preparation runs on the simulation thread; the returned buffer owns all saved data.
