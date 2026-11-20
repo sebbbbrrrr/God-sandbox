@@ -17,7 +17,11 @@ const MAX_PEOPLE := 1500
 
 var seed: int
 var tick: int = 0
+signal terrain_changed(cell: Vector2i)
+
 var terrain := PackedByteArray()
+# Visual strata only; walkability and all simulation decisions still use terrain.
+var visual_elevation := PackedByteArray()
 var citizens: Array[Dictionary] = []
 var next_id := 1
 var rng: RandomNumberGenerator
@@ -28,15 +32,16 @@ func _init(world_seed: int = 424242) -> void:
     rng = RandomNumberGenerator.new()
     rng.seed = seed
     terrain.resize(WIDTH * HEIGHT)
+    visual_elevation.resize(WIDTH * HEIGHT)
     generate_world()
     spawn_initial_population()
 
 func generate_world() -> void:
-    var elevation := FastNoiseLite.new()
-    elevation.seed = seed
-    elevation.frequency = 0.027
-    elevation.fractal_type = FastNoiseLite.FRACTAL_FBM
-    elevation.fractal_octaves = 4
+    var height_noise := FastNoiseLite.new()
+    height_noise.seed = seed
+    height_noise.frequency = 0.027
+    height_noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+    height_noise.fractal_octaves = 4
     var moisture := FastNoiseLite.new()
     moisture.seed = seed + 32749
     moisture.frequency = 0.045
@@ -45,7 +50,7 @@ func generate_world() -> void:
             var px := (float(x) / WIDTH - 0.5) * 2.0
             var py := (float(y) / HEIGHT - 0.5) * 2.0
             var edge := sqrt(px * px + py * py) * 0.48
-            var v := 0.50 + elevation.get_noise_2d(x, y) * 0.50 - edge
+            var v := 0.50 + height_noise.get_noise_2d(x, y) * 0.50 - edge
             var wet := moisture.get_noise_2d(x, y)
             var type := OCEAN
             if v > 0.25:
@@ -57,6 +62,7 @@ func generate_world() -> void:
             if v > 0.63:
                 type = MOUNTAIN
             terrain[y * WIDTH + x] = type
+            visual_elevation[y * WIDTH + x] = 0 if type == OCEAN else (3 if type == MOUNTAIN else (2 if v > 0.50 else (1 if v > 0.38 else 0)))
 
 func index_of(x: int, y: int) -> int:
     if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:
@@ -68,6 +74,22 @@ func at(x: int, y: int) -> int:
     if i == -1:
         return OCEAN
     return terrain[i]
+
+func height_at(x: int, y: int) -> int:
+    var i := index_of(x, y)
+    return 0 if i < 0 else int(visual_elevation[i])
+
+func set_terrain(x: int, y: int, type: int) -> void:
+    var i := index_of(x, y)
+    if i < 0 or terrain[i] == type:
+        return
+    var was_ocean := terrain[i] == OCEAN
+    terrain[i] = type
+    if type == OCEAN:
+        visual_elevation[i] = 0
+    elif was_ocean:
+        visual_elevation[i] = 1
+    terrain_changed.emit(Vector2i(x, y))
 
 func is_walkable(x: int, y: int) -> bool:
     var i := index_of(x, y)
@@ -135,7 +157,7 @@ func grow_settlements() -> void:
         var bx := clampi(center.x + rng.randi_range(-5, 5), 0, WIDTH - 1)
         var by := clampi(center.y + rng.randi_range(-5, 5), 0, HEIGHT - 1)
         if is_walkable(bx, by) and at(bx, by) != BEACH:
-            terrain[index_of(bx, by)] = TOWN
+            set_terrain(bx, by, TOWN)
         if citizens.size() < MAX_PEOPLE:
             add_citizen(center.x, center.y, nation)
 
@@ -146,18 +168,18 @@ func apply_power(power: int, x: int, y: int) -> bool:
         return false
     match power:
         0:
-            terrain[idx] = MEADOW
+            set_terrain(x, y, MEADOW)
         1:
             if terrain[idx] == OCEAN:
                 return false
-            terrain[idx] = ASH
+            set_terrain(x, y, ASH)
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 1 and abs(citizen["y"] - y) <= 1:
                     citizen["hp"] = maxi(0, citizen["hp"] - 30)
         2:
             if terrain[idx] == OCEAN:
                 return false
-            terrain[idx] = FOREST
+            set_terrain(x, y, FOREST)
         3:
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 2 and abs(citizen["y"] - y) <= 2:
@@ -165,7 +187,7 @@ func apply_power(power: int, x: int, y: int) -> bool:
         4:
             return add_citizen(x, y, citizens.size() % 2)
         5:
-            terrain[idx] = OCEAN
+            set_terrain(x, y, OCEAN)
         _:
             return false
     return true
@@ -173,9 +195,9 @@ func apply_power(power: int, x: int, y: int) -> bool:
 func snapshot() -> Dictionary:
     return {
         "version": 1, "seed": seed, "tick": tick, "next_id": next_id,
-        "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens,
+        "terrain": Marshalls.raw_to_base64(terrain), "visual_elevation": Marshalls.raw_to_base64(visual_elevation), "citizens": citizens,
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
-        "rng_state": rng.state
+        "rng_state": str(rng.state)
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -186,6 +208,14 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     var result := SandboxSimulation.new(int(data.get("seed", 424242)))
     result.terrain = raw
+    var saved_heights := Marshalls.base64_to_raw(str(data.get("visual_elevation", "")))
+    if saved_heights.size() == WIDTH * HEIGHT:
+        for i in range(saved_heights.size()):
+            result.visual_elevation[i] = 0 if raw[i] == OCEAN else clampi(saved_heights[i], 0, 3)
+    else:
+        # Version-1 saves without heights remain flat, except existing mountains.
+        for i in range(raw.size()):
+            result.visual_elevation[i] = 2 if raw[i] == MOUNTAIN else 0
     result.tick = maxi(0, int(data.get("tick", 0)))
     result.citizens.clear()
     var saved_people: Array = data.get("citizens", [])

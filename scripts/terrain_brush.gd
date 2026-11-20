@@ -43,6 +43,6 @@ static func paint_segment(world: SandboxSimulation, power: int, start: Vector2i,
         # Grow forest cannot be applied to ocean; mirror world power semantics.
         if power == 2 and world.terrain[idx] == SandboxSimulation.OCEAN:
             continue
-        world.terrain[idx] = target
+        world.set_terrain(cell.x, cell.y, target)
         changed += 1
     return changed

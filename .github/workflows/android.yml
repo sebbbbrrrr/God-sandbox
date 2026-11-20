@@ -2,7 +2,7 @@ name: God Sandbox Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev/phase1-pixel-art]
   workflow_dispatch:
 
 permissions:
@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configure JDK 17
         uses: actions/setup-java@v4
@@ -37,7 +39,7 @@ jobs:
         run: |
           sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
           sudo apt-get update -qq
-          sudo apt-get install -y unzip
+          sudo apt-get install -y unzip xvfb libgl1-mesa-dri ffmpeg python3-pil
 
       - name: Download Godot editor and official export templates
         run: |
@@ -72,19 +74,66 @@ jobs:
           export/android/java_sdk_path = "$JAVA_HOME"
           EOF
 
-      - name: Import project and check scripts
-        run: ./godot --headless --editor --path . --import --quit
+      - name: Validate imports, simulation, renderer and touch controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          run_checked() {
+            local label="$1"
+            shift
+            "$@" 2>&1 | tee "build/${label}.log"
+            if grep -E 'SCRIPT ERROR|^ERROR:|FAILED' "build/${label}.log"; then
+              exit 1
+            fi
+          }
+          python3 tests/atlas_integrity.py | tee build/atlas-integrity.log
+          git diff --exit-code -- assets/pixel
+          run_checked import ./godot --headless --editor --path . --import --quit
+          run_checked simulation ./godot --headless --path . --script res://tests/simulation_test.gd
+          run_checked rendering ./godot --headless --path . --script res://tests/rendering_test.gd
+          run_checked input ./godot --headless --path . --script res://tests/input_test.gd
+          run_checked smoke ./godot --headless --path . --quit-after 90
 
-      - name: Run simulation regression tests
-        run: ./godot --headless --path . --script res://tests/simulation_test.gd
+      - name: Capture matched environments and benchmark both versions
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/baseline build/comparison/before build/comparison/after
+          git archive d89f695 | tar -x -C build/baseline
+          cp tests/environment_fixture.gd tests/capture_environments.gd tests/benchmark_renderer.gd tests/benchmark_paint.gd build/baseline/tests/
+          ./godot --headless --editor --path build/baseline --import --quit > build/baseline-import.log 2>&1
+          for version in before after; do
+            PROJECT=.
+            if [ "$version" = before ]; then PROJECT=build/baseline; fi
+            xvfb-run -a -s "-screen 0 1280x1800x24" ./godot --path "$PROJECT" --rendering-method gl_compatibility --audio-driver Dummy --script res://tests/capture_environments.gd 2>&1 | tee "build/${version}-capture.log"
+            xvfb-run -a -s "-screen 0 1280x1800x24" ./godot --path "$PROJECT" --rendering-method gl_compatibility --audio-driver Dummy --script res://tests/benchmark_renderer.gd 2>&1 | tee "build/${version}-benchmark.log"
+            ./godot --headless --path "$PROJECT" --script res://tests/benchmark_paint.gd 2>&1 | tee "build/${version}-paint.log"
+            cp "$PROJECT"/tests/captures/*.png "$PROJECT"/tests/captures/*.json "build/comparison/$version/"
+          done
+          if grep -E 'SCRIPT ERROR|^ERROR:|FAILED' build/*-capture.log build/*-benchmark.log build/*-paint.log build/baseline-import.log; then exit 1; fi
+          test -s build/comparison/before/forest.png
+          test -s build/comparison/after/settlement.png
 
-      - name: Smoke-test main game scene
-        run: ./godot --headless --path . --quit-after 30
+      - name: Record actual Godot environmental tour
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s "-screen 0 1280x1800x24" ./godot --path . --resolution 480x850 --rendering-method gl_compatibility --audio-driver Dummy --fixed-fps 30 --write-movie build/environment-tour.avi --script res://tests/record_environment_tour.gd 2>&1 | tee build/recording.log
+          if grep -E 'SCRIPT ERROR|^ERROR:|FAILED' build/recording.log; then exit 1; fi
+          ffmpeg -y -i build/environment-tour.avi -c:v libx264 -preset fast -crf 20 -pix_fmt yuv420p -an build/environment-tour.mp4
+          rm build/environment-tour.avi
+          test -s build/environment-tour.mp4
 
       - name: Export Android debug APK
         run: |
           mkdir -p build
-          ./godot --headless --path . --export-debug "Android" build/GodSandbox-debug.apk
+          set -euo pipefail
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-debug.apk 2>&1 | tee build/export.log
+          if grep -E 'SCRIPT ERROR|^ERROR:' build/export.log; then exit 1; fi
           test -s build/GodSandbox-debug.apk
           ls -lh build/GodSandbox-debug.apk
 
@@ -94,4 +143,18 @@ jobs:
           name: GodSandbox-Android-debug
           path: build/GodSandbox-debug.apk
           if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload validation logs and in-engine captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodSandbox-Visual-validation
+          path: |
+            build/*.log
+            build/comparison/
+            build/environment-tour.mp4
+            tests/captures/*.png
+            tests/captures/*.json
+          if-no-files-found: warn
           retention-days: 14
