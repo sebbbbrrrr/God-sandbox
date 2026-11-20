@@ -10,10 +10,7 @@ func _draw() -> void:
     if game == null or game.world == null:
         return
     if mode == "items":
-        if game.inspector.visible:
-            InspectorOverlay.draw_panel(self, game.font, game.world, game.inspector,
-                game.ui_size(), game.toolbar_height())
-        return
+        return # The unified frontend now presents inventory with native Controls.
     var world: SandboxSimulation = game.world
     var size: Vector2 = game.ui_size()
     var ts: float = game.tile_size()
