@@ -250,8 +250,20 @@ func find_plot(world: RefCounted, nation: int) -> Vector2i:
                 return cell
     return Vector2i(-1, -1)
 
+func water_near(world: RefCounted, cell: Vector2i) -> bool:
+    for dy in range(-3, 4):
+        for dx in range(-3, 4):
+            if absi(dx) + absi(dy) > 3:
+                continue
+            if world.at(cell.x + dx, cell.y + dy) in [world.OCEAN, world.BEACH]:
+                return true
+    return false
+
 func create_farm(world: RefCounted, nation: int) -> bool:
     if nation not in [0, 1] or not bool(techniques[nation].get("cultivation", false)):
+        return false
+    # Settlement knowledge does not bypass local growing conditions.
+    if int(world.calendar.date_at(world.tick)["season_index"]) == 3:
         return false
     if int(depots[nation]["grain"]) < 1:
         return false
@@ -271,9 +283,13 @@ func create_farm(world: RefCounted, nation: int) -> bool:
         plot = Vector2i(int(reused["x"]), int(reused["y"]))
     depots[nation]["grain"] = int(depots[nation]["grain"]) - 1
     planted["grain"] = int(planted["grain"]) + 1
-    var crop_yield: int = 5
-    if bool(techniques[nation].get("irrigation", false)):
+    var coastal: bool = water_near(world, plot)
+    var colder: bool = plot.y < 16 or plot.y > world.HEIGHT - 17
+    var crop_yield: int = 4 + (1 if coastal else 0) - (2 if colder else 0)
+    # Irrigation requires actual nearby water rather than creating it.
+    if bool(techniques[nation].get("irrigation", false)) and coastal:
         crop_yield += 2
+    crop_yield = maxi(2, crop_yield)
     if reused.is_empty():
         farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
             "sown_tick": world.tick, "ready_tick": world.tick + 240,
