@@ -140,8 +140,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         if project.is_empty():
             return false
         var job: Dictionary = {}
-        if int(person["id"]) % 5 == 0:
-            # Reserve one builder immediately so they wait locally for actual supplies.
+        var profession: String = str(world.occupations.record_for(person).get("preference", ""))
+        if int(person["id"]) % 5 == 0 or profession == "shelter_builder":
+            # Skilled/aspiring builders can reserve an actual construction job.
             if int(project["reserved"]) != 0:
                 return false
             project["reserved"] = int(person["id"])
