@@ -28,6 +28,7 @@ func run() -> void:
     root.content_scale_size=Vector2i(480,850)
     var game := TestGame.new()
     root.add_child(game)
+    check(bool(ProjectSettings.get_setting("input_devices/pointing/emulate_mouse_from_touch")), "Android GUI buttons require touch-to-mouse emulation")
     game.paused=true
     game.brush_index=0
     game.selected_power=0
@@ -60,11 +61,36 @@ func run() -> void:
     before=game.world.terrain.duplicate()
     touch(game,0,Vector2(20,820),true);drag(game,0,Vector2(50,200));touch(game,0,Vector2(50,200),false)
     check(game.world.terrain==before,"toolbar-origin touch cannot paint world")
-    var paused_before: bool=game.paused
-    game.tapped(Vector2(390,20));check(game.paused!=paused_before,"pause control")
-    game.tapped(Vector2(450,20));check(game.simulation_speed==2,"speed control")
-    game.tapped(Vector2(330,20));check(game.selected_power==-1,"hand selection")
-    game.tapped(Vector2(70,710));check(game.selected_power==0,"category returns to editing")
+    check(game.hud.blocks_world_input(Vector2(25, 820)), "tool dock blocks world input")
+    check(game.hud.blocks_world_input(Vector2(50, 20)), "top HUD blocks world input")
+    game.hud.pause_pressed.emit()
+    check(game.paused == false, "HUD pause toggles simulation")
+    game.hud.speed_pressed.emit()
+    check(game.simulation_speed == 2, "HUD speed cycles simulation")
+    game.hud._choose_power(0)
+    check(game.selected_power == 0, "select Raise via HUD")
+    game.hud._choose_power(0)
+    check(game.selected_power == -1, "tapping selected power again switches to Hand")
+    game.hud._choose_power(0)
+    game.hud._choose_power(2)
+    check(game.selected_power == 2, "switch from equipped power to another")
+    game.hud._choose_brush(2)
+    check(game.brush_index == 2, "brush size updates game from HUD")
+    game.hud._choose_power(-1)
+    game.hud.open_palette(true)
+    check(game.hud.palette_open, "palette expands")
+    check(game.hud.blocks_world_input(game.hud.palette_panel.position + Vector2(10, 10)), "expanded palette blocks world input")
+    game.hud.open_palette(false)
+    check(not game.hud.palette_open, "palette collapses")
+    game.hud._choose_power(0)
+    game.hud._choose_power(-1)
+    game.paused = true
+    game.tapped(Vector2(240, 300))
+    check(game.hud.inspector_panel.visible, "hand mode opens tile inspector")
+    check(game.hud.inspector_panel.size.y <= 220.0, "inspector stays compact instead of covering the map")
+    game.hud.show_citizen(game.world.citizens[0])
+    check(game.hud.inspector_panel.size.y <= 220.0, "citizen inspector uses bounded height")
+    game.hud.hide_inspector()
     game.paused=true
     var point:=Vector2(240,300)
     var cell: Vector2i=game.screen_to_tile(point)
@@ -74,6 +100,16 @@ func run() -> void:
     var units_before:=0
     for row in game.world_renderer.unit_rows: units_before+=row.keys.size()
     game.selected_power=4
+    var citizen_count_before := game.world.citizens.size()
+    var emulated_press := InputEventMouseButton.new()
+    emulated_press.device = InputEvent.DEVICE_ID_EMULATION
+    emulated_press.button_index = MOUSE_BUTTON_LEFT
+    emulated_press.position = point
+    emulated_press.pressed = true
+    game._input(emulated_press)
+    emulated_press.pressed = false
+    game._input(emulated_press)
+    check(game.world.citizens.size() == citizen_count_before, "synthesized touchscreen mouse cannot double-apply world powers")
     game.tapped(point)
     var units_after:=0
     for row in game.world_renderer.unit_rows: units_after+=row.keys.size()
