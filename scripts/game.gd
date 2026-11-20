@@ -206,7 +206,7 @@ func draw_interface(sz: Vector2) -> void:
     label("%dx" % simulation_speed, Vector2(sz.x - 43, 30), 14)
     var top := sz.y - toolbar_height()
     draw_rect(Rect2(0, top, sz.x, toolbar_height()), Color("#203432"))
-    var mode_name := "HAND  /  Navigate & inspect" if selected_power == -1 else "POWER  /  " + POWER_NAMES[selected_power]
+    var mode_name: String = "HAND  /  Navigate & inspect" if selected_power == -1 else "POWER  /  " + str(POWER_NAMES[selected_power])
     label(mode_name, Vector2(12, top + 21), 13, Color("#f4e5c5"))
     var cw := (sz.x - 12.0) / float(CATEGORY_NAMES.size())
     for i in range(CATEGORY_NAMES.size()):
