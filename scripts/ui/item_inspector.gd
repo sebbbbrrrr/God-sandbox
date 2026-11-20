@@ -197,7 +197,7 @@ func actions_for(world: RefCounted) -> Array[Dictionary]:
     var holder := holder_id
     var item_id := str(row["item_id"])
     var serial := str(row["serial"])
-    var is_tool := serial != "" and world.toolmaking.instances.has(serial)
+    var is_tool: bool = serial != "" and world.toolmaking.instances.has(serial)
     if holder.begins_with("citizen:"):
         var owner_id := int(holder.get_slice(":", 1))
         var owner_ok := ready and int(person["id"]) == owner_id
@@ -220,7 +220,7 @@ func actions_for(world: RefCounted) -> Array[Dictionary]:
             "enabled": eligible and not (is_tool and int(row["condition"]) <= 0)})
         if is_tool:
             var repair_mat := str(world.toolmaking.REPAIR_INPUTS.get(item_id, ""))
-            var can_repair := eligible and _craftsman(world, person) and \
+            var can_repair: bool = eligible and _craftsman(world, person) and \
                 int(row["condition"]) < int(row["max_condition"]) and \
                 world.inventory.held(holder, repair_mat) > 0 and \
                 not world.toolmaking.jobs.has(str(person["id"])) and \
@@ -261,7 +261,7 @@ func apply_action(world: RefCounted, key: String) -> bool:
         "unequip":
             success = world.toolmaking.unequip_owned(world, focus_citizen_id, str(row["serial"]))
         "drop":
-            var index := world.index_of(int(person["x"]), int(person["y"]))
+            var index: int = world.index_of(int(person["x"]), int(person["y"]))
             success = _transfer_selected(world, holder_id, "ground:" + str(index))
         "store":
             success = _transfer_selected(world, holder_id,
