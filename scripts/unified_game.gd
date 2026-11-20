@@ -5,6 +5,9 @@ extends "res://scripts/game.gd"
 const Renderer = preload("res://scripts/pixel_world_renderer.gd")
 const HUD = preload("res://scripts/sandbox_ui.gd")
 const UnifiedOverlay = preload("res://scripts/ui/unified_world_overlay.gd")
+const AudioManagerScript = preload("res://scripts/audio/audio_manager.gd")
+const LivingWorldAudio = preload("res://scripts/audio/living_world_audio.gd")
+const ConstructionAudioBridge = preload("res://scripts/audio/construction_audio_bridge.gd")
 
 var world_renderer: PixelWorldRenderer
 var hud: GodSandboxHUD
@@ -26,6 +29,9 @@ var visual_refresh_accum := 0.0
 var hud_refresh_accum := 0.0
 var units_need_refresh := false
 var work_visual_clock := 0.0
+var game_audio: Node
+var living_audio = LivingWorldAudio.new()
+var construction_audio = ConstructionAudioBridge.new()
 
 
 func _ready() -> void:
@@ -33,6 +39,11 @@ func _ready() -> void:
     if world == null:
         world = Simulation.new(int(Time.get_unix_time_from_system()) % 2147483647)
     font = ThemeDB.fallback_font
+    game_audio = AudioManagerScript.new()
+    game_audio.name = "GameAudio"
+    add_child(game_audio)
+    living_audio.reset()
+    construction_audio.reset()
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
     selected_power = -1
     brush_index = 1
@@ -75,6 +86,8 @@ func _ready() -> void:
     _on_resized()
 
 func _on_resized() -> void:
+    if game_audio != null:
+        game_audio.configure_listener(ui_size(), 0.0)
     queue_redraw()
     if world_items != null:
         world_items.queue_redraw()
@@ -123,6 +136,7 @@ func _process(delta: float) -> void:
             if iterations > 0 and Time.get_ticks_usec() - frame_started >= SIM_FRAME_BUDGET_USEC:
                 break
             world.step()
+            _audio_world_step()
             sim_accum -= SIM_TICK_SECONDS
             iterations += 1
             autosave_ticks += 1
@@ -132,6 +146,9 @@ func _process(delta: float) -> void:
             autosave_ticks = 0
             save_world()
 
+    if not paused:
+        living_audio.observe_ambience(world, game_audio, camera_center, world_origin(),
+            tile_size(), ui_size(), 0.0, Time.get_ticks_msec())
     world_renderer.update_view(world_origin(), tile_size(),
         Rect2(Vector2.ZERO, ui_size()))
     # Sprite interpolation follows real display time, not accelerated AI time.
@@ -159,7 +176,29 @@ func _process(delta: float) -> void:
         if inspector.visible:
             item_visual.queue_redraw()
 
+func _audio_world_step() -> void:
+    # Read-only sound observers follow the same authoritative step as the AI.
+    # Real-time audio is never multiplied by the time-speed setting.
+    var origin := world_origin()
+    var ts := tile_size()
+    var size := ui_size()
+    living_audio.observe_movement(world, game_audio, origin, ts, size, 0.0,
+        simulation_speed > 1)
+    construction_audio.observe(world, living_audio, game_audio, origin, ts, size,
+        0.0, work_visual_clock)
+
+func paint_segment(from_cell: Vector2i, to_cell: Vector2i) -> void:
+    if not editable_power():
+        return
+    var changed: int = Brush.paint_segment(world, selected_power, from_cell,
+        to_cell, BRUSH_RADII[brush_index])
+    if changed > 0:
+        game_audio.play_power(selected_power, world_origin() +
+            (Vector2(to_cell) + Vector2(0.5, 0.5)) * tile_size())
+    queue_redraw()
+
 func _set_power(power: int) -> void:
+    game_audio.play_ui("ui.select")
     selected_power = power
     preview_visible = false
     stroke_active = false
@@ -170,14 +209,17 @@ func _set_power(power: int) -> void:
     _on_resized()
 
 func _set_brush(index: int) -> void:
+    game_audio.play_ui("ui.select")
     brush_index = index
     queue_redraw()
 
 func _toggle_pause() -> void:
+    game_audio.play_ui("ui.toggle")
     paused = not paused
     hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused, simulation_speed)
 
 func _cycle_speed() -> void:
+    game_audio.play_ui("ui.toggle")
     simulation_speed = 2 if simulation_speed == 1 else (4 if simulation_speed == 2 else 1)
     hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused, simulation_speed)
 
@@ -236,6 +278,8 @@ func tapped(position: Vector2) -> void:
     elif editable_power():
         paint_segment(cell, cell)
     elif world.apply_power(selected_power, cell.x, cell.y):
+        game_audio.play_power(selected_power, world_origin() +
+            (Vector2(cell) + Vector2(0.5, 0.5)) * tile_size())
         world_renderer.refresh_units()
         world_renderer.add_power_effect(selected_power, cell)
         world_items.queue_redraw()
