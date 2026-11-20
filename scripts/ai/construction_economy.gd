@@ -141,7 +141,8 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             return false
         var job: Dictionary = {}
         if int(person["id"]) % 5 == 0:
-            if int(project["reserved"]) != 0 or int(stockpiles[nation]["wood"]) < HOUSE_WOOD or int(stockpiles[nation]["stone"]) < HOUSE_STONE:
+            # Reserve one builder immediately so they wait locally for actual supplies.
+            if int(project["reserved"]) != 0:
                 return false
             project["reserved"] = int(person["id"])
             job = {"kind": "build", "nation": nation, "project_id": int(project["id"]),
@@ -218,9 +219,7 @@ func build_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: Str
     if str(task["phase"]) == "depot":
         if walk(world, person, mind, depot):
             if int(stockpiles[int(task["nation"])]["wood"]) < HOUSE_WOOD or int(stockpiles[int(task["nation"])]["stone"]) < HOUSE_STONE:
-                project["reserved"] = 0
-                jobs.erase(id)
-                return false
+                return true  # builder waits at depot for supplies, never fabricates them
             stockpiles[int(task["nation"])]["wood"] -= HOUSE_WOOD
             stockpiles[int(task["nation"])]["stone"] -= HOUSE_STONE
             task["wood"] = HOUSE_WOOD
