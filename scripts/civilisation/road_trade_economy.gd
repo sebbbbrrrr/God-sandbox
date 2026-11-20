@@ -407,9 +407,14 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
     road_jobs = raw["road_jobs"].duplicate(true)
     trade_jobs = raw["trade_jobs"].duplicate(true)
     route = raw["route"].duplicate(true)
-    prices = raw.get("prices", [{}, {}]).duplicate(true)
-    if prices.size() != 2:
+    var incoming_prices: Variant = raw.get("prices", [{}, {}])
+    if not incoming_prices is Array or incoming_prices.size() != 2:
         return false
+    prices.clear()
+    for board in incoming_prices:
+        if not board is Dictionary:
+            return false
+        prices.append(board.duplicate(true))
     recent_trades.clear()
     for event in raw["recent_trades"]:
         if not event is Dictionary:
