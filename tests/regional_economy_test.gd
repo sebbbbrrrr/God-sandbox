@@ -96,7 +96,7 @@ func _initialize() -> void:
         check(copy.regional_economy.snapshot() == system.snapshot(),
             "road segments, route, jobs, market quotes and trade history persist")
         check(copy.inventory.ledger_ok(), "save/restore retains commodity conservation")
-    var before := system.roads.size()
+    var before: int = system.roads.size()
     if before > 0:
         var key := str(system.roads.keys()[0])
         var cell := Vector2i(int(key) % world.WIDTH, int(key) / world.WIDTH)
