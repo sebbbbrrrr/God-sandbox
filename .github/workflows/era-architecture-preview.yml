@@ -30,4 +30,6 @@ jobs:
           git add docs/media/god_sandbox_architecture_ages_i_v.png
           git diff --cached --quiet && exit 0
           git commit -m "docs: publish real early-era architecture preview [skip ci]"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
           git push origin HEAD:"${GITHUB_REF_NAME}"
