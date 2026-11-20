@@ -1,5 +1,6 @@
 extends RefCounted
 class_name SandboxSimulation
+signal terrain_changed(cell: Vector2i)
 
 const SaveStore = preload("res://scripts/ai/save_store.gd")
 const SaveCodec = preload("res://scripts/ai/save_codec.gd")
@@ -31,6 +32,8 @@ const MAX_PEOPLE := 1500
 var seed: int
 var tick: int = 0
 var terrain := PackedByteArray()
+# Render-only strata. Citizen decisions and material economics still use terrain.
+var visual_elevation := PackedByteArray()
 var citizens: Array[Dictionary] = []
 var citizen_ai_by_id: Dictionary = {}
 var ai_context := AI.Perception.new()
@@ -52,6 +55,7 @@ func _init(world_seed: int = 424242, initialize_world: bool = true) -> void:
     rng = RandomNumberGenerator.new()
     rng.seed = seed
     terrain.resize(WIDTH * HEIGHT)
+    visual_elevation.resize(WIDTH * HEIGHT)
     # Legacy stockpile access aliases the authoritative settlement balances.
     for nation in range(2):
         construction.stockpiles[nation] = inventory.stockpile(nation)
@@ -85,6 +89,7 @@ func generate_world() -> void:
             if v > 0.63:
                 type = MOUNTAIN
             terrain[y * WIDTH + x] = type
+            visual_elevation[y * WIDTH + x] = 0 if type == OCEAN else (3 if type == MOUNTAIN else (2 if v > 0.50 else (1 if v > 0.38 else 0)))
 
 func index_of(x: int, y: int) -> int:
     if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:
@@ -97,6 +102,10 @@ func at(x: int, y: int) -> int:
         return OCEAN
     return terrain[i]
 
+func height_at(x: int, y: int) -> int:
+    var idx := index_of(x, y)
+    return int(visual_elevation[idx]) if idx >= 0 else 0
+
 func is_walkable(x: int, y: int) -> bool:
     var i := index_of(x, y)
     return i >= 0 and terrain[i] != OCEAN and terrain[i] != MOUNTAIN
@@ -105,14 +114,28 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
     var idx := index_of(x, y)
     if idx < 0 or type < OCEAN or type > TOWN or terrain[idx] == type:
         return false
+    var was_ocean: bool = terrain[idx] == OCEAN
     terrain[idx] = type
+    if type == OCEAN:
+        visual_elevation[idx] = 0
+    elif type == MOUNTAIN:
+        visual_elevation[idx] = 3
+    elif was_ocean:
+        visual_elevation[idx] = 1
     construction.on_terrain_changed(self, x, y)
     inventory.on_terrain_changed(self, x, y)
     households.dirty = true
     food.on_terrain_changed(self, x, y)
     ai_context.terrain_dirty = true
     ai_context.local_views.clear()
+    terrain_changed.emit(Vector2i(x, y))
     return true
+
+# Compatibility for the separate visual branch's editor/capture tests.
+# The authoritative setter remains set_terrain_cell and invokes every
+# construction, inventory, food and AI terrain-change hook.
+func set_terrain(x: int, y: int, type: int) -> void:
+    set_terrain_cell(x, y, type)
 
 func add_citizen(x: int, y: int, nation: int) -> bool:
     if not is_walkable(x, y) or citizens.size() >= MAX_PEOPLE:
@@ -257,7 +280,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
     return {
         "version": 3 if legacy else 4, "seed": seed, "tick": tick, "next_id": next_id,
         "ai_version": 2 if legacy else 3, "citizen_ai_by_id": citizen_ai_by_id.duplicate(true) if legacy else SaveCodec.encode(citizen_ai_by_id),
-        "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens.duplicate(true),
+        "terrain": Marshalls.raw_to_base64(terrain),
+        "visual_elevation": Marshalls.raw_to_base64(visual_elevation), "citizens": citizens.duplicate(true),
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
         "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget,
         "construction": construction.snapshot(),
@@ -277,6 +301,12 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     var result := SandboxSimulation.new(int(data.get("seed", 424242)), false)
     result.terrain = raw
+    var saved_heights := Marshalls.base64_to_raw(str(data.get("visual_elevation", "")))
+    for index in range(raw.size()):
+        if saved_heights.size() == WIDTH * HEIGHT:
+            result.visual_elevation[index] = 0 if raw[index] == OCEAN else clampi(int(saved_heights[index]), 0, 3)
+        else:
+            result.visual_elevation[index] = 3 if raw[index] == MOUNTAIN else 0
     result.tick = maxi(0, int(data.get("tick", 0)))
     result.citizens.clear()
     result.citizen_ai_by_id.clear()

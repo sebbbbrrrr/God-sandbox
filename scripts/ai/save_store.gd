@@ -23,6 +23,7 @@ static func prepare(world: RefCounted) -> PackedByteArray:
         minds[id] = state
     var view := {"version":3, "ai_version":2, "seed":world.seed, "tick":world.tick, "next_id":world.next_id,
         "citizen_ai_by_id":minds, "citizens":world.citizens, "terrain":Marshalls.raw_to_base64(world.terrain),
+        "visual_elevation":Marshalls.raw_to_base64(world.visual_elevation),
         "capitals":[[world.capitals[0].x,world.capitals[0].y],[world.capitals[1].x,world.capitals[1].y]],
         "rng_state":str(world.rng.state), "routine_budget":world.ai_context.routine_budget,
         "construction":world.construction.snapshot(), "calendar":world.calendar.snapshot(),
