@@ -13,6 +13,19 @@ var world_items: Node2D
 var item_layer: CanvasLayer
 var item_visual: Node2D
 var inspected_citizen_id := -1
+# Keep the simulation from monopolising the Android main thread at 2x/4x.
+# One expensive world.step() cannot be interrupted, but subsequent steps are
+# deferred once the CPU slice has been consumed. Rendering uses real time.
+const SIM_TICK_SECONDS := 0.1
+const MAX_SIM_STEPS_PER_FRAME := 4
+const SIM_FRAME_BUDGET_USEC := 4500
+const MAX_SIM_BACKLOG_SECONDS := 0.25
+const VISUAL_REFRESH_SECONDS := 1.0 / 30.0
+const HUD_REFRESH_SECONDS := 0.1
+var visual_refresh_accum := 0.0
+var hud_refresh_accum := 0.0
+var units_need_refresh := false
+
 
 func _ready() -> void:
     world = load_world()
@@ -91,31 +104,48 @@ func _draw() -> void:
 func _process(delta: float) -> void:
     if world == null or world_renderer == null:
         return
+    var real_delta: float = maxf(0.0, delta)
+    visual_refresh_accum += real_delta
+    hud_refresh_accum += real_delta
     if not paused:
-        sim_accum += minf(delta, 0.1) * simulation_speed
+        # Bound accumulated work after a device stall rather than trying to
+        # replay seconds of expensive AI updates on the next rendered frame.
+        sim_accum = minf(sim_accum + minf(real_delta, 0.1) * float(simulation_speed), MAX_SIM_BACKLOG_SECONDS)
+        var frame_started: int = Time.get_ticks_usec()
         var iterations := 0
-        while sim_accum >= 0.1 and iterations < 5:
+        while sim_accum >= SIM_TICK_SECONDS and iterations < MAX_SIM_STEPS_PER_FRAME:
+            if iterations > 0 and Time.get_ticks_usec() - frame_started >= SIM_FRAME_BUDGET_USEC:
+                break
             world.step()
-            sim_accum -= 0.1
+            sim_accum -= SIM_TICK_SECONDS
             iterations += 1
             autosave_ticks += 1
         if iterations > 0:
-            world_renderer.refresh_units()
-        if iterations == 5:
-            sim_accum = minf(sim_accum, 0.5)
+            units_need_refresh = true
         if autosave_ticks >= 600:
             autosave_ticks = 0
             save_world()
+
     world_renderer.update_view(world_origin(), tile_size(),
         Rect2(Vector2.ZERO, ui_size()))
-    world_renderer.animate(delta, 0.0 if paused else delta * float(simulation_speed))
-    if hud != null:
+    # Sprite interpolation follows real display time, not accelerated AI time.
+    # At high speeds, coalesce multiple authoritative steps into one visual
+    # snapshot instead of rebuilding every citizen row on every frame.
+    var refresh_visuals: bool = visual_refresh_accum >= VISUAL_REFRESH_SECONDS
+    if refresh_visuals:
+        visual_refresh_accum = fmod(visual_refresh_accum, VISUAL_REFRESH_SECONDS)
+        if units_need_refresh:
+            world_renderer.refresh_units()
+            units_need_refresh = false
+    world_renderer.animate(real_delta, 0.0 if paused else real_delta)
+    if hud != null and (hud_refresh_accum >= HUD_REFRESH_SECONDS or paused):
+        hud_refresh_accum = 0.0
         hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused,
             simulation_speed)
         _update_inspection()
-    render_accum += delta
-    if render_accum >= 1.0 / 30.0:
-        render_accum = 0.0
+    render_accum += real_delta
+    if render_accum >= VISUAL_REFRESH_SECONDS:
+        render_accum = fmod(render_accum, VISUAL_REFRESH_SECONDS)
         queue_redraw()
         world_items.queue_redraw()
         if inspector.visible:
