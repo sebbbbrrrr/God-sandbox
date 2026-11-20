@@ -1,10 +1,11 @@
-name: D2 Physical Inventory Validation
+name: God Sandbox Item & UI Validation
 
 on:
   push:
     branches:
       - feature/items-physical-inventory-d2
       - feature/autonomous-toolmaking-d3
+      - feature/item-visualisation-interaction-d4
   workflow_dispatch:
 
 permissions:
@@ -34,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for test in item_catalogue_test physical_inventory_test toolmaking_test toolmaking_autonomy_test construction_test food_survival_test era_occupations_test simulation_test civilisation_calendar_lifecycle_test; do
+          for test in item_catalogue_test physical_inventory_test toolmaking_test toolmaking_autonomy_test item_inspector_test game_item_ui_test construction_test food_survival_test era_occupations_test simulation_test civilisation_calendar_lifecycle_test; do
             echo "::group::$test"
             ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/$test.log"
             ! grep -E "SCRIPT ERROR|Parse Error|Failed to load script|FAILED:" "/tmp/$test.log"

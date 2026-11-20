@@ -132,7 +132,8 @@ func _log(world: RefCounted, action: String, source: String, target: String, uni
 
 # All-or-nothing transaction. Physical custody and actor permissions are
 # checked at the time of transfer; neither side may be remotely accessed.
-func transfer(world: RefCounted, source: String, target: String, units: Dictionary, actor_id: int) -> bool:
+func transfer(world: RefCounted, source: String, target: String,
+        units: Dictionary, actor_id: int, exact_serial: String = "") -> bool:
     if source == target or not _bundle_valid(units):
         return false
     var actor_person := _person(world, actor_id)
@@ -157,7 +158,7 @@ func transfer(world: RefCounted, source: String, target: String, units: Dictiona
         updated[item_id] = int(updated.get(item_id, 0)) + qty
     if str(to["kind"]) == "citizen" and _weight(updated) > MAX_CARRY_KG:
         return false
-    if not world.toolmaking.can_move(source, units):
+    if not world.toolmaking.can_move(source, units, exact_serial):
         return false
     if not balances.has(target) and balances.size() >= MAX_STORES:
         return false
@@ -170,7 +171,7 @@ func transfer(world: RefCounted, source: String, target: String, units: Dictiona
         if int(original[item_id]) == 0 and not (source.begins_with("settlement:") and item_id in ["wood", "stone"]):
             original.erase(item_id)
         dst[item_id] = int(dst.get(item_id, 0)) + qty
-    world.toolmaking.move_instances(source, target, units)
+    world.toolmaking.move_instances(source, target, units, exact_serial)
     _log(world, "transfer", source, target, units)
     return true
 
