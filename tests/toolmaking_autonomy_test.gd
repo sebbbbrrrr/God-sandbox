@@ -17,8 +17,16 @@ func _initialize() -> void:
     ok = check(a.occupations.has_capability(a, 0, "stone_working") and
         a.toolmaking.experiments_total > 0,
         "local stone technology discovered through real physical experiments") and ok
+    var made: Dictionary = {}
+    for serial in a.toolmaking.instances:
+        var instance: Dictionary = a.toolmaking.instances[serial]
+        var product := str(instance["item_id"])
+        made[product] = int(made.get(product, 0)) + 1
+    print("D3_AUTONOMOUS_TOOLS=", made, " crafted_total=", a.toolmaking.crafted_total)
     ok = check(a.toolmaking.crafted_total > 0 and not a.toolmaking.instances.is_empty(),
         "citizens autonomously craft durable tools with unique physical identities") and ok
+    ok = check(int(made.get("stone_axe", 0)) > 0,
+        "autonomous chain advances beyond a hammerstone to a usable stone axe") and ok
     ok = check(a.inventory.ledger_ok() and a.food.ledger_ok(),
         "both toolcraft and food economies conserve all produced resources") and ok
     var loaded = World.from_snapshot(a.snapshot())
