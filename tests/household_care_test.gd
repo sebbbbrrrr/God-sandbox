@@ -158,6 +158,10 @@ func add_house(world, id: int, capacity: int) -> void:
         "x": 13, "y": 12, "capacity": capacity, "built_tick": world.tick})
     world.households.dirty = true
 
+func provision_family(world, household_id: int, amount: int) -> void:
+    world.food.pantry_for(household_id)["grain"] += amount
+    world.food.produced["grain"] += amount
+
 func check(condition: bool, name: String) -> bool:
     if not condition:
         push_error("FAILED: " + name)
