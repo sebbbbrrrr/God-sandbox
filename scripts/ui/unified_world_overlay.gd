@@ -84,8 +84,66 @@ func _draw() -> void:
                 "resource.%s.stack_small" % biggest_id if biggest_count >= 4 else
                 "item.%s" % biggest_id)
             var pos := p + Vector2(ts * 0.8, ts * 0.85)
+            # Storage capacity is represented visually, not altered.
+            var fullness := "low" if biggest_count < 4 else ("medium" if biggest_count < 16 else "full")
+            if biggest_id == "wood":
+                pile = "storage.log_pile." + fullness
+            elif biggest_id in ["stone", "flint", "copper_ore", "tin_ore"]:
+                pile = "storage.ore_pile." + fullness
             if not PhysicalSprites.draw(self, pile, pos, ts * 0.54):
                 PhysicalSprites.draw_item(self, biggest_id, pos, ts * 0.54)
+    # Toolmakers use the actual founded facility; an active bench is shown
+    # only when its nation's physical toolmaking job is underway.
+    if ts >= 18.0:
+        for house in world.construction.houses:
+            if str(house.get("type", "")) != "tool_area":
+                continue
+            var nation := int(house.get("nation", -1))
+            if nation < 0:
+                continue
+            var x := int(house["x"])
+            var y := int(house["y"])
+            var anchor := origin + Vector2(float(x), float(y)) * ts
+            anchor.y -= float(world.height_at(x, y)) * (12.0 / 32.0) * ts
+            if anchor.x < -ts or anchor.x > size.x or anchor.y < -ts or anchor.y > size.y:
+                continue
+            var active := false
+            for work in world.toolmaking.jobs.values():
+                if int(work.get("nation", -1)) == nation and str(work.get("kind", "")) in [
+                        "craft", "repair", "experiment"] and str(work.get("phase", "")) == "depot":
+                    active = true
+                    break
+            var key := "workstation.flintbench.active" if active else "workstation.flintbench.idle"
+            PhysicalSprites.draw(self, key, anchor + Vector2(ts * 0.55, ts * 0.32), ts * 0.39)
+    # Other citizens may carry physical inventory outside construction jobs.
+    # Skip construction workers whose authoritative cargo is already drawn
+    # by CitizenWorkVisuals; do not create a second cargo visual.
+    if ts >= 17.0:
+        for citizen in world.citizens:
+            if int(citizen.get("hp", 0)) <= 0:
+                continue
+            var id := int(citizen["id"])
+            if world.construction.jobs.has(str(id)):
+                continue
+            var visual := Vector2(float(citizen["x"]), float(citizen["y"]))
+            if game.world_renderer != null and game.world_renderer.walks != null and \
+                    game.world_renderer.walks.tracks.has(id):
+                visual = game.world_renderer.walks.visual_tile(id)
+            var pos := origin + (visual + Vector2(0.5, 0.5)) * ts
+            pos.y -= float(world.height_at(int(citizen["x"]), int(citizen["y"]))) * (12.0 / 32.0) * ts
+            if pos.x < -ts or pos.x > size.x + ts or pos.y < -ts or pos.y > size.y + ts:
+                continue
+            var held: Dictionary = world.inventory.balances.get("citizen:" + str(id), {})
+            var held_keys: Array = held.keys()
+            held_keys.sort()
+            for item_id in held_keys:
+                if int(held[item_id]) <= 0 or world.toolmaking._managed(str(item_id)):
+                    continue
+                var load := "resource.%s.stack_small" % str(item_id)
+                var at := pos + Vector2(-ts * 0.25, -ts * 0.30)
+                if not PhysicalSprites.draw(self, load, at, ts * 0.38):
+                    PhysicalSprites.draw_item(self, str(item_id), at, ts * 0.38)
+                break
     # Render only tools that are actually equipped and linked to a unique
     # durable instance. Follow the interpolated walking trajectory.
     if ts >= 13.0:
