@@ -193,6 +193,7 @@ func step() -> void:
     lifecycle.on_tick(self)
     ai_context.begin_tick(self)
     construction.prune(self)
+    toolmaking.prune(self)
     households.reconcile(self)
     food.on_tick(self)
     food.on_tick_households(self)
