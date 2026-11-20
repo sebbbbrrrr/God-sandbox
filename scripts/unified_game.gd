@@ -180,6 +180,7 @@ func _process(delta: float) -> void:
             living_audio, game_audio, ui_size())
         world_audio_director.update_civilisation(world, game_audio, camera_center,
             ui_size(), now_ms)
+        world_audio_director.update_day_night(world, game_audio, ui_size(), now_ms)
     if hud != null and (hud_refresh_accum >= HUD_REFRESH_SECONDS or paused):
         hud_refresh_accum = 0.0
         hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused,
