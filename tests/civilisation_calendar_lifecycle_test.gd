@@ -36,6 +36,9 @@ func _initialize() -> void:
         if event["kind"] == "life_stage_changed":
             stage_events += 1
     ok = check(stage_events == 1, "life-stage transition logged once") and ok
+    if stage_events == 1:
+        ok = check(int(a.lifecycle.events[0]["tick"]) == 1,
+            "birthday event occurs on exact global tick, not AI update tick") and ok
     var pa: int = int(a.citizens[0]["id"])
     var pb: int = int(a.citizens[1]["id"])
     ok = check(not a.register_birth(12, 12, 0, pa, pb),
