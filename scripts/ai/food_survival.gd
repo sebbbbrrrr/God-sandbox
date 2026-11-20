@@ -382,7 +382,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             var family: Dictionary = world.households.family_for(family_id)
             if family.is_empty() or int(family["home_id"]) <= 0 or total(pantry_for(family_id)) >= reserve_target(world, family) or total(depots[nation]) < 2:
                 return false
-            var house := world.households.house_by_id(world, int(family["home_id"]))
+            var house: Dictionary = world.households.house_by_id(world, int(family["home_id"]))
             if house.is_empty():
                 return false
             jobs[id] = {"kind": "deliver", "nation": nation, "phase": "depot",
@@ -413,7 +413,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         return true
     if str(job["phase"]) == "home":
         var family: Dictionary = world.households.family_for(int(job["family_id"]))
-        var dwelling := world.households.house_by_id(world, int(family.get("home_id", 0)))
+        var dwelling: Dictionary = world.households.house_by_id(world, int(family.get("home_id", 0)))
         if dwelling.is_empty():
             # Lost home: physically return rations to central depot.
             job["phase"] = "depot"

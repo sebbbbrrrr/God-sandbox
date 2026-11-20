@@ -8,7 +8,7 @@ func _initialize() -> void:
     var ok := true
     var w = fixture()
     var occupations = w.occupations
-    var roles := occupations.definitions
+    var roles: Dictionary = occupations.definitions
     ok = check(occupations.ERAS.size() == 11 and roles.size() >= 60,
         "complete eleven-era career catalogue has broad cross-domain coverage") and ok
     var era_seen := {}
@@ -60,12 +60,12 @@ func _initialize() -> void:
     var worker: Dictionary = w.citizens[0]
     var origin := Vector2i(int(worker["x"]), int(worker["y"]))
     worker["x"] = 15
-    worker["y"] = 12
+    worker["y"] = 16
     w.ai_context.moved(worker, origin)
     var job_id: String = str(worker["id"])
     w.food.jobs[job_id] = {"kind": "forage", "nation": 0, "phase": "source",
-        "source": [15, 12], "target": [15, 12], "type": "berries", "amount": 0}
-    var before := occupations.xp_for(worker, "forager")
+        "source": [15, 16], "target": [15, 16], "type": "berries", "amount": 0}
+    var before: int = occupations.xp_for(worker, "forager")
     ok = check(w.food.work_step(w, worker, w.citizen_ai_by_id[job_id]) and
         occupations.xp_for(worker, "forager") > before and
         str(worker["occupation_id"]) == "forager" and w.food.ledger_ok(),
@@ -96,8 +96,8 @@ func _initialize() -> void:
     occupations.on_tick(w)
     ok = check(occupations.apprenticeships.has(str(student_id)),
         "observed trust and relevant mentor expertise create a local apprenticeship") and ok
-    var student_before := occupations.xp_for(pupil, "forager")
-    var tutor_before := occupations.xp_for(teacher, "oral_mentor")
+    var student_before: int = occupations.xp_for(pupil, "forager")
+    var tutor_before: int = occupations.xp_for(teacher, "oral_mentor")
     w.tick = 271
     w.ai_context.begin_tick(w)
     ok = check(occupations.training_step(w, teacher,
@@ -150,6 +150,8 @@ func fixture():
         for x in range(7, 23):
             w.set_terrain_cell(x, y, World.MEADOW)
     w.set_terrain_cell(15, 12, World.FOREST)
+    # Unlike y=12, this latitude supports spring berries under B1 ecology.
+    w.set_terrain_cell(15, 16, World.FOREST)
     w.set_terrain_cell(18, 12, World.MOUNTAIN)
     w.set_terrain_cell(16, 12, World.BEACH)
     w.set_terrain_cell(17, 12, World.OCEAN)
