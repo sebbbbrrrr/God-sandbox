@@ -155,6 +155,10 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
             if access.x < 0:
                 continue
             var score: int = Nav.manhattan(origin, access) + Nav.manhattan(access, depot)
+            var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
+            if (preferred == "fisher" and source_kind(world, source) == "fish") or (
+                    preferred == "forager" and source_kind(world, source) != "fish"):
+                score -= 4
             if score < best_score:
                 best_score = score
                 chosen = {"source": [source.x, source.y], "target": [access.x, access.y],
@@ -329,7 +333,7 @@ func create_farm(world: RefCounted, nation: int) -> bool:
 
 func ready_farm(world: RefCounted, nation: int) -> Dictionary:
     var season: int = int(world.calendar.date_at(world.tick)["season_index"])
-    if season == 3:
+    if season == 3 or not bool(techniques[nation].get("cultivation", false)):
         return {}
     for farm in farms:
         if int(farm["nation"]) == nation and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
@@ -358,7 +362,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         next_job_scan[id] = int(world.tick) + 18 + int(person["id"]) % 7
         var reserves_low: bool = total(depots[nation]) < 8
         var emergency: bool = reserves_low and int(person.get("hunger", 0)) >= 36
-        if (int(person["id"]) % 4 == 0 or emergency) and gatherers(nation) < MAX_GATHERERS:
+        var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
+        var vocation: bool = preferred in ["forager", "fisher", "crop_farmer"]
+        if (int(person["id"]) % 4 == 0 or emergency or vocation) and gatherers(nation) < MAX_GATHERERS:
             var farm: Dictionary = ready_farm(world, nation)
             if not farm.is_empty():
                 jobs[id] = {"kind": "farm", "nation": nation, "phase": "source",
@@ -422,6 +428,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         return true
     var source := Vector2i(int(job["source"][0]), int(job["source"][1]))
     var target := source
+    if str(job["kind"]) == "farm" and not bool(techniques[nation].get("cultivation", false)):
+        jobs.erase(id)
+        return false
     if str(job["kind"]) == "forage":
         target = Vector2i(int(job["target"][0]), int(job["target"][1]))
         if source_kind(world, source) != str(job["type"]) or resource_left(world, source) <= 0:
