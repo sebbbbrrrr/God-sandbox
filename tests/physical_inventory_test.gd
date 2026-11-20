@@ -56,6 +56,10 @@ func _initialize() -> void:
         "extracted = currently held + consumed + destroyed") and ok
     var snapshot: Dictionary = world.snapshot()
     var restored = World.from_snapshot(snapshot)
+    print("D2_DEBUG restored_null=", restored == null)
+    if restored != null:
+        print("D2_DEBUG original=", world.inventory.snapshot())
+        print("D2_DEBUG returned=", restored.inventory.snapshot())
     ok = check(restored != null and restored.inventory.snapshot() == world.inventory.snapshot(),
         "JSON world snapshot restores every holder and audit counter") and ok
     var packed: PackedByteArray = world.prepare_save_bytes()
