@@ -21,6 +21,7 @@ var mouse_world_pressed := false
 var mouse_moved := false
 var details_accum := 0.0
 var last_save_error: Error = OK
+var world_file_path := SAVE_PATH
 # Keep the simulation from monopolising the Android main thread at 2x/4x.
 # One expensive world.step() cannot be interrupted, but subsequent steps are
 # deferred once the CPU slice has been consumed. Rendering uses real time.
@@ -386,19 +387,19 @@ func _refresh_world_details() -> void:
     hud.set_world_details(text)
 
 func load_world() -> SandboxSimulation:
-    var data := WorldFiles.read_snapshot(SAVE_PATH)
+    var data := WorldFiles.read_snapshot(world_file_path)
     return Simulation.from_snapshot(data) if not data.is_empty() else null
 
 func save_world() -> void:
     if world != null:
-        last_save_error = WorldFiles.write_world(world, SAVE_PATH)
+        last_save_error = WorldFiles.write_world(world, world_file_path)
 
 func _manual_save() -> void:
     save_world()
     hud.notify("World saved" if last_save_error == OK else "Could not save world", last_save_error != OK)
 
 func _reload_saved_world() -> void:
-    var data := WorldFiles.read_snapshot(SAVE_PATH)
+    var data := WorldFiles.read_snapshot(world_file_path)
     var restored = Simulation.from_snapshot(data) if not data.is_empty() else null
     if restored == null:
         hud.notify("No valid saved world found", true)

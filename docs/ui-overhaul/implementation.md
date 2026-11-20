@@ -4,7 +4,7 @@
 
 The unified scene uses a 6-category native dock: Terrain (Raise/Ocean), Nature (Forest), Life (Human/Bless), Chaos (Fire), World (real calendar and settlement capability summaries), Menu (inventory, save/reload and preferences). These are the six actual powers already supported by the runtime; there are no placeholder construction, economy or civilisation actions.
 
-A slim tool context row holds Hand, the active tool and brush size. Category changes browse without changing the equipped power. Selecting a power closes its tray. Tapping the equipped name returns to Hand. Three brush choices remain available in terrain trays. Short windows scroll the tray instead of shrinking touch targets.
+A slim tool context row holds Hand, the active tool and brush size. Category changes browse without changing the equipped power. Selecting a power closes its tray. Tapping the equipped name returns to Hand. Three brush choices remain available in terrain trays. Short windows scroll the tray instead of shrinking touch targets. Tool and menu headers remain fixed while their content scrolls.
 
 Minimal view hides all primary surfaces, temporarily uses Hand for navigation, and retains a 48-unit restore target. Restoring brings back the equipped tool. Android Back/Escape closes the current surface, restores a hidden HUD or puts a tool away before opening the world menu.
 
@@ -22,7 +22,7 @@ Minimal view hides all primary surfaces, temporarily uses Hand for navigation, a
 | Press compression / release | Inner content only; 60 ms / 100 ms |
 | Surface entrance | 180 ms opacity; stable interactive geometry |
 | Exit | Immediate, no delayed invisible blockers |
-| Feedback | Optional 8 ms Android haptic; notices expire after 2.2 seconds |
+| Feedback | Optional 8 ms Android haptic with export permission; notices expire after 2.2 seconds |
 | Motion preference | Persisted, completes running transitions when enabled |
 
 `ui_tokens.gd`, `ui_icons.gd`, `tactile_button.gd` and `item_icon.gd` centralise components. There are no blur shaders, screen texture reads or permanent animation loops. Icon textures are cached. Inventory rows rebuild only when actual item identities change, preserving scrolling and press ownership during live health/condition refreshes. HUD data refresh is limited to 10 Hz; expanded settlement summaries to 1 Hz.
@@ -46,3 +46,7 @@ An 8-unit movement threshold distinguishes a deliberate tap with finger jitter f
 Future tools should be added only with an implemented controller action. Keep stable power IDs and extend `CATEGORIES`, `CATEGORY_POWERS`, tool labels/icons and controller signal handling together. Tool trays already scroll and use reusable cards; add labelled subgroup containers when a category outgrows a small grid. World-information content is supplied through `set_world_details`; future construction/economy inspectors should follow the native inventory-sheet presentation and leave decisions in their authoritative model.
 
 No simulation, citizen AI, construction planning, resource logistics or inventory authority file was modified by this overhaul. `game.gd` changes in this branch are inherited from the existing pinch-fix branch, not new simulation work.
+
+## Future integrations
+
+The controller remains the boundary for runtime commands. Future construction/civilisation views can use the shared panel/button/scroll components and existing `interaction_started` cancellation signal; their own read models and validated command signals must be supplied by the feature that implements them. Add actual tool definitions to the category/power mapping only when the corresponding runtime action exists. UI preferences live in a separate ConfigFile, not the world schema.

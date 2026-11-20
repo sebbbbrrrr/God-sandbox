@@ -137,7 +137,10 @@ func run() -> void:
     var serials: Array = w.toolmaking._matching_serials("settlement:0","stone_axe")
     var serial: String = serials[0]
     var sheet: PanelContainer = game.hud.inventory_panel
+    check(sheet.summary.size.y >= 16 and sheet.summary.text != "", "live inventory summary has readable height")
+    check(sheet.citizen_label.size.y >= 16, "live biological age has readable height")
     await click(sheet.row_buttons["serial:"+serial])
+    check(sheet.detail.size.y >= 40, "serial and condition details have readable multiline height")
     await click(sheet.action_buttons["take"])
     check(str(w.toolmaking.instances[serial]["holder"]) == "citizen:1", "native Take command moves exact selected tool")
     await click(sheet.pack)

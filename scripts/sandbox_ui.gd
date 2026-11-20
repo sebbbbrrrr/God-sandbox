@@ -217,11 +217,12 @@ func _make_interface() -> void:
     context.add_child(dock_brush_button)
 
     palette_panel = _panel(root, "ToolTray", true)
+    var tray_outer := _column(palette_panel)
+    palette_title = _heading(tray_outer, "TERRAIN", func() -> void: open_palette(false))
     var tool_scroll := Tokens.scroll()
     tool_scroll.name = "ToolScroll"
-    palette_panel.add_child(tool_scroll)
+    tray_outer.add_child(tool_scroll)
     tool_content = _column(tool_scroll)
-    palette_title = _heading(tool_content, "TERRAIN", func() -> void: open_palette(false))
     power_grid = GridContainer.new()
     power_grid.columns = 2
     power_grid.add_theme_constant_override("h_separation", 8)
@@ -267,10 +268,11 @@ func _make_interface() -> void:
             get_viewport().set_input_as_handled()
     )
     settings_panel = _panel(root, "WorldMenu", true)
+    var menu_outer := _column(settings_panel)
+    _heading(menu_outer, "YOUR WORLD", func() -> void: _show_settings(false))
     var menu_scroll := Tokens.scroll()
-    settings_panel.add_child(menu_scroll)
+    menu_outer.add_child(menu_scroll)
     var menu := _column(menu_scroll, 10)
-    _heading(menu, "YOUR WORLD", func() -> void: _show_settings(false))
     var menu_caption := Tokens.label("World files & preferences", 13, Tokens.MUTED)
     menu.add_child(menu_caption)
     items_button = _button("Inventory & stores", "pack")
@@ -381,7 +383,7 @@ func _rebuild_power_buttons() -> void:
         power_grid.add_child(b)
         power_buttons[index] = b
         b.pressed.connect(func() -> void: _choose_power(index))
-    palette_hint.text = "Live information from this world." if active_category == 4 else "Choose a tool. Tap its name above the dock to put it away."
+    palette_hint.text = ["Drag to paint · Two fingers to navigate", "Drag to grow · Two fingers to navigate", "Tap to place or heal · Two fingers to navigate", "Tap a tile to ignite", "Live information from this world."][active_category]
     _refresh_selection()
 
 func _choose_power(power: int) -> void:
