@@ -144,6 +144,7 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
     var origin := Vector2i(int(person["x"]), int(person["y"]))
     var chosen: Dictionary = {}
     var best_score := 2147483647
+    var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
     for dy in range(-SEARCH_RADIUS, SEARCH_RADIUS + 1):
         for dx in range(-SEARCH_RADIUS, SEARCH_RADIUS + 1):
             if absi(dx) + absi(dy) > SEARCH_RADIUS:
@@ -155,7 +156,6 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
             if access.x < 0:
                 continue
             var score: int = Nav.manhattan(origin, access) + Nav.manhattan(access, depot)
-            var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
             if (preferred == "fisher" and source_kind(world, source) == "fish") or (
                     preferred == "forager" and source_kind(world, source) != "fish"):
                 score -= 4
