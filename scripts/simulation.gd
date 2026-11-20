@@ -5,6 +5,8 @@ const SaveStore = preload("res://scripts/ai/save_store.gd")
 const SaveCodec = preload("res://scripts/ai/save_codec.gd")
 const AI = preload("res://scripts/ai/citizen_ai.gd")
 const Construction = preload("res://scripts/ai/construction_economy.gd")
+const Calendar = preload("res://scripts/ai/sim_calendar.gd")
+const Lifecycle = preload("res://scripts/ai/citizen_lifecycle.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -27,6 +29,8 @@ var citizens: Array[Dictionary] = []
 var citizen_ai_by_id: Dictionary = {}
 var ai_context := AI.Perception.new()
 var construction := Construction.new()
+var calendar := Calendar.new()
+var lifecycle := Lifecycle.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -103,9 +107,37 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         "hp": 100,
         "age": 0
     })
+    lifecycle.initialise_founder(citizens[-1], seed, tick)
     citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
     ai_context.added(citizens[-1], citizen_ai_by_id[str(next_id)])
     next_id += 1
+    return true
+
+# Internal lifecycle API for later household/food planners; no autonomous births
+# are scheduled until nutrition and dependent care exist.
+func register_birth(x: int, y: int, nation: int, parent_a: int, parent_b: int) -> bool:
+    if parent_a <= 0 or parent_b <= 0 or parent_a == parent_b or not is_walkable(x, y):
+        return false
+    if citizens.size() >= MAX_PEOPLE:
+        return false
+    var parents: Array[Dictionary] = []
+    for citizen in citizens:
+        if int(citizen["id"]) in [parent_a, parent_b]:
+            if int(citizen["hp"]) <= 0 or int(citizen["nation"]) != nation or calendar.age_years(int(citizen["birth_tick"]), tick) < 18:
+                return false
+            if absi(int(citizen["x"]) - x) + absi(int(citizen["y"]) - y) > 3:
+                return false
+            parents.append(citizen)
+    if parents.size() != 2:
+        return false
+    var sheltered := false
+    for house in construction.houses:
+        if int(house["nation"]) == nation and absi(int(house["x"]) - x) + absi(int(house["y"]) - y) <= 3:
+            sheltered = true
+            break
+    if not sheltered or not add_citizen(x, y, nation):
+        return false
+    lifecycle.register_newborn(self, citizens[-1], parent_a, parent_b)
     return true
 
 func spawn_initial_population() -> void:
@@ -123,11 +155,13 @@ func spawn_initial_population() -> void:
 
 func step() -> void:
     tick += 1
+    lifecycle.on_year_boundary(self)
     ai_context.begin_tick(self)
     construction.prune(self)
     construction.plan(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
+        lifecycle.update_person(self, citizen)
         if citizen["hp"] <= 0:
             continue
         AI.step(self, citizen, ai_context.minds[id], true)
@@ -151,6 +185,8 @@ func apply_power(power: int, x: int, y: int) -> bool:
                 if abs(citizen["x"] - x) <= 1 and abs(citizen["y"] - y) <= 1:
                     citizen["hp"] = maxi(0, citizen["hp"] - 30)
                     AI.event(self, citizen, "damage", Vector2i(x, y), 30)
+                    if int(citizen["hp"]) <= 0:
+                        lifecycle.record_death(self, citizen, "fire")
                 elif abs(citizen["x"] - x) <= AI.Perception.RADIUS and abs(citizen["y"] - y) <= AI.Perception.RADIUS and AI.Perception.visible(self, Vector2i(citizen["x"], citizen["y"]), Vector2i(x, y)):
                     AI.event(self, citizen, "witness_damage", Vector2i(x, y), 20)
         2:
@@ -179,7 +215,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens.duplicate(true),
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
         "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget,
-        "construction": construction.snapshot()
+        "construction": construction.snapshot(),
+        "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -208,11 +245,19 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
             return null
         ids[incoming_id] = true
         if result.index_of(x, y) >= 0:
-            result.citizens.append({
+            var restored_citizen: Dictionary = {
                 "id": int(person.get("id", 0)), "nation": clampi(int(person.get("nation", 0)), 0, 1),
                 "x": x, "y": y, "hp": clampi(int(person.get("hp", 100)), 0, 100),
                 "age": maxi(0, int(person.get("age", 0)))
-            })
+            }
+            if person.has("birth_tick"):
+                restored_citizen["birth_tick"] = int(person["birth_tick"])
+                restored_citizen["parent_ids"] = person.get("parent_ids", [])
+                restored_citizen["life_stage"] = person.get("life_stage", "adult")
+                restored_citizen["death_tick"] = person.get("death_tick", -1)
+                restored_citizen["death_cause"] = person.get("death_cause", "")
+            result.lifecycle.migrate_citizen(restored_citizen, result.seed, result.tick)
+            result.citizens.append(restored_citizen)
     var stored_ai: Dictionary = data.get("citizen_ai_by_id", {}) if version >= 2 and data.get("citizen_ai_by_id", {}) is Dictionary else {}
     if version == 4:
         var expanded: Variant = SaveCodec.decode(data.get("citizen_ai_by_id"))
@@ -241,6 +286,10 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 result.capitals[i] = Vector2i(int(saved_capitals[i][0]), int(saved_capitals[i][1]))
     result.rng.state = int(data.get("rng_state", result.rng.state))
     result.ai_context.routine_budget = clampi(int(data.get("routine_budget", 96)), 1, MAX_PEOPLE)
+    if data.has("calendar") and not result.calendar.accepts_snapshot(data["calendar"]):
+        return null
+    if data.has("lifecycle") and not result.lifecycle.load_state(data["lifecycle"]):
+        return null
     result.construction.load_state(data.get("construction", {}))
     result.ai_context.begin_tick(result)
     return result
