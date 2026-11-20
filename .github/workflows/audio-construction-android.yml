@@ -102,7 +102,7 @@ jobs:
       - name: Audio phase A, B and construction integration regressions
         run: |
           set -euo pipefail
-          for test in audio_phase_a_test audio_phase_b_test audio_construction_integration_test construction_animation_test universal_construction_test; do
+          for test in audio_phase_a_test audio_phase_b_test audio_sample_test audio_construction_integration_test construction_animation_test universal_construction_test; do
             ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/$test.log"
             if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" "/tmp/$test.log"; then exit 1; fi
           done
