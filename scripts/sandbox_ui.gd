@@ -1,42 +1,28 @@
 extends CanvasLayer
 class_name GodSandboxHUD
-
-## Responsive, canvas-space Android HUD. World input is owned by game.gd;
-## interactive Controls consume their own taps and expose their visible bounds.
+## Presentation only. Stable power IDs and signals bridge to the game controller.
 signal power_changed(power: int)
 signal brush_changed(index: int)
 signal pause_pressed
 signal speed_pressed
 signal save_pressed
+signal reload_pressed
 signal items_pressed
+signal interaction_started
 
-const INK := Color("#172825")
-const SURFACE := Color("#1b2d2b")
-const SURFACE_RAISED := Color("#304640")
-const BORDER := Color("#647e68")
-const GOLD := Color("#e4c58b")
-const IVORY := Color("#f5ecda")
-const MUTED := Color("#b6c7b6")
-const POWER_NAMES := ["Raise", "Fire", "Forest", "Bless", "Spawn", "Ocean"]
+const Tokens = preload("res://scripts/ui/ui_tokens.gd")
+const TouchButton = preload("res://scripts/ui/tactile_button.gd")
+const InventorySheet = preload("res://scripts/ui/inventory_sheet.gd")
+const POWER_NAMES := ["Raise land", "Fire", "Forest", "Bless", "Human", "Ocean"]
 const POWER_ICONS := ["raise", "fire", "forest", "bless", "spawn", "ocean"]
-const CATEGORIES := ["All", "World", "Life", "Nature", "Chaos"]
-const CATEGORY_POWERS := [[0, 1, 2, 3, 4, 5], [0, 5], [3, 4], [0, 2], [1, 5]]
+const POWER_HINTS := ["Paint new land", "Ignite a tile", "Grow woodland", "Heal nearby life", "Place a citizen", "Paint deep water"]
+const CATEGORIES := ["Terrain", "Nature", "Life", "Chaos", "World", "Menu"]
+const CATEGORY_ICONS := ["raise", "forest", "spawn", "fire", "info", "settings"]
+const CATEGORY_POWERS := [[0, 5], [2], [4, 3], [1], [], []]
 const BRUSH_NAMES := ["Small", "Medium", "Large"]
-const ICON_PATHS := {
-    "hand": "<path d='M8 13V5a1.5 1.5 0 0 1 3 0v6-7a1.5 1.5 0 0 1 3 0v7-5a1.5 1.5 0 0 1 3 0v6-3a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6.5 7H11c-2.3 0-4-1-5.1-2.8L3 15a1.5 1.5 0 0 1 2.5-1.7l2.5 2.7'/>",
-    "raise": "<path d='m2 19 6-9 4 5 4-10 6 14H2Z'/><path d='M16 5V2m-3 3h6'/>",
-    "fire": "<path d='M12 22c-4.4 0-7-3.2-7-7.2 0-3 2.5-6 3.4-8.8.5 3.1 2.5 3.2 3.4 3.8 1.2-3 1.6-5.4 1-8 4.8 3.8 7.2 7.7 7.2 11.5 0 4.2-2.7 7.7-7 7.7Z'/><path d='M12 22c-2.1 0-3.5-1.5-3.5-3.5 0-1.8 1-3 2-4.4.3 2 2.7 2.6 3 4.3.3-1 .5-2 .4-3.1 2 1.9 2.6 3.3 2.6 4.3 0 2.1-1.4 3.4-3.5 3.4Z'/>",
-    "forest": "<path d='m6 3-4 8h3l-4 7h11l-4-7h3L7 3ZM7 18v4'/><path d='m17 2-4 9h3l-3 7h10l-3-7h2l-4-9Zm1 16v4'/>",
-    "bless": "<path d='m12 2 2.6 6.5L21 11l-6.4 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2Z'/><path d='M20 18v5m-2.5-2.5h5M4 2v4M2 4h4'/>",
-    "spawn": "<circle cx='12' cy='6' r='3'/><path d='M5 22v-5c0-4 2.8-6 7-6s7 2 7 6v5M9 16v6m6-6v6'/>",
-    "ocean": "<path d='M2 7c3-4 5 4 10 0s7-4 10 0M2 13c3-4 5 4 10 0s7-4 10 0M2 19c3-4 5 4 10 0s7-4 10 0'/>",
-    "tools": "<rect x='3' y='4' width='7' height='7' rx='1'/><rect x='14' y='4' width='7' height='7' rx='1'/><rect x='3' y='15' width='7' height='6' rx='1'/><rect x='14' y='15' width='7' height='6' rx='1'/>",
-    "pause": "<rect x='5' y='4' width='5' height='16' rx='1'/><rect x='14' y='4' width='5' height='16' rx='1'/>",
-    "play": "<path d='m7 4 13 8-13 8V4Z'/>",
-    "settings": "<circle cx='12' cy='12' r='3'/><path d='M10 2h4l.6 2.5 2 1.2 2.5-.7 2 3.5-1.9 1.8v3.4l1.9 1.8-2 3.5-2.5-.7-2 1.2L14 22h-4l-.6-2.5-2-1.2-2.5.7-2-3.5 1.9-1.8v-3.4L2.9 8.5l2-3.5 2.5.7 2-1.2L10 2Z'/>",
-    "close": "<path d='M5 5 19 19M19 5 5 19'/>",
-    "chevron": "<path d='m5 9 7 7 7-7'/>"
-}
+const IVORY := Tokens.TEXT
+const GOLD := Tokens.ACCENT
+const MUTED := Tokens.MUTED
 
 var active_power := -1
 var active_category := 0
@@ -45,22 +31,31 @@ var is_paused := false
 var current_speed := 1
 var palette_open := false
 var reduced_motion := false
+var haptics := true
+var hud_hidden := false
+var hidden_power := -1
+var preferences_path := "user://interface.cfg"
+var safe_override := Rect2() # Deterministic layout QA; zero uses platform safe area.
+var safe_rect := Rect2()
 var panel_tween: Tween
 var inspector_tween: Tween
-var icon_cache := {}
-
+var toast_tween: Tween
 var root: Control
 var top_panel: PanelContainer
 var dock_panel: PanelContainer
+var context_panel: PanelContainer
 var palette_panel: PanelContainer
 var inspector_panel: PanelContainer
 var modal_dim: ColorRect
 var settings_panel: PanelContainer
+var restore_panel: PanelContainer
+var inventory_panel: PanelContainer
 var status_line: Label
 var caption_line: Label
 var pause_button: Button
 var speed_button: Button
-var palette_button: Button
+var hide_button: Button
+var palette_button: Button # Stable integration alias: Terrain category.
 var hand_button: Button
 var items_button: Button
 var active_button: Button
@@ -74,370 +69,337 @@ var power_buttons := {}
 var inspector_title: Label
 var inspector_body: Label
 var motion_button: Button
+var haptic_button: Button
+var restore_button: Button
 var inspector_content: Dictionary = {}
+var buttons: Array[Button] = []
+var palette_title: Label
+var palette_hint: Label
+var tool_content: VBoxContainer
+var world_info: Label
+var world_details := ""
+var toast: PanelContainer
+var toast_label: Label
+var inventory_model: RefCounted
+var world_ref: RefCounted
 
 func _ready() -> void:
     layer = 10
+    _load_preferences()
     _make_interface()
     get_viewport().size_changed.connect(_layout)
     _layout()
 
-func _panel_style(raised: bool = false) -> StyleBoxFlat:
-    var s := StyleBoxFlat.new()
-    var tint := SURFACE_RAISED if raised else SURFACE
-    tint.a = 0.96 if raised else 0.94
-    s.bg_color = tint
-    s.border_color = Color("#607c6c", 0.68)
-    s.set_border_width_all(1)
-    s.set_corner_radius_all(15)
-    s.set_content_margin_all(10)
-    s.shadow_color = Color(0.0, 0.0, 0.0, 0.28)
-    s.shadow_size = 5
-    s.shadow_offset = Vector2(0, 3)
-    return s
-
-func _button_style(selected: bool, hovered: bool = false) -> StyleBoxFlat:
-    var s := StyleBoxFlat.new()
-    s.bg_color = GOLD if selected else (Color("#456256") if hovered else Color("#243b35"))
-    s.set_corner_radius_all(10)
-    s.set_content_margin_all(5)
-    if selected:
-        s.border_color = Color("#ffe4ac")
-        s.set_border_width_all(1)
-    return s
-
-func _icon(name: String, dark: bool = false) -> Texture2D:
-    var key := name + (":dark" if dark else ":light")
-    if icon_cache.has(key):
-        return icon_cache[key]
-    var path: String = ICON_PATHS.get(name, ICON_PATHS["tools"])
-    var stroke := "#233730" if dark else "#f5ecda"
-    var svg := "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='" + stroke + "' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'>" + path + "</svg>"
-    var img := Image.new()
-    if img.load_svg_from_buffer(svg.to_utf8_buffer(), 1.5) != OK:
-        return null
-    var tex := ImageTexture.create_from_image(img)
-    icon_cache[key] = tex
-    return tex
-
-func _label(value: String, font_size: int = 13, tint: Color = IVORY) -> Label:
-    var l := Label.new()
-    l.text = value
-    l.add_theme_font_size_override("font_size", font_size)
-    l.add_theme_color_override("font_color", tint)
-    l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-    l.clip_text = true
-    l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    return l
-
-func _button(value: String, icon_name: String = "", width: float = 50.0) -> Button:
-    var b := Button.new()
-    b.text = value
-    b.custom_minimum_size = Vector2(width, 48)
-    b.clip_text = true
-    b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-    b.add_theme_font_size_override("font_size", 12)
-    b.add_theme_color_override("font_color", IVORY)
-    b.add_theme_color_override("font_hover_color", IVORY)
-    b.add_theme_color_override("font_pressed_color", IVORY)
-    b.add_theme_color_override("font_focus_color", IVORY)
-    b.add_theme_stylebox_override("normal", _button_style(false))
-    b.add_theme_stylebox_override("hover", _button_style(false, true))
-    b.add_theme_stylebox_override("pressed", _button_style(true))
-    b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-    b.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
-    if icon_name != "":
-        b.set_meta("hud_icon", icon_name)
-        b.icon = _icon(icon_name)
+func _button(value: String, icon_name: String = "", width: float = 48, vertical: bool = false) -> Button:
+    var b := TouchButton.new()
+    b.setup(value, icon_name, vertical)
+    b.custom_minimum_size.x = maxf(Tokens.TOUCH, width)
+    b.reduced_motion = reduced_motion
+    b.haptics = haptics
+    b.tooltip_text = value if value != "" else icon_name.capitalize()
+    b.button_down.connect(func() -> void:
+        interaction_started.emit()
+    )
+    buttons.append(b)
+    _set_selected(b, false)
     return b
 
-func _set_selected(button: Button, selected: bool) -> void:
-    button.add_theme_stylebox_override("normal", _button_style(selected))
-    button.add_theme_stylebox_override("hover", _button_style(selected, not selected))
-    button.add_theme_color_override("font_color", INK if selected else IVORY)
-    button.add_theme_color_override("font_hover_color", INK if selected else IVORY)
-    if button.has_meta("hud_icon"):
-        button.icon = _icon(str(button.get_meta("hud_icon")), selected)
+func _set_selected(b: Button, selected: bool) -> void:
+    b.set_selected(selected)
 
-func _animate_press(button: Button) -> void:
-    if reduced_motion:
-        return
-    button.pivot_offset = button.size * 0.5
-    var t := create_tween()
-    t.tween_property(button, "scale", Vector2(0.94, 0.94), 0.07)
-    t.tween_property(button, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+func _set_caption(b: Button, value: String) -> void:
+    b.set_caption(value)
+
+func _panel(parent: Node, node_name: String, raised: bool = false, padding: int = 12) -> PanelContainer:
+    var p := PanelContainer.new()
+    p.name = node_name
+    p.mouse_filter = Control.MOUSE_FILTER_STOP
+    p.add_theme_stylebox_override("panel", Tokens.panel(raised, padding))
+    parent.add_child(p)
+    return p
+
+func _column(parent: Node, gap: int = 8) -> VBoxContainer:
+    var col := VBoxContainer.new()
+    col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    col.add_theme_constant_override("separation", gap)
+    parent.add_child(col)
+    return col
+
+func _heading(parent: Node, title: String, close_action: Callable) -> Label:
+    var row := HBoxContainer.new()
+    row.add_theme_constant_override("separation", 8)
+    parent.add_child(row)
+    var text_label := Tokens.label(title, 17, Tokens.ACCENT)
+    text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    row.add_child(text_label)
+    var close := _button("", "close")
+    close.tooltip_text = "Close " + title.to_lower()
+    close.pressed.connect(close_action)
+    row.add_child(close)
+    return text_label
 
 func _make_interface() -> void:
     root = Control.new()
     root.name = "HUDRoot"
     root.mouse_filter = Control.MOUSE_FILTER_IGNORE
     add_child(root)
+    top_panel = _panel(root, "StatusBar", false, 6)
+    var top := HBoxContainer.new()
+    top.add_theme_constant_override("separation", 4)
+    top_panel.add_child(top)
+    var overview := _button("", "", 80)
+    overview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    overview.tooltip_text = "World information"
+    var wordmark := _column(overview, 0)
+    wordmark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    wordmark.alignment = BoxContainer.ALIGNMENT_CENTER
+    wordmark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+    wordmark.offset_left = 10
+    wordmark.offset_right = -6
+    status_line = Tokens.label("GOD SANDBOX", 13, Tokens.ACCENT)
+    caption_line = Tokens.label("Year 1 · 0 people", 11, Tokens.MUTED)
+    wordmark.add_child(status_line)
+    wordmark.add_child(caption_line)
+    overview.pressed.connect(func() -> void: _choose_category(4))
+    top.add_child(overview)
+    pause_button = _button("", "pause")
+    pause_button.tooltip_text = "Pause simulation"
+    speed_button = _button("1×")
+    speed_button.tooltip_text = "Change simulation speed"
+    hide_button = _button("", "eye")
+    hide_button.tooltip_text = "Hide interface"
+    for b in [pause_button, speed_button, hide_button]:
+        top.add_child(b)
+    pause_button.pressed.connect(func() -> void: pause_pressed.emit())
+    speed_button.pressed.connect(func() -> void: speed_pressed.emit())
+    hide_button.pressed.connect(func() -> void: set_hud_hidden(true))
 
-    top_panel = PanelContainer.new()
-    top_panel.name = "StatusBar"
-    top_panel.add_theme_stylebox_override("panel", _panel_style())
-    top_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-    root.add_child(top_panel)
-    var top_row := HBoxContainer.new()
-    top_row.add_theme_constant_override("separation", 6)
-    top_panel.add_child(top_row)
-    var status := VBoxContainer.new()
-    status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    status.add_theme_constant_override("separation", 0)
-    top_row.add_child(status)
-    status_line = _label("GOD SANDBOX", 14, GOLD)
-    caption_line = _label("Year 1  ·  0 souls", 10, MUTED)
-    status.add_child(status_line)
-    status.add_child(caption_line)
-    pause_button = _button("", "pause", 42)
-    speed_button = _button("1×", "", 44)
-    var settings_button := _button("", "settings", 42)
-    for b in [pause_button, speed_button, settings_button]:
-        b.custom_minimum_size.y = 42
-        top_row.add_child(b)
-    pause_button.pressed.connect(func() -> void:
-        _animate_press(pause_button)
-        pause_pressed.emit()
-    )
-    speed_button.pressed.connect(func() -> void:
-        _animate_press(speed_button)
-        speed_pressed.emit()
-    )
-    settings_button.pressed.connect(func() -> void:
-        _animate_press(settings_button)
-        _show_settings(true)
-    )
-
-    dock_panel = PanelContainer.new()
-    dock_panel.name = "ToolDock"
-    dock_panel.add_theme_stylebox_override("panel", _panel_style())
-    dock_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-    root.add_child(dock_panel)
-    var dock_row := HBoxContainer.new()
-    dock_row.add_theme_constant_override("separation", 6)
-    dock_panel.add_child(dock_row)
-    hand_button = _button("Hand", "hand", 68)
-    items_button = _button("Items", "", 66)
-    palette_button = _button("Powers", "tools", 91)
-    active_button = _button("Choose power", "", 45)
-    active_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    dock_brush_button = _button("M", "", 43)
-    for b in [hand_button, items_button, palette_button, active_button, dock_brush_button]:
-        b.custom_minimum_size.y = 50
-        dock_row.add_child(b)
-    hand_button.pressed.connect(func() -> void:
-        _animate_press(hand_button)
-        _choose_power(-1)
-        open_palette(false)
-    )
-    items_button.pressed.connect(func() -> void:
-        _animate_press(items_button)
-        _choose_power(-1)
-        open_palette(false)
-        hide_inspector()
-        items_pressed.emit()
-    )
-    palette_button.pressed.connect(func() -> void:
-        _animate_press(palette_button)
-        open_palette(not palette_open)
-    )
-    active_button.pressed.connect(func() -> void:
-        _animate_press(active_button)
-        if active_power != -1:
-            _choose_power(-1)
-        else:
-            open_palette(true)
-    )
-    dock_brush_button.pressed.connect(func() -> void:
-        _animate_press(dock_brush_button)
-        _choose_brush((active_brush + 1) % BRUSH_NAMES.size())
-    )
-
-    palette_panel = PanelContainer.new()
-    palette_panel.name = "PowerPalette"
-    palette_panel.add_theme_stylebox_override("panel", _panel_style(true))
-    palette_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-    root.add_child(palette_panel)
-    var palette_vbox := VBoxContainer.new()
-    palette_vbox.add_theme_constant_override("separation", 7)
-    palette_panel.add_child(palette_vbox)
-    var heading := HBoxContainer.new()
-    heading.add_theme_constant_override("separation", 8)
-    palette_vbox.add_child(heading)
-    var palette_title := _label("GOD POWERS", 14, GOLD)
-    palette_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    heading.add_child(palette_title)
-    var close_palette := _button("", "close", 34)
-    close_palette.custom_minimum_size.y = 30
-    heading.add_child(close_palette)
-    close_palette.pressed.connect(func() -> void:
-        _animate_press(close_palette)
-        open_palette(false)
-    )
-
-    var category_scroll := ScrollContainer.new()
-    category_scroll.name = "CategoryScroll"
-    category_scroll.custom_minimum_size.y = 38
-    category_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    category_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
-    category_scroll.follow_focus = true
-    palette_vbox.add_child(category_scroll)
+    dock_panel = _panel(root, "CategoryDock", false, 6)
     category_bar = HBoxContainer.new()
-    category_bar.add_theme_constant_override("separation", 5)
-    category_scroll.add_child(category_bar)
+    category_bar.add_theme_constant_override("separation", 2)
+    dock_panel.add_child(category_bar)
     for i in range(CATEGORIES.size()):
         var index := i
-        var tab := _button(CATEGORIES[i], "", 62)
-        tab.custom_minimum_size.y = 36
-        tab.add_theme_font_size_override("font_size", 11)
-        category_bar.add_child(tab)
-        category_buttons.append(tab)
-        tab.pressed.connect(func() -> void:
-            _animate_press(tab)
-            _choose_category(index)
-        )
+        var b := _button(CATEGORIES[i], CATEGORY_ICONS[i], 48, true)
+        b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        b.custom_minimum_size.y = 56
+        b.caption_label.add_theme_font_size_override("font_size", 10)
+        category_bar.add_child(b)
+        category_buttons.append(b)
+        b.pressed.connect(func() -> void: _choose_category(index))
+    palette_button = category_buttons[0]
 
+    context_panel = _panel(root, "ToolContext", false, 4)
+    var context := HBoxContainer.new()
+    context.add_theme_constant_override("separation", 4)
+    context_panel.add_child(context)
+    hand_button = _button("", "hand")
+    hand_button.tooltip_text = "Hand: navigate and inspect"
+    hand_button.pressed.connect(func() -> void:
+        _choose_power(-1)
+        open_palette(false)
+    )
+    context.add_child(hand_button)
+    active_button = _button("Explore & inspect")
+    active_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    active_button.pressed.connect(func() -> void:
+        if active_power >= 0:
+            _choose_power(-1)
+        else:
+            open_palette(not palette_open)
+    )
+    context.add_child(active_button)
+    dock_brush_button = _button("M", "brush", 64)
+    dock_brush_button.pressed.connect(func() -> void:
+        _choose_brush((active_brush + 1) % 3)
+        notify("%s brush" % BRUSH_NAMES[active_brush])
+    )
+    context.add_child(dock_brush_button)
+
+    palette_panel = _panel(root, "ToolTray", true)
+    var tray_outer := _column(palette_panel)
+    palette_title = _heading(tray_outer, "TERRAIN", func() -> void: open_palette(false))
+    var tool_scroll := Tokens.scroll()
+    tool_scroll.name = "ToolScroll"
+    tray_outer.add_child(tool_scroll)
+    tool_content = _column(tool_scroll)
     power_grid = GridContainer.new()
-    power_grid.columns = 3
-    power_grid.add_theme_constant_override("h_separation", 6)
-    power_grid.add_theme_constant_override("v_separation", 6)
-    palette_vbox.add_child(power_grid)
-
+    power_grid.columns = 2
+    power_grid.add_theme_constant_override("h_separation", 8)
+    power_grid.add_theme_constant_override("v_separation", 8)
+    tool_content.add_child(power_grid)
+    world_info = Tokens.label("", 14)
+    world_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    world_info.clip_text = false
+    tool_content.add_child(world_info)
     brush_row = HBoxContainer.new()
     brush_row.add_theme_constant_override("separation", 6)
-    palette_vbox.add_child(brush_row)
-    var brush_title := _label("Brush", 12, MUTED)
-    brush_title.custom_minimum_size.x = 52
-    brush_row.add_child(brush_title)
-    for i in range(BRUSH_NAMES.size()):
+    tool_content.add_child(brush_row)
+    for i in range(3):
         var index := i
-        var b := _button(BRUSH_NAMES[i], "", 65)
-        b.custom_minimum_size.y = 34
+        var b := _button(BRUSH_NAMES[i])
         b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-        brush_row.add_child(b)
         brush_buttons.append(b)
-        b.pressed.connect(func() -> void:
-            _animate_press(b)
-            _choose_brush(index)
-        )
+        brush_row.add_child(b)
+        b.pressed.connect(func() -> void: _choose_brush(index))
+    palette_hint = Tokens.label("Choose a tool to shape your world.", 12, Tokens.MUTED)
+    palette_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    palette_hint.clip_text = false
+    tool_content.add_child(palette_hint)
+    palette_panel.hide()
 
-    var hint := _label("Tap an equipped power again to return to Hand.", 11, MUTED)
-    palette_vbox.add_child(hint)
-    palette_panel.visible = false
-
-    inspector_panel = PanelContainer.new()
-    inspector_panel.name = "Inspector"
-    inspector_panel.add_theme_stylebox_override("panel", _panel_style(true))
-    inspector_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-    root.add_child(inspector_panel)
-    var inspect_col := VBoxContainer.new()
-    inspect_col.add_theme_constant_override("separation", 8)
-    inspector_panel.add_child(inspect_col)
-    var inspect_header := HBoxContainer.new()
-    inspect_col.add_child(inspect_header)
-    inspector_title = _label("INSPECT", 15, GOLD)
-    inspector_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    inspect_header.add_child(inspector_title)
-    var close_inspector := _button("", "close", 34)
-    close_inspector.custom_minimum_size.y = 32
-    inspect_header.add_child(close_inspector)
-    close_inspector.pressed.connect(func() -> void:
-        _animate_press(close_inspector)
-        hide_inspector()
-    )
-    inspector_body = _label("", 13, IVORY)
-    inspector_body.autowrap_mode = TextServer.AUTOWRAP_OFF
+    inspector_panel = _panel(root, "TerrainInspector", true)
+    var inspection := _column(inspector_panel)
+    inspector_title = _heading(inspection, "TERRAIN", hide_inspector)
+    inspector_body = Tokens.label("", 14)
     inspector_body.clip_text = false
-    inspector_body.custom_minimum_size.y = 116
-    inspect_col.add_child(inspector_body)
-    inspector_panel.visible = false
+    inspection.add_child(inspector_body)
+    inspector_panel.hide()
 
     modal_dim = ColorRect.new()
-    modal_dim.name = "ModalDim"
-    modal_dim.color = Color(0, 0, 0, 0.44)
+    modal_dim.name = "ModalBackdrop"
+    modal_dim.color = Color(0.02, 0.06, 0.08, 0.64)
     modal_dim.mouse_filter = Control.MOUSE_FILTER_STOP
-    modal_dim.visible = false
     root.add_child(modal_dim)
-    settings_panel = PanelContainer.new()
-    settings_panel.name = "Settings"
-    settings_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-    settings_panel.add_theme_stylebox_override("panel", _panel_style(true))
-    root.add_child(settings_panel)
-    var settings_col := VBoxContainer.new()
-    settings_col.add_theme_constant_override("separation", 12)
-    settings_panel.add_child(settings_col)
-    var settings_head := HBoxContainer.new()
-    settings_col.add_child(settings_head)
-    var settings_title := _label("SETTINGS", 17, GOLD)
-    settings_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    settings_head.add_child(settings_title)
-    var settings_close := _button("", "close", 38)
-    settings_close.custom_minimum_size.y = 38
-    settings_head.add_child(settings_close)
-    settings_close.pressed.connect(func() -> void:
-        _animate_press(settings_close)
+    modal_dim.hide()
+    modal_dim.gui_input.connect(func(event: InputEvent) -> void:
+        if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+            close_modal()
+            get_viewport().set_input_as_handled()
+    )
+    settings_panel = _panel(root, "WorldMenu", true)
+    var menu_outer := _column(settings_panel)
+    _heading(menu_outer, "YOUR WORLD", func() -> void: _show_settings(false))
+    var menu_scroll := Tokens.scroll()
+    menu_outer.add_child(menu_scroll)
+    var menu := _column(menu_scroll, 10)
+    var menu_caption := Tokens.label("World files & preferences", 13, Tokens.MUTED)
+    menu.add_child(menu_caption)
+    items_button = _button("Inventory & stores", "pack")
+    menu.add_child(items_button)
+    items_button.pressed.connect(func() -> void:
         _show_settings(false)
+        _choose_power(-1)
+        items_pressed.emit()
     )
-    settings_col.add_child(_label("Your world is autosaved while you play.", 12, MUTED))
-    var save_button := _button("Save world now", "", 120)
-    save_button.custom_minimum_size.y = 50
-    settings_col.add_child(save_button)
-    save_button.pressed.connect(func() -> void:
-        _animate_press(save_button)
-        save_pressed.emit()
-        save_button.text = "World saved"
-    )
-    motion_button = _button("Animations: On", "", 120)
-    motion_button.custom_minimum_size.y = 50
-    settings_col.add_child(motion_button)
+    var save := _button("Save world", "save")
+    save.name = "SaveWorld"
+    menu.add_child(save)
+    save.pressed.connect(func() -> void: save_pressed.emit())
+    restore_button = _button("Reload saved world", "load")
+    restore_button.name = "ReloadWorld"
+    menu.add_child(restore_button)
+    restore_button.pressed.connect(_confirm_restore)
+    motion_button = _button("")
+    menu.add_child(motion_button)
     motion_button.pressed.connect(func() -> void:
-        reduced_motion = not reduced_motion
-        motion_button.text = "Animations: Off" if reduced_motion else "Animations: On"
+        set_reduced_motion(not reduced_motion)
+        _save_preferences()
     )
-    settings_col.add_child(_label("Hand: drag to move. Painting: drag to draw.", 12, MUTED))
-    settings_col.add_child(_label("Two fingers: move and zoom while editing.", 12, MUTED))
-    settings_panel.visible = false
+    haptic_button = _button("")
+    menu.add_child(haptic_button)
+    haptic_button.pressed.connect(func() -> void:
+        haptics = not haptics
+        _refresh_preferences()
+        _save_preferences()
+    )
+    var guidance := Tokens.label("Hand: drag to move, tap to inspect.\nTerrain: drag to paint.\nTwo fingers: move and zoom.", 12, Tokens.MUTED)
+    guidance.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    guidance.clip_text = false
+    menu.add_child(guidance)
+    settings_panel.hide()
+
+    restore_panel = _panel(root, "ConfirmReload", true)
+    var confirm := _column(restore_panel, 12)
+    _heading(confirm, "RELOAD WORLD?", _cancel_restore)
+    var message := Tokens.label("Return to your last save? Changes since that save will be lost.", 14)
+    message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    message.clip_text = false
+    confirm.add_child(message)
+    var cancel := _button("Keep playing", "back")
+    confirm.add_child(cancel)
+    cancel.pressed.connect(_cancel_restore)
+    var reload := _button("Reload saved world", "load")
+    confirm.add_child(reload)
+    reload.pressed.connect(func() -> void:
+        close_modal()
+        reload_pressed.emit()
+    )
+    restore_panel.hide()
+
+    inventory_panel = InventorySheet.new()
+    inventory_panel.name = "InventorySheet"
+    root.add_child(inventory_panel)
+    inventory_panel.setup(self)
+    inventory_panel.hide()
+    var reveal := _button("", "eye")
+    reveal.name = "RestoreHUD"
+    reveal.tooltip_text = "Show interface"
+    root.add_child(reveal)
+    reveal.pressed.connect(func() -> void: set_hud_hidden(false))
+    reveal.hide()
+    toast = _panel(root, "Feedback", false, 10)
+    toast.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    toast_label = Tokens.label("", 13, Tokens.ACCENT)
+    toast.add_child(toast_label)
+    toast.hide()
     _rebuild_power_buttons()
+    _refresh_preferences()
     _refresh_selection()
 
 func _choose_category(index: int) -> void:
-    active_category = clampi(index, 0, CATEGORIES.size() - 1)
+    interaction_started.emit()
+    if index == 5:
+        _show_settings(not settings_panel.visible)
+        return
+    if palette_open and active_category == index:
+        open_palette(false)
+        return
+    active_category = clampi(index, 0, 4)
     _rebuild_power_buttons()
-    _refresh_selection()
-    _layout()
-    if not reduced_motion:
-        power_grid.modulate.a = 0.42
-        var fade := create_tween()
-        fade.tween_property(power_grid, "modulate:a", 1.0, 0.16).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+    if palette_open:
+        _refresh_selection()
+        _layout()
+        _transition(palette_panel, true)
+    else:
+        open_palette(true)
 
 func _rebuild_power_buttons() -> void:
     for child in power_grid.get_children():
+        buttons.erase(child)
         power_grid.remove_child(child)
         child.queue_free()
     power_buttons.clear()
+    palette_title.text = CATEGORIES[active_category].to_upper()
+    world_info.visible = active_category == 4
+    world_info.text = world_details
+    power_grid.visible = active_category < 4
     for power in CATEGORY_POWERS[active_category]:
         var index: int = power
-        var b := _button(POWER_NAMES[index], POWER_ICONS[index], 90)
-        b.custom_minimum_size.y = 49
+        var b := _button(POWER_NAMES[index], POWER_ICONS[index], 80, true)
+        b.custom_minimum_size.y = 80
         b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        b.tooltip_text = POWER_HINTS[index]
         power_grid.add_child(b)
         power_buttons[index] = b
-        b.pressed.connect(func() -> void:
-            _animate_press(b)
-            _choose_power(index)
-        )
+        b.pressed.connect(func() -> void: _choose_power(index))
+    palette_hint.text = ["Drag to paint · Two fingers to navigate", "Drag to grow · Two fingers to navigate", "Tap to place or heal · Two fingers to navigate", "Tap a tile to ignite", "Live information from this world."][active_category]
+    _refresh_selection()
 
 func _choose_power(power: int) -> void:
-    var next_power := -1 if power == active_power else power
+    var next := -1 if power == active_power else power
     if power == -1:
-        next_power = -1
-    set_active_power(next_power)
-    power_changed.emit(next_power)
+        next = -1
+    set_active_power(next)
+    power_changed.emit(next)
+    open_palette(false)
+    if next >= 0:
+        notify(POWER_HINTS[next])
 
 func set_active_power(power: int) -> void:
     active_power = clampi(power, -1, POWER_NAMES.size() - 1)
     _refresh_selection()
-    if active_power != -1:
+    if active_power >= 0:
         hide_inspector()
     _layout()
 
@@ -446,180 +408,315 @@ func _choose_brush(index: int) -> void:
     brush_changed.emit(active_brush)
 
 func set_brush(index: int) -> void:
-    active_brush = clampi(index, 0, BRUSH_NAMES.size() - 1)
+    active_brush = clampi(index, 0, 2)
     _refresh_selection()
+    _layout()
 
 func _refresh_selection() -> void:
+    if hand_button == null:
+        return
     _set_selected(hand_button, active_power == -1)
-    _set_selected(palette_button, palette_open)
-    _set_selected(active_button, active_power != -1)
-    active_button.text = "Choose power" if active_power == -1 else POWER_NAMES[active_power]
-    if active_power >= 0:
-        active_button.set_meta("hud_icon", POWER_ICONS[active_power])
-        active_button.icon = _icon(POWER_ICONS[active_power], true)
-    else:
-        if active_button.has_meta("hud_icon"):
-            active_button.remove_meta("hud_icon")
-        active_button.icon = null
-    dock_brush_button.visible = active_power == 0 or active_power == 2 or active_power == 5
-    dock_brush_button.text = ["S", "M", "L"][active_brush]
-    brush_row.visible = dock_brush_button.visible
+    _set_selected(active_button, active_power >= 0)
+    _set_caption(active_button, "Explore & inspect" if active_power < 0 else POWER_NAMES[active_power] + "  ×")
+    dock_brush_button.visible = active_power in [0, 2, 5]
+    _set_caption(dock_brush_button, ["S", "M", "L"][active_brush])
+    brush_row.visible = active_category < 4 and (active_power in [0, 2, 5] or active_category in [0, 1])
     for i in range(category_buttons.size()):
-        _set_selected(category_buttons[i], i == active_category)
+        _set_selected(category_buttons[i], (palette_open and i == active_category) or (not palette_open and active_power >= 0 and active_power in CATEGORY_POWERS[i]) or (i == 5 and settings_panel != null and settings_panel.visible))
     for id in power_buttons:
         _set_selected(power_buttons[id], id == active_power)
     for i in range(brush_buttons.size()):
         _set_selected(brush_buttons[i], i == active_brush)
 
 func update_stats(year: int, population: int, paused: bool, speed: int) -> void:
-    var new_caption := "Year %d  ·  %d souls" % [year, population]
-    if caption_line.text != new_caption:
-        caption_line.text = new_caption
+    caption_line.text = "Year %d · %d people" % [year, population]
     if is_paused != paused:
         is_paused = paused
-        pause_button.set_meta("hud_icon", "play" if paused else "pause")
-        pause_button.icon = _icon("play" if paused else "pause")
+        pause_button.set_symbol("play" if paused else "pause")
+        pause_button.tooltip_text = "Resume simulation" if paused else "Pause simulation"
+        _set_selected(pause_button, paused)
     if current_speed != speed:
         current_speed = speed
-        speed_button.text = "%d×" % speed
+        _set_caption(speed_button, "%d×" % speed)
+        _set_selected(speed_button, speed > 1)
+
+func set_world_details(details: String) -> void:
+    if world_details != details:
+        world_details = details
+        world_info.text = details
 
 func open_palette(show: bool) -> void:
     if palette_open == show:
         return
     palette_open = show
+    interaction_started.emit()
     if show:
         hide_inspector()
+        if active_category >= 5:
+            active_category = 0
+            _rebuild_power_buttons()
     _refresh_selection()
     _layout()
-    if panel_tween != null and panel_tween.is_running():
-        panel_tween.kill()
-    var target_y := _palette_y()
-    if reduced_motion:
-        palette_panel.visible = show
-        palette_panel.position.y = target_y if show else dock_panel.position.y + 8
-        palette_panel.modulate.a = 1.0 if show else 0.0
-        return
-    if show:
-        palette_panel.visible = true
-        palette_panel.position.y = dock_panel.position.y + 6
-        palette_panel.modulate.a = 0.0
-    panel_tween = create_tween().set_parallel(true)
-    panel_tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-    panel_tween.tween_property(palette_panel, "position:y", target_y if show else dock_panel.position.y + 8, 0.22)
-    panel_tween.tween_property(palette_panel, "modulate:a", 1.0 if show else 0.0, 0.18)
-    if not show:
-        panel_tween.chain().tween_callback(func() -> void:
-            if not palette_open:
-                palette_panel.visible = false
-        )
+    _transition(palette_panel, show)
 
-func _palette_y() -> float:
-    var viewport_size := get_viewport().get_visible_rect().size
-    if viewport_size.x > viewport_size.y * 1.2:
-        return maxf(78.0, (viewport_size.y - palette_panel.size.y) * 0.45)
-    return dock_panel.position.y - palette_panel.size.y - 9
+func _transition(panel: Control, show: bool) -> void:
+    if panel_tween != null:
+        panel_tween.kill()
+    # Keep hit geometry fixed throughout motion; animate opacity only.
+    # No stale callback can hide a newly reopened tray.
+    if reduced_motion or not show:
+        panel.visible = show
+        panel.modulate.a = 1.0
+        return
+    panel.show()
+    panel.modulate.a = 0.0
+    panel_tween = create_tween()
+    panel_tween.tween_property(panel, "modulate:a", 1.0, Tokens.ENTER).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func _show_settings(show: bool) -> void:
+    interaction_started.emit()
     if show:
         open_palette(false)
         hide_inspector()
-    modal_dim.visible = show
+        close_inventory()
     settings_panel.visible = show
+    modal_dim.visible = show
+    restore_panel.hide()
+    _refresh_selection()
     _layout()
-    if show and not reduced_motion:
-        settings_panel.pivot_offset = settings_panel.size * 0.5
-        settings_panel.scale = Vector2(0.94, 0.94)
-        settings_panel.modulate.a = 0.0
-        var t := create_tween().set_parallel(true)
-        t.tween_property(settings_panel, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-        t.tween_property(settings_panel, "modulate:a", 1.0, 0.16)
+    _transition(settings_panel, show)
+
+func _confirm_restore() -> void:
+    settings_panel.hide()
+    restore_panel.show()
+    modal_dim.show()
+    _layout()
+
+func _cancel_restore() -> void:
+    restore_panel.hide()
+    settings_panel.show()
+    _layout()
+
+func close_modal() -> void:
+    interaction_started.emit()
+    close_inventory()
+    settings_panel.hide()
+    restore_panel.hide()
+    modal_dim.hide()
+    _refresh_selection()
+
+func open_inventory(model: RefCounted, world: RefCounted) -> void:
+    if inventory_model == model:
+        inventory_model = null
+    close_modal()
+    open_palette(false)
+    hide_inspector()
+    inventory_model = model
+    world_ref = world
+    inventory_panel.bind_model(model, world)
+    modal_dim.show()
+    inventory_panel.show()
+    _layout()
+    _transition(inventory_panel, true)
+
+func close_inventory() -> void:
+    if inventory_model != null:
+        inventory_model.close()
+    if inventory_panel != null:
+        inventory_panel.hide()
+    inventory_model = null
+    world_ref = null
+
+func sync_inventory() -> void:
+    if inventory_model == null:
+        return
+    if not inventory_model.visible:
+        close_inventory()
+        modal_dim.hide()
     else:
-        settings_panel.scale = Vector2.ONE
-        settings_panel.modulate.a = 1.0
+        inventory_panel.refresh()
+
+func handle_back() -> bool:
+    if restore_panel.visible:
+        _cancel_restore()
+    elif modal_dim.visible:
+        close_modal()
+    elif palette_open:
+        open_palette(false)
+    elif inspector_panel.visible:
+        hide_inspector()
+    elif hud_hidden:
+        set_hud_hidden(false)
+    elif active_power >= 0:
+        _choose_power(-1)
+    else:
+        _show_settings(true)
+    return true
+
+func set_hud_hidden(hidden: bool) -> void:
+    if hud_hidden == hidden:
+        return
+    interaction_started.emit()
+    hud_hidden = hidden
+    open_palette(false)
+    hide_inspector()
+    close_modal()
+    if hidden:
+        hidden_power = active_power
+        power_changed.emit(-1)
+    else:
+        power_changed.emit(hidden_power)
+        set_active_power(hidden_power)
+    top_panel.visible = not hidden
+    dock_panel.visible = not hidden
+    context_panel.visible = not hidden
+    root.get_node("RestoreHUD").visible = hidden
+    toast.hide()
+    _layout()
 
 func show_citizen(person: Dictionary) -> void:
     inspector_content = person.duplicate()
     inspector_title.text = "CITIZEN #%d" % int(person.get("id", 0))
-    inspector_body.text = "Civilisation: %d\nHealth: %d / 100\nAge: %d\nPosition: %d, %d" % [
-        int(person.get("nation", 0)) + 1, int(person.get("hp", 100)),
-        int(person.get("age", 0)), int(person.get("x", 0)), int(person.get("y", 0))
-    ]
+    inspector_body.text = _citizen_text(person)
     _reveal_inspector()
 
+func _citizen_text(person: Dictionary) -> String:
+    return "Civilisation %d · Health %d / 100\nPosition %d, %d" % [int(person.get("nation", 0)) + 1, int(person.get("hp", 100)), int(person.get("x", 0)), int(person.get("y", 0))]
+
 func refresh_citizen(person: Dictionary) -> void:
-    if not inspector_panel.visible or inspector_content.is_empty():
-        return
-    if int(person.get("id", -1)) != int(inspector_content.get("id", -2)):
-        return
-    inspector_content = person.duplicate()
-    var new_details := "Civilisation: %d\\nHealth: %d / 100\\nAge: %d\\nPosition: %d, %d" % [
-        int(person.get("nation", 0)) + 1, int(person.get("hp", 100)),
-        int(person.get("age", 0)), int(person.get("x", 0)), int(person.get("y", 0))
-    ]
-    if inspector_body.text != new_details:
-        inspector_body.text = new_details
+    if inspector_panel.visible and int(person.get("id", -1)) == int(inspector_content.get("id", -2)):
+        inspector_content = person.duplicate()
+        inspector_body.text = _citizen_text(person)
 
 func show_terrain(cell: Vector2i, kind: String, elevation: int) -> void:
     inspector_content.clear()
     inspector_title.text = kind.to_upper()
-    inspector_body.text = "Terrain: %s\nElevation: %d\nPosition: %d, %d\n\nSelect a power to modify this tile." % [kind, elevation, cell.x, cell.y]
+    inspector_body.text = "Elevation %d · Tile %d, %d\nChoose a tool to reshape this place." % [elevation, cell.x, cell.y]
     _reveal_inspector()
 
 func _reveal_inspector() -> void:
     open_palette(false)
-    if inspector_tween != null and inspector_tween.is_running():
-        inspector_tween.kill()
-    inspector_panel.visible = true
+    inspector_panel.show()
     _layout()
-    if reduced_motion:
-        inspector_panel.modulate.a = 1.0
-        return
-    inspector_panel.modulate.a = 0.0
-    var y := inspector_panel.position.y
-    inspector_panel.position.y = y + 12
-    inspector_tween = create_tween().set_parallel(true)
-    inspector_tween.tween_property(inspector_panel, "position:y", y, 0.18).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-    inspector_tween.tween_property(inspector_panel, "modulate:a", 1.0, 0.18)
+    _transition(inspector_panel, true)
 
 func hide_inspector() -> void:
-    if inspector_tween != null and inspector_tween.is_running():
-        inspector_tween.kill()
-    inspector_panel.visible = false
+    if inspector_panel != null:
+        inspector_panel.hide()
     inspector_content.clear()
+
+func notify(message: String, error: bool = false) -> void:
+    if toast == null or hud_hidden:
+        return
+    if toast_tween != null:
+        toast_tween.kill()
+    toast_label.text = message
+    toast_label.add_theme_color_override("font_color", Tokens.DANGER if error else Tokens.ACCENT)
+    toast.show()
+    toast.modulate.a = 1.0
+    _layout()
+    toast_tween = create_tween()
+    toast_tween.tween_interval(2.2)
+    if not reduced_motion:
+        toast_tween.tween_property(toast, "modulate:a", 0.0, Tokens.ENTER)
+    toast_tween.tween_callback(toast.hide)
+
+func set_reduced_motion(value: bool) -> void:
+    reduced_motion = value
+    if panel_tween != null:
+        panel_tween.kill()
+    for panel in [palette_panel, inspector_panel, settings_panel, inventory_panel]:
+        if panel != null:
+            panel.modulate.a = 1.0
+    _refresh_preferences()
+
+func _refresh_preferences() -> void:
+    for b in buttons:
+        if is_instance_valid(b):
+            b.reduced_motion = reduced_motion
+            b.haptics = haptics
+            b._reset_motion()
+    if motion_button != null:
+        _set_caption(motion_button, "Motion: Reduced" if reduced_motion else "Motion: Full")
+        _set_caption(haptic_button, "Touch feedback: On" if haptics else "Touch feedback: Off")
+
+func _load_preferences() -> void:
+    var config := ConfigFile.new()
+    if preferences_path != "" and config.load(preferences_path) == OK:
+        reduced_motion = bool(config.get_value("interface", "reduced_motion", false))
+        haptics = bool(config.get_value("interface", "haptics", true))
+
+func _save_preferences() -> void:
+    if preferences_path == "":
+        return
+    var config := ConfigFile.new()
+    config.set_value("interface", "reduced_motion", reduced_motion)
+    config.set_value("interface", "haptics", haptics)
+    if config.save(preferences_path) != OK:
+        notify("Could not save interface preferences", true)
+
+func platform_safe_rect() -> Rect2:
+    var viewport_size := get_viewport().get_visible_rect().size
+    var full := Rect2(Vector2.ZERO, viewport_size)
+    if safe_override.has_area():
+        return full.intersection(safe_override)
+    if OS.get_name() != "Android":
+        return full
+    # Safe area is in physical screen coordinates; GUI is in logical canvas units.
+    var physical := Rect2(DisplayServer.get_display_safe_area())
+    if not physical.has_area():
+        return full
+    var inverse := get_viewport().get_screen_transform().affine_inverse()
+    return full.intersection(Rect2(inverse * physical.position, inverse.basis_xform(physical.size)))
 
 func _layout() -> void:
     if root == null:
         return
-    var size_view := get_viewport().get_visible_rect().size
-    root.size = size_view
-    var width := minf(size_view.x - 20.0, 600.0)
-    var x := (size_view.x - width) * 0.5
-    top_panel.position = Vector2(x, 10)
-    top_panel.size = Vector2(width, 62)
-    dock_panel.size = Vector2(width, 72)
-    dock_panel.position = Vector2(x, size_view.y - 82)
-    var is_landscape := size_view.x > size_view.y * 1.2
-    var palette_width := minf(370.0, size_view.x * 0.48) if is_landscape else width
-    var palette_x := size_view.x - palette_width - 12.0 if is_landscape else x
-    palette_panel.size = Vector2(palette_width, palette_panel.get_combined_minimum_size().y)
-    if panel_tween == null or not panel_tween.is_running():
-        palette_panel.position = Vector2(palette_x, _palette_y() if palette_open else dock_panel.position.y + 8)
-    else:
-        palette_panel.position.x = palette_x
-    inspector_panel.size = Vector2(minf(size_view.x - 22, 290), 208.0)
-    inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
+    var viewport_size := get_viewport().get_visible_rect().size
+    root.size = viewport_size
+    safe_rect = platform_safe_rect().grow(-8.0 if viewport_size.x <= 360 else -Tokens.MARGIN)
+    category_bar.add_theme_constant_override("separation", 0 if safe_rect.size.x < 320 else 2)
+    var width := minf(safe_rect.size.x, 600.0)
+    var x := safe_rect.position.x + (safe_rect.size.x - width) * 0.5
+    top_panel.position = Vector2(x, safe_rect.position.y)
+    top_panel.size = Vector2(width, 60)
+    dock_panel.size = Vector2(width, 68)
+    dock_panel.position = Vector2(x, safe_rect.end.y - 68)
+    context_panel.size = Vector2(width, 56)
+    context_panel.position = Vector2(x, dock_panel.position.y - 64)
+    var available := maxf(48, context_panel.position.y - top_panel.get_global_rect().end.y - 16)
+    var tool_height := 48 + 80 + 16 + 36 + 24
+    if brush_row.visible:
+        tool_height += 56
+    if active_category == 4:
+        tool_height = 280
+    var tray_width := minf(width, 420.0)
+    palette_panel.size = Vector2(tray_width, minf(tool_height, available))
+    palette_panel.position = Vector2(x + width - tray_width, context_panel.position.y - palette_panel.size.y - 8)
+    inspector_panel.size = Vector2(minf(width, 340), 128)
+    inspector_panel.position = Vector2(x + width - inspector_panel.size.x, top_panel.position.y + 68)
     modal_dim.position = Vector2.ZERO
-    modal_dim.size = size_view
-    settings_panel.size = Vector2(minf(size_view.x - 30, 360), settings_panel.get_combined_minimum_size().y)
-    settings_panel.position = (size_view - settings_panel.size) * 0.5
+    modal_dim.size = viewport_size
+    settings_panel.size = Vector2(minf(width, 360), minf(safe_rect.size.y, 490))
+    settings_panel.position = safe_rect.get_center() - settings_panel.size * 0.5
+    restore_panel.size = Vector2(minf(width, 360), minf(safe_rect.size.y, 256))
+    restore_panel.position = safe_rect.get_center() - restore_panel.size * 0.5
+    var inventory_height := 440.0
+    if inventory_model != null and world_ref != null and not inventory_model.rows_for(world_ref).is_empty():
+        inventory_height = 600.0
+    inventory_panel.size = Vector2(minf(width, 480), minf(safe_rect.size.y, inventory_height))
+    inventory_panel.position = safe_rect.get_center() - inventory_panel.size * 0.5
+    var reveal: Control = root.get_node("RestoreHUD")
+    reveal.position = safe_rect.end - Vector2(48, 48)
+    reveal.size = Vector2(48, 48)
+    toast.size = Vector2(minf(width, 360), 42)
+    toast.position = Vector2(safe_rect.get_center().x - toast.size.x * 0.5, top_panel.position.y + 68)
 
 func blocks_world_input(point: Vector2) -> bool:
     if modal_dim.visible:
         return true
-    if top_panel.get_global_rect().has_point(point) or dock_panel.get_global_rect().has_point(point):
-        return true
-    if palette_panel.visible and palette_panel.get_global_rect().has_point(point):
-        return true
-    if inspector_panel.visible and inspector_panel.get_global_rect().has_point(point):
-        return true
-    return false
+    # The same visible Control rectangles serve rendering, GUI and world routing.
+    for control in [top_panel, dock_panel, context_panel, palette_panel, inspector_panel, root.get_node("RestoreHUD")]:
+        if control.is_visible_in_tree() and control.get_global_rect().has_point(point):
+            return true
+    return not Rect2(Vector2.ZERO, root.size).has_point(point)

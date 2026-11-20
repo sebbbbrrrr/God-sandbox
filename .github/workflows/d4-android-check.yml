@@ -1,16 +1,16 @@
-name: Unified God Sandbox Android APK QA
+name: Unified God Sandbox Zoom Fix Android QA
 
 on:
   push:
     branches:
-      - integration/unified-god-sandbox-android-20261120
+      - fix/unified-pinch-zoom-anchor
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: unified-debug-apk-${{ github.ref }}
+  group: zoomfix-debug-apk-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -89,18 +89,23 @@ jobs:
           set -euo pipefail
           ./godot --headless --path . --script res://tests/unified_integration_test.gd 2>&1 | tee /tmp/unified_integration_test.log
           if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" /tmp/unified_integration_test.log; then exit 1; fi
+      - name: Validate two-finger and cursor zoom anchors
+        run: |
+          set -euo pipefail
+          ./godot --headless --path . --script res://tests/pinch_zoom_anchor_test.gd 2>&1 | tee /tmp/pinch_zoom_anchor_test.log
+          if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" /tmp/pinch_zoom_anchor_test.log; then exit 1; fi
       - name: Export Android debug APK
         run: |
           set -euo pipefail
           mkdir -p build
-          ./godot --headless --path . --export-debug "Android" build/GodSandbox-Unified-debug.apk
-          test -s build/GodSandbox-Unified-debug.apk
-          ls -lh build/GodSandbox-Unified-debug.apk
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-Unified-ZoomFix-debug.apk
+          test -s build/GodSandbox-Unified-ZoomFix-debug.apk
+          ls -lh build/GodSandbox-Unified-ZoomFix-debug.apk
       - name: Upload Unified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: GodSandbox-Unified-Android-debug
-          path: build/GodSandbox-Unified-debug.apk
+          name: GodSandbox-Unified-ZoomFix-Android-debug
+          path: build/GodSandbox-Unified-ZoomFix-debug.apk
           if-no-files-found: error
           retention-days: 14
       - name: Upload validation diagnostics on failure
@@ -113,5 +118,6 @@ jobs:
             /tmp/item_inspector_test.log
             /tmp/game_item_ui_test.log
             /tmp/unified_integration_test.log
+            /tmp/pinch_zoom_anchor_test.log
           if-no-files-found: warn
           retention-days: 7
