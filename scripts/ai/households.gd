@@ -413,5 +413,7 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
             person["carried_by"] = int(person.get("carried_by", 0))
             person["last_care_tick"] = int(person.get("last_care_tick", world.tick))
             person["care_visits"] = maxi(0, int(person.get("care_visits", 0)))
-    dirty = true
+    # Restore the saved reconciliation marker exactly. Reconciliation still
+    # rechecks every 60 ticks, even if no changes were pending at save time.
+    dirty = bool(raw.get("dirty", true))
     return true
