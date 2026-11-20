@@ -1,0 +1,51 @@
+name: D2 Physical Inventory Validation
+
+on:
+  push:
+    branches:
+      - feature/items-physical-inventory-d2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: physical-inventory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch Godot 4.5.2 and import project
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 "https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip" -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip
+          mv Godot_v4.5.2-stable_linux.x86_64 godot
+          chmod +x godot
+          ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/godot-import.log
+          ! grep -E "SCRIPT ERROR|Parse Error|Failed to load script" /tmp/godot-import.log
+      - name: Catalogue, physical economy and save regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in item_catalogue_test physical_inventory_test construction_test food_survival_test era_occupations_test simulation_test civilisation_calendar_lifecycle_test; do
+            echo "::group::$test"
+            ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/$test.log"
+            ! grep -E "SCRIPT ERROR|Parse Error|Failed to load script|FAILED:" "/tmp/$test.log"
+            echo "::endgroup::"
+          done
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d2-inventory-validation-logs
+          path: |
+            /tmp/godot-import.log
+            /tmp/*_test.log
+          if-no-files-found: warn
+          retention-days: 7
