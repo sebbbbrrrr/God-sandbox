@@ -70,6 +70,31 @@ func run() -> void:
         for key in row.keys:
             if key.begins_with("town_hall"): hall_present=true
     check(not hall_present,"burned capital loses intact town hall")
+    # A fire scar crossing a chunk boundary must be one connected silhouette.
+    for y in range(14,17):
+        for x in range(14,18):
+            world.set_terrain(x,y,Sim.MEADOW)
+    world.set_terrain(15,15,Sim.ASH)
+    world.set_terrain(16,15,Sim.ASH)
+    var left_exposure := renderer.scorch_exposure(15,15)
+    var right_exposure := renderer.scorch_exposure(16,15)
+    check((left_exposure & 2)==0,"connected ash has no east cut at chunk seam")
+    check((right_exposure & 8)==0,"connected ash has no west cut at chunk seam")
+    var scorch_key: String = renderer.atlas.scorch_tile(left_exposure,0)
+    var scorch_img: Image = renderer.atlas.scorch_images[scorch_key]
+    check(scorch_img.get_pixel(16,0).a==0.0,"exposed north edge reveals substrate")
+    check(scorch_img.get_pixel(16,16).a>0.0,"burned tile keeps solid ash interior")
+    check(renderer.atlas.texture(scorch_key)!=null,"scorch mask has renderable texture")
+    var left_chunk: PixelChunk = renderer.chunks[Vector2i(0,0)]
+    renderer.build_chunk(left_chunk)
+    check(left_chunk.layers[1].keys.has(scorch_key) or left_chunk.layers[1].keys.has(
+        "scorch_%d_%d" % [left_exposure,renderer.variation(15,15,world.seed,5)]),
+        "charred border uses composited ground")
+    renderer.detail=0
+    renderer.build_chunk(left_chunk)
+    check(left_chunk.far_sprite.texture!=null,"far LOD bakes alpha-masked scorch")
+    renderer.detail=1
+
     # Exhaustive cardinal transition lookup including diagonal/chunk-border cases.
     var center := Vector2i(15,15)
     world.set_terrain(15,15,Sim.OCEAN)
