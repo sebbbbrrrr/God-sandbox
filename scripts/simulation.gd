@@ -14,6 +14,7 @@ const Demography = preload("res://scripts/ai/autonomous_demography.gd")
 const Occupations = preload("res://scripts/ai/era_occupations.gd")
 const Inventory = preload("res://scripts/items/physical_inventory.gd")
 const Toolmaking = preload("res://scripts/items/autonomous_toolmaking.gd")
+const RegionalEconomy = preload("res://scripts/civilisation/road_trade_economy.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -46,6 +47,7 @@ var demography := Demography.new()
 var occupations := Occupations.new()
 var inventory := Inventory.new()
 var toolmaking := Toolmaking.new()
+var regional_economy := RegionalEconomy.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -123,6 +125,7 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
     elif was_ocean:
         visual_elevation[idx] = 1
     construction.on_terrain_changed(self, x, y)
+    regional_economy.on_terrain_changed(self, x, y)
     inventory.on_terrain_changed(self, x, y)
     households.dirty = true
     food.on_terrain_changed(self, x, y)
@@ -221,6 +224,7 @@ func step() -> void:
     food.on_tick(self)
     food.on_tick_households(self)
     construction.plan(self)
+    regional_economy.on_tick(self)
     occupations.on_tick(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
@@ -289,7 +293,7 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "households": households.snapshot(),
         "food": food.snapshot(), "demography": demography.snapshot(),
         "occupations": occupations.snapshot(), "inventory": inventory.snapshot(),
-        "toolmaking": toolmaking.snapshot()
+        "toolmaking": toolmaking.snapshot(), "regional_economy": regional_economy.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -410,6 +414,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     if not result.toolmaking.load_state(result, data.get("toolmaking", null)):
         return null
     if not result.construction.validate_restored(result):
+        return null
+    if not result.regional_economy.load_state(result, data.get("regional_economy", null)):
         return null
     return result
 
