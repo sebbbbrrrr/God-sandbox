@@ -1,6 +1,7 @@
 extends PanelContainer
 ## Native mobile presentation for the existing conserved physical-item model.
 ## All eligibility and transfer decisions remain in item_inspector.gd.
+const ItemIcon = preload("res://scripts/ui/item_icon.gd")
 const Tokens = preload("res://scripts/ui/ui_tokens.gd")
 var host: CanvasLayer
 var model: RefCounted
@@ -127,6 +128,7 @@ func refresh() -> void:
         for entry in entries:
             var key := str(entry["key"])
             var b: Button = host._button("", "pack")
+            b.item_texture = ItemIcon.texture(str(entry["item_id"]))
             b.custom_minimum_size.y = 60
             b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
             b.caption_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -144,6 +146,7 @@ func refresh() -> void:
         host._set_caption(b, "%s ×%d%s" % [str(entry["name"]), int(entry["quantity"]), suffix])
         host._set_selected(b, str(entry["key"]) == str(model.selected_key))
     var row: Dictionary = model.item_key(world)
+    detail.visible = not row.is_empty()
     if row.is_empty():
         detail.text = "Select an item to see its details."
     elif str(row["serial"]) != "":

@@ -3,6 +3,9 @@ const Game = preload("res://scripts/game.gd")
 const World = preload("res://scripts/simulation.gd")
 
 func _initialize() -> void:
+    call_deferred("run")
+
+func run() -> void:
     var ok := true
     # The headless root window has zero drawable size; isolate the real game
     # inside an explicitly sized offscreen viewport instead.

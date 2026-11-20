@@ -152,6 +152,7 @@ func _make_interface() -> void:
     overview.tooltip_text = "World information"
     var wordmark := _column(overview, 0)
     wordmark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    wordmark.alignment = BoxContainer.ALIGNMENT_CENTER
     wordmark.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     wordmark.offset_left = 10
     wordmark.offset_right = -6
@@ -698,7 +699,10 @@ func _layout() -> void:
     settings_panel.position = safe_rect.get_center() - settings_panel.size * 0.5
     restore_panel.size = Vector2(minf(width, 360), minf(safe_rect.size.y, 256))
     restore_panel.position = safe_rect.get_center() - restore_panel.size * 0.5
-    inventory_panel.size = Vector2(minf(width, 480), minf(safe_rect.size.y, 640))
+    var inventory_height := 440.0
+    if inventory_model != null and world_ref != null and not inventory_model.rows_for(world_ref).is_empty():
+        inventory_height = 600.0
+    inventory_panel.size = Vector2(minf(width, 480), minf(safe_rect.size.y, inventory_height))
     inventory_panel.position = safe_rect.get_center() - inventory_panel.size * 0.5
     var reveal: Control = root.get_node("RestoreHUD")
     reveal.position = safe_rect.end - Vector2(48, 48)

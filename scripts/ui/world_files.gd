@@ -39,14 +39,6 @@ static func read_snapshot(path: String) -> Dictionary:
         return value
     return {}
 
-static func _restore_counts(counts: Variant) -> void:
-    if not counts is Dictionary:
-        return
-    for key in counts:
-        var number: Variant = counts[key]
-        if typeof(number) == TYPE_FLOAT and is_finite(number) and number == floor(number) and absf(number) <= 9007199254740991.0:
-            counts[key] = int(number)
-
 static func _restore_numbers(value: Variant) -> Variant:
     if value is Dictionary:
         for key in value:

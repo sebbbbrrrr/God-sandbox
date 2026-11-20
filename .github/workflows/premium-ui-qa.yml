@@ -27,12 +27,13 @@ jobs:
           set -euo pipefail
           ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/ui-import.log
           ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/ui-import.log
-          for test in premium_hud_test premium_input_test premium_save_test pinch_zoom_anchor_test unified_integration_test game_item_ui_test item_inspector_test; do
+          for test in premium_hud_test premium_input_test premium_save_test input_test pinch_zoom_anchor_test unified_integration_test game_item_ui_test item_inspector_test item_catalogue_test physical_inventory_test toolmaking_test toolmaking_autonomy_test construction_test food_survival_test era_occupations_test simulation_test civilisation_calendar_lifecycle_test household_care_test citizen_ai_test; do
             ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/$test.log"
             ! grep -E 'SCRIPT ERROR|Parse Error|FAILED:|ERROR:' "/tmp/$test.log"
           done
       - name: Capture actual phone and landscape UI
         run: |
+          set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y xvfb xauth libgl1-mesa-dri
           LIBGL_ALWAYS_SOFTWARE=1 xvfb-run -a -s '-screen 0 1280x1280x24' ./godot --path . --rendering-method gl_compatibility --script res://tests/capture_premium_hud.gd 2>&1 | tee /tmp/ui-capture.log

@@ -19,6 +19,10 @@ func run() -> void:
     hud.preferences_path = ""
     root.add_child(hud)
     hud.set_reduced_motion(true)
+    await settle()
+    for button in [hud.speed_button, hud.active_button, hud.brush_buttons[1]]:
+        if button.caption_label.is_visible_in_tree():
+            check(button.caption_label.size.x >= 20 and button.caption_label.size.y >= 16, "dynamic button captions have drawable bounds")
     for dimensions in [Vector2i(320,568),Vector2i(360,780),Vector2i(400,866),Vector2i(480,850),Vector2i(866,400),Vector2i(640,360),Vector2i(1024,768),Vector2i(1280,800)]:
         root.size = dimensions
         root.content_scale_size = dimensions
@@ -43,6 +47,9 @@ func run() -> void:
             check(hud.palette_panel.get_global_rect().end.y <= hud.context_panel.position.y, "tray clears tool context")
         hud._show_settings(true)
         await settle()
+        for button in hud.buttons:
+            if is_instance_valid(button) and button.is_visible_in_tree() and button.caption != "":
+                check(button.caption_label.size.x >= 16 and button.caption_label.size.y >= 12, "visible button caption has usable layout space")
         check(fits(hud.settings_panel.get_global_rect(), full), "scrollable menu fits %s" % dimensions)
         hud.close_modal()
     root.size = Vector2i(400,866)
@@ -81,6 +88,18 @@ func run() -> void:
     for button in hud.buttons:
         if is_instance_valid(button):
             check(button.custom_minimum_size.x >= 48 and button.custom_minimum_size.y >= 48, "all reusable controls have 48-unit minimum targets")
+    # Project scaling keeps 400 logical units on the short screen edge in
+    # BOTH orientations; a portrait reference canvas shrinks landscape taps.
+    root.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+    root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+    root.content_scale_size = Vector2i(400,400)
+    for pixels in [Vector2i(1080,2340),Vector2i(2340,1080)]:
+        root.size = pixels
+        await settle()
+        var logical := root.get_visible_rect().size
+        check(absf(minf(logical.x,logical.y)-400.0) < 1.0, "Android orientation retains short-edge logical density")
+        var physical_target := root.get_screen_transform().basis_xform(Vector2(48,48))
+        check(minf(physical_target.x,physical_target.y) >= 129, "P30 physical touch targets retain their size after rotation")
     hud.free()
     print("PREMIUM_HUD_TESTS_%s (%d assertions)" % ["PASSED" if ok else "FAILED", assertions])
     quit(0 if ok else 1)

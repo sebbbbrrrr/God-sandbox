@@ -362,6 +362,8 @@ func _notification(what: int) -> void:
     if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_APPLICATION_PAUSED:
         _reset_world_gesture()
         ui_touches.clear()
+    elif what == NOTIFICATION_WM_CLOSE_REQUEST:
+        get_tree().quit()
     elif what == NOTIFICATION_WM_GO_BACK_REQUEST and hud != null:
         hud.handle_back()
 

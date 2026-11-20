@@ -12,6 +12,7 @@ var stacked := false
 var content: Control
 var caption_label: Label
 var image: TextureRect
+var item_texture: Texture2D
 var press_tween: Tween
 
 func setup(value: String, icon_name: String = "", vertical: bool = false) -> Button:
@@ -51,7 +52,7 @@ func setup(value: String, icon_name: String = "", vertical: bool = false) -> But
     box.add_child(image)
     caption_label = Tokens.label(value, 11 if vertical else 13)
     caption_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    caption_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL if vertical else Control.SIZE_SHRINK_CENTER
+    caption_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     box.add_child(caption_label)
     set_caption(value)
     set_symbol(icon_name)
@@ -84,6 +85,10 @@ func set_selected(value: bool) -> void:
     add_theme_stylebox_override("disabled", off)
     caption_label.add_theme_color_override("font_color", Tokens.ACCENT if value else Tokens.TEXT)
     set_symbol(symbol)
+    if item_texture != null:
+        image.visible = true
+        image.texture = item_texture
+        image.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     queue_redraw()
 
 func _compress() -> void:

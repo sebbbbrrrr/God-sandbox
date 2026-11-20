@@ -52,7 +52,8 @@ static func label(value: String, font_size: int = 14, color: Color = TEXT) -> La
     l.add_theme_color_override("font_color", color)
     l.mouse_filter = Control.MOUSE_FILTER_IGNORE
     l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-    l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+    l.custom_minimum_size.y = ceilf(font_size * 1.5)
+    l.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
     l.clip_text = true
     return l
 

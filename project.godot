@@ -4,13 +4,14 @@ config_version=5
 
 [application]
 config/name="God Sandbox"
+config/icon="res://assets/icon.svg"
 run/main_scene="res://scenes/world.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/description="A living, procedural 2D sandbox."
 
 [display]
 window/size/viewport_width=400
-window/size/viewport_height=720
+window/size/viewport_height=400
 window/size/window_width_override=480
 window/size/window_height_override=850
 window/stretch/mode="canvas_items"
