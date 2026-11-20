@@ -157,7 +157,11 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     Learning.advance(state, world.tick)
     var pos := Vector2i(person["x"], person["y"])
     var urgent: bool = Nav.danger_near(world, pos) or not world.is_walkable(pos.x, pos.y)
-    # Work is an actual physical commitment; emergency avoidance always overrides it.
+    # Young dependents cannot perform adult construction jobs. Their safety
+    # responses remain active during hazards.
+    if not urgent and world.lifecycle.dependent_step(world, person, state):
+        return
+    # Work is a physical commitment, interrupted by immediate danger.
     if not urgent and world.construction.work_step(world, person, state):
         return
     var think: bool = int(world.tick) >= int(state["next_decision"]) or (urgent and state["goal"] != GOAL_SAFE)
