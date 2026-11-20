@@ -95,7 +95,7 @@ func _process(delta: float) -> void:
             autosave_ticks = 0
             save_world()
     world_renderer.update_view(world_origin(),tile_size(),Rect2(0,50,get_viewport_rect().size.x,get_viewport_rect().size.y-toolbar_height()-50))
-    world_renderer.animate(delta)
+    world_renderer.animate(delta, 0.0 if paused else delta * float(simulation_speed))
     render_accum += delta
     if render_accum >= (1.0 / 30.0):
         render_accum = 0.0

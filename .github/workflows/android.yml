@@ -91,6 +91,7 @@ jobs:
           git diff --exit-code -- assets/pixel
           run_checked import ./godot --headless --editor --path . --import --quit
           run_checked simulation ./godot --headless --path . --script res://tests/simulation_test.gd
+          run_checked walking ./godot --headless --path . --script res://tests/walking_test.gd
           run_checked rendering ./godot --headless --path . --script res://tests/rendering_test.gd
           run_checked input ./godot --headless --path . --script res://tests/input_test.gd
           run_checked smoke ./godot --headless --path . --quit-after 90

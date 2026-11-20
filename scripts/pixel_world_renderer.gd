@@ -4,6 +4,7 @@ class_name PixelWorldRenderer
 const Atlas = preload("res://scripts/pixel_atlas.gd")
 const Chunk = preload("res://scripts/pixel_chunk.gd")
 const Commands = preload("res://scripts/pixel_commands.gd")
+const Walk = preload("res://scripts/citizen_walk.gd")
 const TILE := 32
 const CHUNK := 16
 const RISE := 12
@@ -18,6 +19,8 @@ var world: SandboxSimulation
 var atlas: PixelAtlas
 var chunks: Dictionary = {}
 var unit_rows: Array[PixelCommands] = []
+var walks: CitizenWalk
+var walk_draw_accum := 0.0
 var effects: PixelCommands
 var detail := 1
 var visible_rect := Rect2()
@@ -37,6 +40,7 @@ var previous_screen_tile := -1.0
 func setup(simulation: SandboxSimulation) -> void:
     world = simulation
     atlas = Atlas.new()
+    walks = Walk.new()
     texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     z_index = -1000
     for cy in range(ceili(float(world.HEIGHT) / CHUNK)):
@@ -137,6 +141,8 @@ func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> voi
             rebuilds += 1
     for y in range(unit_rows.size()):
         unit_rows[y].visible = y*TILE >= visible_rect.position.y-64 and y*TILE <= visible_rect.end.y+64
+    # Camera changes also refresh visibility for resting citizens.
+    render_units()
 
 func build_chunk(chunk: PixelChunk) -> void:
     chunk.clear_commands()
@@ -350,20 +356,54 @@ func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0,
     layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint)
 
 func refresh_units() -> void:
+    # Refresh only when the authoritative simulation changes. Between ticks,
+    # presentation positions advance independently without changing AI state.
+    walks.synchronize(world.citizens)
+    render_units()
+
+func render_units() -> void:
     for row in unit_rows:
         row.clear_commands()
     for citizen in world.citizens:
-        if citizen["hp"] <= 0:
+        if int(citizen["hp"]) <= 0:
             continue
-        var x: int = citizen["x"]
-        var y: int = citizen["y"]
-        var p := top_left(x,y)+Vector2(12+citizen["id"]%9,25)
-        prop(unit_rows[y],"citizen_gold" if citizen["nation"]==0 else "citizen_rose",p,0.9)
+        var id: int = int(citizen["id"])
+        if not walks.tracks.has(id):
+            continue
+        var track: Dictionary = walks.tracks[id]
+        var start: Vector2 = track["from"]
+        var goal: Vector2 = track["to"]
+        var fraction: float = walks.alpha(id)
+        var start_height := world.height_at(roundi(start.x), roundi(start.y))
+        var end_height := world.height_at(int(citizen["x"]), int(citizen["y"]))
+        var p := start.lerp(goal, fraction) * TILE + Vector2(
+            12 + posmod(id, 9), 25 - lerpf(float(start_height), float(end_height), fraction) * RISE)
+        var phase: float = walks.walk_phase(id)
+        if phase >= 0.0:
+            p.y -= absf(sin(phase * TAU * 2.0)) * 0.65
+        # Skip invisible sprites, not simulated citizens. No one-sprite nodes.
+        if visible_rect.size != Vector2.ZERO and not visible_rect.grow(72.0).has_point(p):
+            continue
+        var row_index := clampi(roundi(lerpf(start.y, goal.y, fraction)), 0, world.HEIGHT - 1)
+        var key := "citizen_gold" if int(citizen["nation"]) == 0 else "citizen_rose"
+        var sprite_size := (atlas.size_of(key) * 0.9).round()
+        unit_rows[row_index].add(key,
+            (p - Vector2(sprite_size.x * 0.5, sprite_size.y)).round(),
+            sprite_size, Color.WHITE, phase)
     for row in unit_rows:
-        row.queue_redraw()
+        if row.visible:
+            row.queue_redraw()
 
-func animate(delta: float) -> void:
-    effect_clock += delta
+func animate(delta: float, simulated_delta: float = -1.0) -> void:
+    # The visual clock follows simulation speed, but drawing is capped to 30Hz
+    # on Android rather than rebuilding all unit rows every render frame.
+    var motion_delta := delta if simulated_delta < 0.0 else simulated_delta
+    if walks.advance(motion_delta):
+        walk_draw_accum += delta
+        if walk_draw_accum >= (1.0 / 30.0) or not walks.has_active_motion():
+            render_units()
+            walk_draw_accum = 0.0
+    effect_clock += motion_delta
     if effect_clock < 0.25:
         return
     effect_clock = 0.0
