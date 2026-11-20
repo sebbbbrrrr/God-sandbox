@@ -293,12 +293,13 @@ func create_farm(world: RefCounted, nation: int) -> bool:
     if reused.is_empty():
         farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
             "sown_tick": world.tick, "ready_tick": world.tick + 240,
-            "fertility": 5, "yield": crop_yield, "harvested": false})
+            "fertility": 5, "yield": crop_yield, "collected": 0, "harvested": false)
         next_farm_id += 1
     else:
         reused["sown_tick"] = world.tick
         reused["ready_tick"] = world.tick + 240
         reused["yield"] = crop_yield
+        reused["collected"] = 0
         reused["harvested"] = false
     return true
 
@@ -405,9 +406,12 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     if str(job["kind"]) == "farm":
         for farm in farms:
             if int(farm["id"]) == int(job["farm_id"]) and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
-                amount = int(farm["yield"])
-                farm["harvested"] = true
-                farm["fertility"] = maxi(0, int(farm["fertility"]) - 1)
+                var available: int = maxi(0, int(farm["yield"]) - int(farm.get("collected", 0)))
+                amount = mini(CARRY_AMOUNT, available)
+                farm["collected"] = int(farm.get("collected", 0)) + amount
+                if int(farm["collected"]) >= int(farm["yield"]):
+                    farm["harvested"] = true
+                    farm["fertility"] = maxi(0, int(farm["fertility"]) - 1)
                 break
     else:
         amount = mini(CARRY_AMOUNT, resource_left(world, source))
