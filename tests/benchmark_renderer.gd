@@ -15,8 +15,9 @@ func run() -> void:
     var game := BenchGame.new()
     root.add_child(game)
     game.selected_power=-1
+    game.paused=true
     var report: Dictionary={"engine":Engine.get_version_info()["string"],"platform":"Linux Xvfb / Mesa llvmpipe software GL; NOT an Android device","cases":[]}
-    for setting in [[0.5,160],[1.0,160],[2.0,160],[1.0,1500]]:
+    for setting in [[0.5,160],[1.0,160],[2.0,160],[1.0,500],[1.0,1500]]:
         game.zoom=float(setting[0])
         if int(setting[1])>game.world.citizens.size():
             var point: Vector2i=game.world.capitals[0]
@@ -28,13 +29,16 @@ func run() -> void:
         var mem_start:=OS.get_static_memory_usage()
         var builds_before:=game.world_renderer.rebuilds
         for i in range(180):
+            if i%6==0:
+                game.world.step()
+                game.world_renderer.refresh_units()
             await RenderingServer.frame_post_draw
             var now:=Time.get_ticks_usec()
             samples.append(float(now-last)/1000.0)
             last=now
         samples.sort()
         var elapsed:=float(Time.get_ticks_usec()-start)/1000000.0
-        report["cases"].append({"zoom":game.zoom,"citizens":game.world.citizens.size(),"visible_chunks":game.world_renderer.visible_chunks,"mean_fps":180.0/elapsed,"frame_p50_ms":samples[90],"frame_p95_ms":samples[171],"static_memory_start_bytes":mem_start,"static_memory_end_bytes":OS.get_static_memory_usage(),"cached_terrain_rebuilds":game.world_renderer.rebuilds-builds_before,"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)})
+        report["cases"].append({"zoom":game.zoom,"citizens":game.world.citizens.size(),"visible_chunks":game.world_renderer.visible_chunks,"mean_fps":180.0/elapsed,"mean_frame_ms":elapsed*1000.0/180,"worst_frame_ms":samples[-1],"frame_p50_ms":samples[90],"frame_p95_ms":samples[171],"static_memory_start_bytes":mem_start,"static_memory_end_bytes":OS.get_static_memory_usage(),"cached_terrain_rebuilds":game.world_renderer.rebuilds-builds_before,"draw_calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)})
     var renderer: PixelWorldRenderer=game.world_renderer
     var point:=game.screen_to_tile(Vector2(240,330))
     var t:=Time.get_ticks_usec()

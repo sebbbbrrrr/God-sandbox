@@ -8,6 +8,11 @@ const TILE := 32
 const CHUNK := 16
 const RISE := 12
 const DIRECTIONS := [Vector2i(0,-1), Vector2i(1,0), Vector2i(0,1), Vector2i(-1,0)]
+const BIOMES := [3,1,5,6,4]
+const EDGE_FAMILY := ["","dirt","","forest","rock","ash","earth"]
+const TREE_SPECIES := ["pine_0","pine_1","pine_2","pine_3","pine_4","oak","birch","willow","beech","spruce","cedar","juniper"]
+const SMALL_PLANTS := ["berry_shrub","fern_cluster","wildflowers","tall_grass","mushrooms","leaf_litter","branches","exposed_roots"]
+const BUILDINGS := ["hut_a","hut_b","cottage_a","cottage_b","stone_house_a","stone_house_b","workshop_a","workshop_b","storage_a","storage_b","farmhouse_a","farmhouse_b","barn_a","barn_b","market_a","market_b","watchtower_a","watchtower_b"]
 const DIAGONALS := [Vector2i(-1,-1), Vector2i(1,-1), Vector2i(1,1), Vector2i(-1,1)]
 var world: SandboxSimulation
 var atlas: PixelAtlas
@@ -21,7 +26,9 @@ var effect_clock := 0.0
 var effect_phase := 0
 var rebuilds := 0
 var path_cells: Dictionary = {}
+var path_barriers: Dictionary = {}
 var town_cells: Dictionary = {}
+var building_cells: Dictionary = {}
 var paths_dirty := true
 var view_dirty := true
 var previous_screen_rect := Rect2()
@@ -70,7 +77,7 @@ func invalidate_cell(cell: Vector2i) -> void:
             var c := Vector2i(q.x / CHUNK, q.y / CHUNK)
             if chunks.has(c):
                 chunks[c].dirty = true
-    if world.at(cell.x,cell.y)==world.TOWN or town_cells.has(cell) or path_cells.has(cell):
+    if (world.at(cell.x,cell.y)==world.TOWN) != town_cells.has(cell) or (path_cells.has(cell) and not world.is_walkable(cell.x,cell.y)) or (path_barriers.has(cell) and world.is_walkable(cell.x,cell.y)):
         paths_dirty=true
     effect_clock = 1.0
 
@@ -162,6 +169,10 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var type := world.at(x,y)
     var p := top_left(x,y)
     var v := variation(x,y,world.seed,4)
+    var neighbour_masks := [0,0,0,0,0,0,0]
+    for i in range(4):
+        var q: Vector2i = Vector2i(x,y) + DIRECTIONS[i]
+        neighbour_masks[world.at(q.x,q.y)] |= 1 << i
     var is_capital := Vector2i(x,y) in world.capitals and world.is_walkable(x,y) and type!=world.ASH
     var water := chunk.layers[0]
     var ground := chunk.layers[1]
@@ -171,7 +182,7 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var objects: PixelCommands = chunk.rows[y % CHUNK]
     if type == world.OCEAN:
         water.add("water_%d" % v,Vector2(x*TILE,y*TILE))
-        var shores := land_mask(x,y)
+        var shores: int = (~int(neighbour_masks[world.OCEAN])) & 15
         if shores:
             water.add("shallow_edge_%d" % shores,p)
             transitions.add("shore_edge_%d" % shores,p)
@@ -190,24 +201,29 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         world.TOWN: family = "earth"
     if is_capital:
         family = "earth"
-    ground.add("%s_%d" % [family,0 if family == "earth" else v],p)
-    if type == world.MOUNTAIN and v == 0:
+    var variants: int = {"meadow":8,"forest":8,"sand":8,"rock":6,"ash":5,"earth":2}.get(family,4)
+    var surface := variation(x,y,world.seed,variants)
+    # Stable broad patches enrich colour without changing the material or sampling scale.
+    var shade := 0.97 + variation(x/7,y/7,world.seed,7)*0.01 if type in [world.MEADOW,world.FOREST] else 1.0
+    ground.add("%s_%d" % [family,surface],p,Vector2.ZERO,Color(shade,shade,shade))
+    if type == world.MOUNTAIN and variation(x,y,world.seed+27,7)==0:
         ground.add("mountain_%d" % v,p)
-    var ocean_mask := mask_for(x,y,world.OCEAN)
+    var ocean_mask: int = neighbour_masks[world.OCEAN]
     if ocean_mask:
         transitions.add("coast_cut_%d" % ocean_mask,p)
     # Beach-to-meadow edges spread vegetation into sand instead of a straight line.
     if type == world.BEACH:
-        var grass_mask := mask_for(x,y,world.MEADOW) | mask_for(x,y,world.FOREST)
+        var grass_mask: int = neighbour_masks[world.MEADOW] | neighbour_masks[world.FOREST]
         if grass_mask: transitions.add("meadow_edge_%d" % grass_mask,p)
+        if ocean_mask and detail==2 and v%2==0: decor.add("shore_scatter",p)
     # Overlay higher-priority neighbouring biome edges without hard tile borders.
-    for other in [world.FOREST,world.BEACH,world.ASH,world.TOWN,world.MOUNTAIN]:
+    for other in BIOMES:
         if other == type:
             continue
-        var mask := mask_for(x,y,other)
+        var mask: int = neighbour_masks[other]
         if mask == 0:
             continue
-        var edge_family: String = {world.FOREST:"forest",world.BEACH:"dirt",world.ASH:"ash",world.TOWN:"earth",world.MOUNTAIN:"rock"}[other]
+        var edge_family: String = EDGE_FAMILY[other]
         if type != world.MOUNTAIN:
             transitions.add("%s_edge_%d" % [edge_family,mask],p)
     var height := world.height_at(x,y)
@@ -217,6 +233,8 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         var face_height := south_drop*RISE+4
         cliffs.add("cliff_%d" % variation(x,y,world.seed,8),p+Vector2(0,TILE-4),Vector2(TILE,face_height))
         cliffs.add("contact_shadow",p+Vector2(0,TILE+face_height-5),Vector2(TILE,12))
+        cliffs.add("cliff_strata",p+Vector2(0,TILE-4),Vector2(TILE,face_height))
+        cliffs.add("cliff_rim",p+Vector2(0,TILE-6))
     if east_drop > 0:
         cliffs.add("cliff_east",p,Vector2(TILE,TILE),Color(1,1,1,0.38))
         if v%2==0 and detail>0:
@@ -228,39 +246,51 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
     var cell := Vector2i(x,y)
     if path_cells.has(cell) and type!=world.ASH:
         var path: int = path_cells[cell]
-        decor.add("path_h" if path==1 else ("path_v" if path==2 else "path_cross"),p)
+        decor.add("path_join_%d" % path,p)
     var salt := variation(x,y,world.seed+17,100)
     if type == world.TOWN or is_capital:
-        var building: String = "town_hall" if is_capital else ["hut","cottage","workshop","cottage"][v]
-        prop(objects,building,p+Vector2(16,25))
-        if detail > 0:
-            prop(decor,"fence_h",p+Vector2(18,31))
-            if v == 0: prop(decor,"barrels",p+Vector2(29,24),0.65)
+        if is_capital or building_cells.has(cell):
+            var building: String = ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
+            prop(objects,building,p+Vector2(16,27))
+            if detail > 0:
+                prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
+                prop(decor,"garden" if v%2==0 else "crops",p+Vector2(7,31),0.58)
+                if detail==2:prop(objects,["handcart","crates","hay","chopping_block"][v],p+Vector2(29,28),0.6)
+        elif detail > 0:
+            prop(decor,["garden","crops","well_open","well_roof"][v],p+Vector2(16,28),0.78)
         return
     if type == world.FOREST:
         if (detail > 0 or salt < 40) and not path_cells.has(cell):
-            var tree := "pine_%d" % variation(x,y,world.seed,5)
+            var tree: String = TREE_SPECIES[variation(x,y,world.seed,TREE_SPECIES.size())]
             var offset := Vector2(9+variation(x,y,world.seed+3,12),24+variation(x,y,world.seed+4,7))
             prop(objects,tree,p+offset,0.87+v*0.06)
         if detail == 2 and salt < 26:
-            prop(decor,"fern",p+Vector2(5,28),0.55)
+            prop(decor,SMALL_PLANTS[variation(x,y,world.seed,SMALL_PLANTS.size())],p+Vector2(5,28),0.55)
     elif type == world.MEADOW:
         if salt < 7 and detail > 0 and not path_cells.has(cell):
-            prop(objects,"pine_%d" % v,p+Vector2(17,28),0.78)
+            prop(objects,["oak","birch","beech","maple"][v],p+Vector2(17,28),0.78)
         elif salt < 20 and detail > 0:
-            prop(decor,["bush","grass","flowers_white","flowers_gold"][v],p+Vector2(16,28),0.6)
+            prop(decor,["berry_shrub","tall_grass","wildflowers","sapling_leaf"][v],p+Vector2(16,28),0.6)
         elif salt < 23 and detail == 2:
-            prop(decor,"log" if v == 0 else "stump",p+Vector2(18,26),0.6)
+            prop(decor,["moss_log","fallen_tree","sapling_pine","dead_tree"][v],p+Vector2(18,26),0.6)
     elif type == world.MOUNTAIN:
-        prop(objects,"rock_tall" if v%2==0 else "moss_rock",p+Vector2(17,27),1.0+v*0.15)
+        if salt<42:
+            prop(objects,["mountain_spire","granite_boulder","sandstone_boulder","moss_boulder"][v],p+Vector2(11+salt%12,26+salt%5),0.85+v*0.1)
     elif type == world.ASH and salt < 15 and detail > 0:
-        prop(decor,"stump",p+Vector2(17,25),0.7,Color(0.5,0.47,0.44))
+        prop(objects,"dead_tree",p+Vector2(17,29),0.72,Color(0.66,0.61,0.58))
+    if type == world.BEACH and detail > 0 and salt < 27:
+        prop(decor,["driftwood","coastal_stones","pebbles","shells"][v],p+Vector2(16,28),0.62)
+        if salt < 9 and ocean_mask:prop(objects,"wet_reeds" if v%2==0 else "cattails",p+Vector2(26,29),0.65)
+    if south_drop>0 and detail==2 and salt<25:
+        prop(objects,"cliff_debris",p+Vector2(18,TILE+south_drop*RISE),0.55)
     if salt >= 93 and type != world.ASH and detail > 0:
         prop(decor,"rock_small" if v%2==0 else "rock_medium",p+Vector2(17,25),0.6)
 
 func rebuild_paths() -> void:
     path_cells.clear()
+    path_barriers.clear()
     town_cells.clear()
+    building_cells.clear()
     for y in range(world.HEIGHT):
         for x in range(world.WIDTH):
             if world.at(x,y)!=world.TOWN: continue
@@ -274,10 +304,14 @@ func rebuild_paths() -> void:
             var previous := cell
             for i in range(steps+1):
                 var point := Vector2i(Vector2(cell).lerp(Vector2(capital),float(i)/maxi(steps,1)).round())
-                if not world.is_walkable(point.x,point.y): break
+                if not world.is_walkable(point.x,point.y):
+                    path_barriers[point]=true
+                    break
                 if point.x!=previous.x and point.y!=previous.y:
                     var elbow := Vector2i(point.x,previous.y)
-                    if not world.is_walkable(elbow.x,elbow.y): break
+                    if not world.is_walkable(elbow.x,elbow.y):
+                        path_barriers[elbow]=true
+                        break
                     path_cells[elbow]=3
                     path_cells[previous]=int(path_cells.get(previous,0))|1
                     path_cells[point]=int(path_cells.get(point,0))|2
@@ -285,11 +319,34 @@ func rebuild_paths() -> void:
                 path_cells[point]=int(path_cells.get(point,0))|direction
                 path_cells[previous]=int(path_cells.get(previous,0))|direction
                 previous=point
+    # Local deterministic minima reserve a one-cell gap between large building footprints.
+    for cell in town_cells:
+        var priority := variation(cell.x,cell.y,world.seed+71,100000)
+        var anchor := true
+        for dy in range(-1,2):
+            for dx in range(-1,2):
+                var other: Vector2i = cell+Vector2i(dx,dy)
+                if other==cell:continue
+                if other in world.capitals:
+                    anchor=false
+                elif town_cells.has(other):
+                    var rank := variation(other.x,other.y,world.seed+71,100000)
+                    if rank<priority or (rank==priority and (other.y<cell.y or (other.y==cell.y and other.x<cell.x))):anchor=false
+        if anchor:building_cells[cell]=true
+    var connected := {}
+    for cell in path_cells:
+        var mask := 0
+        for i in range(4):
+            if path_cells.has(cell+DIRECTIONS[i]):mask |= 1<<i
+        connected[cell]=mask if mask>0 else 15
+    path_cells=connected
     for chunk in chunks.values(): chunk.dirty=true
     paths_dirty=false
 
 func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0, tint: Color = Color.WHITE) -> void:
     var sz := atlas.size_of(key)*factor
+    if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall"):
+        layer.add("ground_shadow",(foot-Vector2(sz.x*0.43,9)).round(),Vector2(sz.x,14).round())
     layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint)
 
 func refresh_units() -> void:

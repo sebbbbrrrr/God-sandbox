@@ -20,18 +20,55 @@ func run() -> void:
     var renderer := Renderer.new()
     renderer.setup(world)
     root.add_child(renderer)
-    check(renderer.atlas.entries.size()==231,"all 231 atlas entries")
+    check(renderer.atlas.entries.size()==330,"all 330 atlas entries")
     for key in renderer.atlas.entries:
         var tex := renderer.atlas.texture(key)
         check(tex != null and Rect2(Vector2.ZERO,tex.get_size()).encloses(renderer.atlas.region(key)),"atlas bounds: "+key)
     check(ResourceLoader.exists(ProjectSettings.get_setting("application/config/icon","")),"Android export icon exists")
+    check(renderer.atlas.pages.size()==1,"expansion fits existing runtime texture page")
+    for key in Renderer.TREE_SPECIES+Renderer.SMALL_PLANTS+Renderer.BUILDINGS:
+        check(renderer.atlas.entries.has(key),"integrated art exists: "+key)
+    # A blocked footpath must disappear and return when the player restores land.
+    world.capitals=[Vector2i(40,40),Vector2i(80,80)]
+    for x in range(40,47):world.set_terrain(x,40,Sim.MEADOW)
+    world.set_terrain(46,40,Sim.TOWN)
+    renderer.rebuild_paths()
+    check(renderer.path_cells.has(Vector2i(43,40)),"settlement footpath connects to capital")
+    world.set_terrain(43,40,Sim.OCEAN)
+    check(renderer.paths_dirty,"flooding a footpath invalidates connectivity")
+    renderer.rebuild_paths()
+    check(not renderer.path_cells.has(Vector2i(43,40)),"footpath never crosses water")
+    world.set_terrain(43,40,Sim.MEADOW)
+    check(renderer.paths_dirty,"restored terrain reconnects blocked footpath")
+    renderer.rebuild_paths()
+    check(renderer.path_cells.has(Vector2i(43,40)),"restored footpath reappears")
+    world.set_terrain(43,40,Sim.FOREST)
+    check(not renderer.paths_dirty,"walkable material change keeps cached path network")
+    for y in range(42,49):
+        for x in range(42,49):world.set_terrain(x,y,Sim.TOWN)
+    renderer.rebuild_paths()
+    var anchors:=0
+    for cell in renderer.building_cells:
+        if cell.x<42 or cell.x>48 or cell.y<42 or cell.y>48:continue
+        anchors+=1
+        for other in renderer.building_cells:
+            check(cell==other or maxi(absi(cell.x-other.x),absi(cell.y-other.y))>1,"large buildings reserve separation")
+    check(anchors>0,"dense town retains building anchors")
+    var hall_chunk: PixelChunk=renderer.chunks[Vector2i(40/16,40/16)]
+    renderer.build_chunk(hall_chunk)
+    var intact_hall:=false
+    for row in hall_chunk.rows:
+        for key in row.keys:
+            if key.begins_with("town_hall"):intact_hall=true
+    check(intact_hall,"capital renders new town hall artwork")
     var capital: Vector2i=world.capitals[0]
     world.apply_power(1,capital.x,capital.y)
     var capital_chunk: PixelChunk=renderer.chunks[Vector2i(capital.x/16,capital.y/16)]
     renderer.build_chunk(capital_chunk)
     var hall_present:=false
     for row in capital_chunk.rows:
-        if row.keys.has("town_hall"): hall_present=true
+        for key in row.keys:
+            if key.begins_with("town_hall"): hall_present=true
     check(not hall_present,"burned capital loses intact town hall")
     # Exhaustive cardinal transition lookup including diagonal/chunk-border cases.
     var center := Vector2i(15,15)
