@@ -179,14 +179,16 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     # Food collection and survival take priority over optional construction.
     if not urgent and world.food.work_step(world, person, state):
         return
+    if not urgent and world.founding.travel_step(world, person, state):
+        return
     # One dedicated toolmaking worker per settlement; physical labour only.
-    if not urgent and world.toolmaking.work_step(world, person, state):
+    if not urgent and world.settlements.sid(person) in [0, 1] and world.toolmaking.work_step(world, person, state):
         return
     # Work is a physical commitment, interrupted by immediate danger.
     if not urgent and world.construction.work_step(world, person, state):
         return
     # Remaining available adults can extend real roads or haul bilateral barter.
-    if not urgent and world.regional_economy.work_step(world, person, state):
+    if not urgent and world.settlements.sid(person) in [0, 1] and world.regional_economy.work_step(world, person, state):
         return
     var think: bool = int(world.tick) >= int(state["next_decision"]) or (urgent and state["goal"] != GOAL_SAFE)
     if think and scheduled and not urgent and not world.ai_context.routine_grants.has(int(person["id"])):

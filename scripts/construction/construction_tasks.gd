@@ -37,10 +37,10 @@ func finish(engine: RefCounted, id: String, mind: Dictionary) -> void:
 
 func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var id = str(person["id"])
-    var nation = int(person["nation"])
+    var nation = world.settlements.sid(person)
     if int(person["hp"]) <= 0 or world.lifecycle.is_dependent(person):
         return false
-    var depot: Vector2i = world.capitals[nation]
+    var depot: Vector2i = world.settlements.center(world, nation)
     if depot.x < 0 or not world.is_walkable(depot.x, depot.y):
         return false
     if not engine.jobs.has(id):
@@ -51,7 +51,7 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
         var best = -2147483647
         var origin = Vector2i(int(person["x"]), int(person["y"]))
         for site in engine.projects:
-            if int(site["nation"]) != nation or site["paused"] or int(site["reserved"]) != 0:
+            if world.settlements.sid(site) != nation or site["paused"] or int(site["reserved"]) != 0:
                 continue
             var row: Dictionary = engine.catalogue.definition(str(site["definition_id"]))
             if not engine.catalogue.worker_eligible(world, person, row):
@@ -63,7 +63,7 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
         if not chosen.is_empty():
             chosen["reserved"] = int(person["id"])
             chosen["assigned_workers"] = [int(person["id"])]
-            engine.jobs[id] = {"kind": "build", "nation": nation, "project_id": int(chosen["id"]), "phase": "depot", "cargo": {}, "wood": 0, "stone": 0, "last_active_tick": int(world.tick)}
+            engine.jobs[id] = {"kind": "build", "nation": int(person["nation"]), "settlement_id": nation, "project_id": int(chosen["id"]), "phase": "depot", "cargo": {}, "wood": 0, "stone": 0, "last_active_tick": int(world.tick)}
         elif engine.lifecycle.assign(engine, world, person):
             pass
         else:
@@ -76,7 +76,8 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
             var source: Dictionary = engine.source_for(world, person, material)
             if source.is_empty():
                 return false
-            engine.jobs[id] = {"kind": "gather", "nation": nation, "phase": "source", "material": material, "source": source["source"], "target": source["target"], "wood": 0, "stone": 0, "amount": 0, "last_active_tick": int(world.tick)}
+            engine.jobs[id] = {"kind": "gather", "nation": int(person["nation"]), "settlement_id": nation, "phase": "source", "material": material, "source": source["source"], "target": source["target"], "wood": 0, "stone": 0, "amount": 0, "last_active_tick": int(world.tick)}
+        engine.jobs[id]["settlement_id"] = nation
         mind["route"] = []
         mind["next_path_tick"] = world.tick
     var task: Dictionary = engine.jobs[id]

@@ -122,7 +122,7 @@ func has_capability(world: RefCounted, nation: int, tech: String) -> bool:
     if tech == "":
         return true
     if nation not in [0, 1]:
-        return false
+        return bool(world.settlements.get_record(nation).get("knowledge", {}).get(tech, false))
     if tech in ["cultivation", "irrigation"]:
         return bool(world.food.techniques[nation].get(tech, false))
     var key := settlement_key(world, nation)
@@ -176,18 +176,18 @@ func facility_present(world: RefCounted, nation: int, facility: String) -> bool:
         return true
     if facility == "farm":
         for farm in world.food.farms:
-            if int(farm["nation"]) == nation:
+            if world.settlements.sid(farm) == nation:
                 return true
         return false
     if facility == "house":
         for house in world.construction.houses:
-            if int(house["nation"]) == nation and int(house.get("capacity", 0)) > 0:
+            if world.settlements.sid(house) == nation and int(house.get("capacity", 0)) > 0:
                 return true
         return false
     # Only actual specialised building entities unlock advanced roles.
     # The existing town tile is not a forge, factory or research laboratory.
     for house in world.construction.houses:
-        if int(house["nation"]) == nation and str(house.get("type", "home")) == facility:
+        if world.settlements.sid(house) == nation and str(house.get("type", "home")) == facility:
             return true
     return false
 
@@ -200,9 +200,9 @@ func enabled(world: RefCounted, nation: int, id: String) -> bool:
 func context_exists(world: RefCounted, nation: int, context: String) -> bool:
     if context == "":
         return true
-    if nation not in [0, 1]:
+    if nation not in [0, 1] and world.settlements.get_record(nation).is_empty():
         return false
-    var center: Vector2i = world.capitals[nation]
+    var center: Vector2i = world.settlements.center(world, nation)
     if center.x < 0:
         return false
     match context:
@@ -210,13 +210,13 @@ func context_exists(world: RefCounted, nation: int, context: String) -> bool:
             return not world.construction.project_for(nation).is_empty()
         "dependent":
             for person in world.citizens:
-                if int(person["nation"]) == nation and int(person["hp"]) > 0 and \
+                if world.settlements.sid(person) == nation and int(person["hp"]) > 0 and \
                         int(person.get("guardian_id", 0)) > 0:
                     return true
             return false
         "meadow":
             for farm in world.food.farms:
-                if int(farm["nation"]) == nation:
+                if world.settlements.sid(farm) == nation:
                     return true
             return false
     for dy in range(-12, 13):
@@ -300,7 +300,7 @@ func append_event(world: RefCounted, person: Dictionary, type: String, extra: Di
         career_events.pop_front()
 
 func credit(world: RefCounted, person: Dictionary, id: String, quantity: int, practice: bool) -> bool:
-    if int(person["hp"]) <= 0 or not enabled(world, int(person["nation"]), id) or quantity <= 0:
+    if int(person["hp"]) <= 0 or not enabled(world, world.settlements.sid(person), id) or quantity <= 0:
         return false
     var rec: Dictionary = record_for(person)
     if rec.is_empty():
@@ -342,12 +342,12 @@ func apprenticeship_available(world: RefCounted, teacher: Dictionary,
     if teacher.is_empty() or student.is_empty() or int(teacher["id"]) == int(student["id"]):
         return false
     if int(teacher["hp"]) <= 0 or int(student["hp"]) <= 0 or \
-            int(teacher["nation"]) != int(student["nation"]):
+            world.settlements.sid(teacher) != world.settlements.sid(student):
         return false
     if world.calendar.age_years(int(teacher["birth_tick"]), world.tick) < 18 or \
             world.calendar.age_years(int(student["birth_tick"]), world.tick) < 13:
         return false
-    if not enabled(world, int(student["nation"]), id) or xp_for(teacher, id) < MENTOR_MIN_XP:
+    if not enabled(world, world.settlements.sid(student), id) or xp_for(teacher, id) < MENTOR_MIN_XP:
         return false
     if xp_for(student, id) >= xp_for(teacher, id):
         return false
@@ -413,7 +413,7 @@ func retire_invalid_apprenticeships(world: RefCounted) -> void:
         var pupil: Dictionary = world.ai_context.people.get(int(link["student_id"]), {})
         if mentor.is_empty() or pupil.is_empty() or \
                 int(mentor["hp"]) <= 0 or int(pupil["hp"]) <= 0 or \
-                not enabled(world, int(pupil["nation"]), str(link["occupation"])):
+                not enabled(world, world.settlements.sid(pupil), str(link["occupation"])):
             apprenticeships.erase(key)
 
 func auto_apprenticeship(world: RefCounted) -> void:
@@ -432,7 +432,7 @@ func auto_apprenticeship(world: RefCounted) -> void:
         var most_xp := MENTOR_MIN_XP - 1
         for skill_id in rec["xp"]:
             var xp: int = int(rec["xp"][skill_id])
-            if xp > most_xp and enabled(world, int(teacher["nation"]), str(skill_id)):
+            if xp > most_xp and enabled(world, world.settlements.sid(teacher), str(skill_id)):
                 most_xp = xp
                 taught = str(skill_id)
         if taught == "":
@@ -463,7 +463,7 @@ func on_tick(world: RefCounted) -> void:
     if int(world.tick) < next_plan_tick:
         return
     next_plan_tick = int(world.tick) + PLANNING_INTERVAL
-    var local: Array = [available_roles(world, 0), available_roles(world, 1)]
+    var local: Dictionary = {0: available_roles(world, 0), 1: available_roles(world, 1)}
     auto_apprenticeship(world)
     for person in world.citizens:
         if int(person["hp"]) <= 0:
@@ -475,7 +475,9 @@ func on_tick(world: RefCounted) -> void:
         if world.calendar.age_years(int(person["birth_tick"]), world.tick) < 18:
             record["preference"] = ""
             continue
-        var nation: int = int(person["nation"])
+        var nation: int = world.settlements.sid(person)
+        if not local.has(nation):
+            local[nation] = available_roles(world, nation)
         var old_role := str(record["preference"])
         var choice := old_role if old_role in local[nation] else ""
         var best_score := -2147483647
@@ -493,7 +495,7 @@ func on_tick(world: RefCounted) -> void:
                 score += (int(mind["personality"]["diligence"]) +
                     int(mind["personality"]["curiosity"])) / 10
             if str(role_id) == "forager":
-                score += 25 if world.food.total(world.food.depots[nation]) < 8 else 10
+                score += 25 if world.food.total(world.food.store(nation)) < 8 else 10
             if str(role_id) == "shelter_builder":
                 score += 15
             if str(role_id) == "crop_farmer":

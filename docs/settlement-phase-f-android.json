@@ -1,0 +1,21 @@
+{
+  "scope": "F1-F3 foundations; full Phase F incomplete",
+  "engine": "Godot 4.5.2 stable",
+  "source_commit_local": "42177220dda16cad87bc4fd96fef90463642588a",
+  "base_commit": "cebf8e52dea048e14a90c6d09067306ee9f0f09c",
+  "apk": "GodSandbox-PhaseF-Foundations-debug.apk",
+  "bytes": 29341806,
+  "sha256": "da1d41458af5e0f8d0bc58bd9bfac9b59deca6d1086dbae13124c974127b1781",
+  "architecture": "arm64-v8a",
+  "renderer": "GL Compatibility",
+  "min_sdk": 24,
+  "target_sdk": 35,
+  "signature_verified": true,
+  "zip_crc_verified": true,
+  "local_java": "OpenJDK 21",
+  "ci_java": "Temurin 17",
+  "android_device_tested": false,
+  "device_status": "No Android device attached during validation",
+  "headless_validation_steps": 26,
+  "headless_validation_passed": true
+}

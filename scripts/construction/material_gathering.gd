@@ -34,7 +34,7 @@ func approach(world: RefCounted, from: Vector2i, source: Vector2i) -> Vector2i:
     return best
 
 func source_for(world: RefCounted, person: Dictionary, material: String) -> Dictionary:
-    var depot: Vector2i = world.capitals[int(person["nation"])]
+    var depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
     var origin = Vector2i(int(person["x"]), int(person["y"]))
     var result: Dictionary = {}
     var shortest = 2147483647
@@ -57,7 +57,7 @@ func source_for(world: RefCounted, person: Dictionary, material: String) -> Dict
 func gatherer_count(nation: int) -> int:
     var result = 0
     for job in jobs.values():
-        if str(job["kind"]) == "gather" and int(job["nation"]) == nation:
+        if str(job["kind"]) == "gather" and int(job.get("settlement_id", job["nation"])) == nation:
             result += 1
     return result
 
@@ -78,7 +78,7 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         if walk(world, person, mind, depot):
             var material = str(task["material"])
             if world.inventory.transfer(world, "citizen:" + id,
-                    "settlement:" + str(task["nation"]), {material: maxi(1, int(task.get("amount", 1)))}, int(person["id"])):
+                    "settlement:" + str(task.get("settlement_id", task["nation"])), {material: maxi(1, int(task.get("amount", 1)))}, int(person["id"])):
                 jobs.erase(id)
                 mind["route"] = []
         return true

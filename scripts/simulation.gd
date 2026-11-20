@@ -14,6 +14,9 @@ const Demography = preload("res://scripts/ai/autonomous_demography.gd")
 const Occupations = preload("res://scripts/ai/era_occupations.gd")
 const Inventory = preload("res://scripts/items/physical_inventory.gd")
 const Toolmaking = preload("res://scripts/items/autonomous_toolmaking.gd")
+const Settlements = preload("res://scripts/civilisation/settlement_registry.gd")
+const Founding = preload("res://scripts/civilisation/founding_expeditions.gd")
+const SettlementPlanner = preload("res://scripts/civilisation/settlement_planner.gd")
 const RegionalEconomy = preload("res://scripts/civilisation/road_trade_economy.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
@@ -48,6 +51,9 @@ var occupations := Occupations.new()
 var inventory := Inventory.new()
 var toolmaking := Toolmaking.new()
 var regional_economy := RegionalEconomy.new()
+var settlements := Settlements.new()
+var founding := Founding.new()
+var settlement_planner := SettlementPlanner.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -126,6 +132,7 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
         visual_elevation[idx] = 1
     construction.on_terrain_changed(self, x, y)
     regional_economy.on_terrain_changed(self, x, y)
+    settlement_planner.invalidate(Vector2i(x, y))
     inventory.on_terrain_changed(self, x, y)
     households.dirty = true
     food.on_terrain_changed(self, x, y)
@@ -143,9 +150,11 @@ func set_terrain(x: int, y: int, type: int) -> void:
 func add_citizen(x: int, y: int, nation: int) -> bool:
     if not is_walkable(x, y) or citizens.size() >= MAX_PEOPLE:
         return false
+    if capitals[nation].x < 0:
+        capitals[nation] = Vector2i(x, y)
     citizens.append({
         "id": next_id,
-        "nation": nation,
+        "nation": nation, "settlement_id": nation,
         "x": x,
         "y": y,
         "hp": 100,
@@ -218,6 +227,10 @@ func step() -> void:
     tick += 1
     lifecycle.on_tick(self)
     ai_context.begin_tick(self)
+    settlements.rebuild_membership(self)
+    founding.tick(self)
+    if tick % 15 == 3:
+        settlement_planner.update_one(self)
     construction.prune(self)
     toolmaking.prune(self)
     households.reconcile(self)
@@ -281,6 +294,7 @@ func apply_power(power: int, x: int, y: int) -> bool:
     return true
 
 func snapshot(legacy: bool = false) -> Dictionary:
+    settlements.ensure_legacy(self)
     return {
         "version": 3 if legacy else 4, "seed": seed, "tick": tick, "next_id": next_id,
         "ai_version": 2 if legacy else 3, "citizen_ai_by_id": citizen_ai_by_id.duplicate(true) if legacy else SaveCodec.encode(citizen_ai_by_id),
@@ -293,7 +307,9 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "households": households.snapshot(),
         "food": food.snapshot(), "demography": demography.snapshot(),
         "occupations": occupations.snapshot(), "inventory": inventory.snapshot(),
-        "toolmaking": toolmaking.snapshot(), "regional_economy": regional_economy.snapshot()
+        "toolmaking": toolmaking.snapshot(), "regional_economy": regional_economy.snapshot(),
+        "settlements": settlements.snapshot(), "founding": founding.snapshot(),
+        "settlement_planner_cursor": settlement_planner.cursor
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -341,7 +357,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 "can_gestate": bool(person.get("can_gestate", Demography.can_gestate_for(result.seed, incoming_id))),
                 "last_birth_tick": int(person.get("last_birth_tick", -Calendar.TICKS_PER_YEAR * 100)),
                 "last_partner_decision": int(person.get("last_partner_decision", result.tick)),
-                "occupation_id": str(person.get("occupation_id", ""))
+                "occupation_id": str(person.get("occupation_id", "")),
+                "settlement_id": int(person.get("settlement_id", person.get("nation", 0)))
             }
             if person.has("birth_tick"):
                 restored_citizen["birth_tick"] = int(person["birth_tick"])
@@ -389,6 +406,9 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     if data.has("lifecycle") and not result.lifecycle.load_state(data["lifecycle"]):
         return null
+    if not result.settlements.load_state(result, data.get("settlements", null)):
+        return null
+    result.settlement_planner.cursor = int(data.get("settlement_planner_cursor", 0))
     if not result.construction.load_state(data.get("construction", {})):
         return null
     result.ai_context.begin_tick(result)
@@ -401,6 +421,9 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         result.inventory.import_legacy(result)
     for nation in range(2):
         result.construction.stockpiles[nation] = result.inventory.stockpile(nation)
+    for key in result.settlements.records:
+        if int(key) > 1:
+            result.construction.local_stockpiles[key] = result.inventory.stockpile(int(key))
     if not result.inventory.ledger_ok():
         return null
     if not result.households.load_state(result, data.get("households", null)):
@@ -417,6 +440,12 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     if not result.regional_economy.load_state(result, data.get("regional_economy", null)):
         return null
+    if not result.settlements.validate(result) or not result.founding.load_state(result, data.get("founding", null)):
+        return null
+    result.settlements.rebuild_membership(result)
+    for key in result.food.local_depots:
+        if result.settlements.get_record(int(key)).is_empty():
+            return null
     return result
 
 # Preparation runs on the simulation thread; the returned buffer owns all saved data.

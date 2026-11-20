@@ -1,6 +1,6 @@
 extends SceneTree
 
-class TestGame extends "res://scripts/game.gd":
+class TestGame extends "res://scripts/unified_game.gd":
     func load_world() -> SandboxSimulation:
         return SandboxSimulation.new(424242)
     func save_world() -> void:

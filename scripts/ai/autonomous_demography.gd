@@ -89,6 +89,8 @@ func on_household_merge(primary_id: int, absorbed_id: int) -> void:
             pregnancy["household_id"] = primary_id
 
 func eligible_adult(world: RefCounted, citizen: Dictionary) -> bool:
+    if world.founding.assignments.has(str(citizen.get("id", 0))):
+        return false # established care and pregnancy commitments precede migration
     if citizen.is_empty() or int(citizen["hp"]) < 50 or int(citizen.get("hunger", 0)) > 50:
         return false
     var age: int = world.calendar.age_years(int(citizen["birth_tick"]), int(world.tick))

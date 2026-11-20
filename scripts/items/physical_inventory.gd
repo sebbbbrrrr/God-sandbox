@@ -30,9 +30,7 @@ func ensure_settlements() -> void:
 # Legacy construction.stockpiles[] is a read-through compatibility reference
 # to this same dictionary, not an independently updated inventory.
 func stockpile(nation: int) -> Dictionary:
-    if nation not in [0, 1]:
-        return {}
-    return balances["settlement:" + str(nation)]
+    return balances.get("settlement:" + str(nation), {})
 
 func held(holder: String, item_id: String) -> int:
     return int(balances.get(holder, {}).get(item_id, 0))
@@ -63,12 +61,12 @@ func _holder(world: RefCounted, holder_id: String) -> Dictionary:
     var number := int(fields[1])
     match fields[0]:
         "settlement":
-            if number not in [0, 1]:
+            if number not in [0, 1] and world.settlements.get_record(number).is_empty():
                 return {}
-            var cell: Vector2i = world.capitals[number]
+            var cell: Vector2i = world.settlements.center(world, number)
             # Unfounded nations still have an empty, persistable reserve; their
             # off-map capital naturally denies proximity-based transfers.
-            return {"kind": "settlement", "owner_id": number, "nation": number,
+            return {"kind": "settlement", "owner_id": number, "nation": world.settlements.nation(number), "settlement_id": number,
                 "cell": cell}
         "citizen":
             if number <= 0:
@@ -76,13 +74,13 @@ func _holder(world: RefCounted, holder_id: String) -> Dictionary:
             var person := _person(world, number)
             if person.is_empty():
                 return {}
-            return {"kind": "citizen", "owner_id": number, "nation": int(person["nation"]),
+            return {"kind": "citizen", "owner_id": number, "nation": int(person["nation"]), "settlement_id": world.settlements.sid(person),
                 "cell": Vector2i(int(person["x"]), int(person["y"]))}
         "site":
             var site: Dictionary = world.construction.site_by_id(number)
             if site.is_empty():
                 return {}
-            return {"kind": "site", "owner_id": number, "nation": int(site["nation"]),
+            return {"kind": "site", "owner_id": number, "nation": int(site["nation"]), "settlement_id": world.settlements.sid(site),
                 "cell": Vector2i(int(site["x"]), int(site["y"]))}
         "ground":
             if number < 0 or number >= world.WIDTH * world.HEIGHT:
@@ -108,7 +106,7 @@ func _access(holder: Dictionary, actor: Dictionary, as_source: bool) -> bool:
             return int(holder["owner_id"]) == int(actor["owner_id"]) if as_source else \
                 int(holder["nation"]) == int(actor["nation"])
         "settlement", "site":
-            return int(holder["nation"]) == int(actor["nation"])
+            return int(holder["settlement_id"]) == int(actor["settlement_id"])
         "ground":
             return true
     return false
@@ -161,7 +159,7 @@ func transfer(world: RefCounted, source: String, target: String,
         if str(claim.get("holder", "")) != source or target != "citizen:" + str(actor_id):
             return false
         var site: Dictionary = world.construction.site_by_id(int(reservation_id.trim_prefix("site:")))
-        if site.is_empty() or int(site["nation"]) != int(actor["nation"]):
+        if site.is_empty() or world.settlements.sid(site) != int(actor["settlement_id"]):
             return false
         for item_id in units:
             if int(claim.get("units", {}).get(item_id, 0)) < int(units[item_id]):
@@ -279,6 +277,7 @@ func extract(world: RefCounted, citizen_id: int, item_id: String, source: Vector
     balances[holder_id][item_id] = int(balances[holder_id].get(item_id, 0)) + quantity
     var index: int = world.index_of(source.x, source.y)
     var cell_key := str(index)
+    world.settlement_planner.invalidate(source)
     world.construction.depleted[cell_key] = int(world.construction.depleted.get(cell_key, 0)) + quantity
     minted[item_id] = int(minted.get(item_id, 0)) + quantity
     _log(world, "extract", "terrain:" + cell_key, holder_id, {item_id: quantity})
@@ -389,6 +388,8 @@ func prototype_knapping(world: RefCounted, actor_id: int) -> bool:
     if person.is_empty() or int(person.get("hp", 0)) <= 0:
         return false
     var nation := int(person["nation"])
+    if world.settlements.sid(person) != nation:
+        return false # capital-only crafting cannot spend a satellite resident's nation store
     var depot: Vector2i = world.capitals[nation]
     if depot.x < 0 or _distance(depot, Vector2i(int(person["x"]), int(person["y"]))) > 1 or \
             world.calendar.age_years(int(person.get("birth_tick", world.tick)), world.tick) < 13 or \
@@ -424,6 +425,8 @@ func craft_at(world: RefCounted, item_id: String, actor_id: int) -> bool:
     if person.is_empty() or int(person.get("hp", 0)) <= 0:
         return false
     var nation := int(person["nation"])
+    if world.settlements.sid(person) != nation:
+        return false # capital-only crafting cannot spend a satellite resident's nation store
     var depot: Vector2i = world.capitals[nation]
     if depot.x < 0 or _distance(depot, Vector2i(int(person["x"]), int(person["y"]))) > 1 or \
             not world.occupations.enabled(world, nation, "stone_toolmaker"):

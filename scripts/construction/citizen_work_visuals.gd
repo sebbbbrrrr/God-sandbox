@@ -28,6 +28,8 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
         elif task.is_empty() and world.regional_economy.trade_jobs.has(str(id)):
             task = world.regional_economy.trade_jobs[str(id)].duplicate()
             task["kind"] = "merchant"
+        elif task.is_empty() and world.founding.assignments.has(str(id)):
+            task = {"kind": "founder", "phase": "travel", "cargo": world.inventory.citizen_inventory(id)}
         if task.is_empty():
             continue
         var kind := str(task.get("kind", ""))
@@ -71,7 +73,7 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             continue
         if kind == "merchant":
             var market: Vector2i = world.capitals[int(task.get("other", 1 - int(person["nation"])))]
-            var homeland: Vector2i = world.capitals[int(person["nation"])]
+            var homeland: Vector2i = world.settlements.center(world, world.settlements.sid(person))
             var here := Vector2i(int(person["x"]), int(person["y"]))
             if phase == "pickup" and here == homeland:
                 _action(canvas, p, size, t, "pickup")
@@ -87,7 +89,7 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                     var material := str(task.get("material", "wood"))
                     _action(canvas, p, size, t, "chop" if material in ["wood", "plant_fibre"] else "mine")
             elif phase == "depot":
-                var gather_depot: Vector2i = world.capitals[int(person["nation"])]
+                var gather_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
                 if int(person["x"]) == gather_depot.x and int(person["y"]) == gather_depot.y:
                     _action(canvas, p, size, t, "unload")
             continue
@@ -103,11 +105,11 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                 destination = Vector2i(int(site["x"]), int(site["y"]))
         var nearby := absi(int(person["x"]) - destination.x) <= 1 and absi(int(person["y"]) - destination.y) <= 1
         if phase == "depot":
-            var pickup_depot: Vector2i = world.capitals[int(person["nation"])]
+            var pickup_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
             if int(person["x"]) == pickup_depot.x and int(person["y"]) == pickup_depot.y:
                 _action(canvas, p, size, t, "pickup")
         elif phase == "return" and carrying:
-            var return_depot: Vector2i = world.capitals[int(person["nation"])]
+            var return_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
             if int(person["x"]) == return_depot.x and int(person["y"]) == return_depot.y:
                 _action(canvas, p, size, t, "unload")
         elif phase == "site" and nearby:

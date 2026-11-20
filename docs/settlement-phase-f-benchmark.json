@@ -1,0 +1,36 @@
+{
+  "android_device_tested": false,
+  "engine": "4.5.2-stable (official)",
+  "hardware": "AMD EPYC 9V74 80-Core Processor",
+  "platform": "Linux",
+  "scenarios": [
+    {
+      "citizens": 120,
+      "completed_buildings": 6,
+      "food_conserved": true,
+      "inventory_conserved": true,
+      "max_ms": 112.596,
+      "p50_ms": 10.262,
+      "p95_ms": 37.152,
+      "peak_tick": 1,
+      "result_settlements": 8,
+      "seeded_settlements": 6,
+      "sites": 4,
+      "ticks": 240
+    },
+    {
+      "citizens": 500,
+      "completed_buildings": 7,
+      "food_conserved": true,
+      "inventory_conserved": true,
+      "max_ms": 124.297,
+      "p50_ms": 21.854,
+      "p95_ms": 43.888,
+      "peak_tick": 1,
+      "result_settlements": 8,
+      "seeded_settlements": 6,
+      "sites": 1,
+      "ticks": 240
+    }
+  ]
+}
