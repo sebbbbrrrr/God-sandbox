@@ -1,0 +1,57 @@
+name: Physical Objects 420 — Godot and Android QA
+
+on:
+  push:
+    branches:
+      - feature/physical-objects-420-v1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: physical-art-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.5.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 "https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip" -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip
+          mv Godot_v4.5.2-stable_linux.x86_64 godot
+          chmod +x godot
+      - name: Import and parse project
+        run: |
+          set -o pipefail
+          ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/physical-import.log
+          ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/physical-import.log
+      - name: Validate art atlas and existing simulation contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in physical_sprite_atlas_test construction_animation_test universal_construction_test physical_inventory_test item_inspector_test game_item_ui_test rendering_test; do
+            echo "::group::$test"
+            ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/physical-$test.log"
+            ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script|FAILED:' "/tmp/physical-$test.log"
+            echo "::endgroup::"
+          done
+      - name: Main scene smoke test
+        shell: bash
+        run: |
+          set -o pipefail
+          ./godot --headless --path . --quit-after 60 2>&1 | tee /tmp/physical-smoke.log
+          ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/physical-smoke.log
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: physical-art-420-qa
+          path: /tmp/physical-*.log
+          retention-days: 7

@@ -28,3 +28,12 @@ These compact procedural pixel pieces establish visual coverage, but do not cons
 Run `godot --headless --editor --path . --import --quit`, then
 `godot --headless --path . --script res://tests/physical_sprite_atlas_test.gd`
 and the existing construction, item inventory and renderer regression suites. Check GL screens and Android debug export before merge.
+
+## Integrated runtime uses
+- All 100 catalogue icons in the physical inspector and existing equipment overlay.
+- Ground-cache stacks and settlement stockpile quantities, read from physical inventory.
+- Citizen construction cargo visuals, from actual task cargo only.
+- Loose site wood and stone stacks from delivered-minus-consumed inventories.
+- Atlas-framed citizen gestures for the 15 mapped action families; all other A2 gestures use the existing procedural fallback.
+
+The remaining authored regions are registered for subsequent occupation/workstation/era visual hookups. There is no autonomous production for catalogued items without existing simulation support.
