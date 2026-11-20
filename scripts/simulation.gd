@@ -158,7 +158,10 @@ func register_birth(x: int, y: int, nation: int, parent_a: int, parent_b: int) -
     if not add_citizen(x, y, nation):
         return false
     lifecycle.register_newborn(self, citizens[-1], parent_a, parent_b)
-    households.join_newborn(self, citizens[-1], adults[0], adults[1])
+    if not households.join_newborn(self, citizens[-1], adults[0], adults[1]):
+        return false # prevalidated capacity; never continue a partially joined family
+    var gestator: Dictionary = adults[0] if bool(adults[0].get("can_gestate", false)) else adults[1]
+    demography.record_family_birth(self, citizens[-1], int(gestator["id"]))
     return true
 
 func spawn_initial_population() -> void:
