@@ -357,6 +357,11 @@ func craft_at(world: RefCounted, item_id: String, actor_id: int) -> bool:
     var context: Dictionary = catalogue.context_for_citizen(world, person, item_id)
     if not catalogue.can_craft(item_id, store, context):
         return false
+    if item_id == "knapped_flint":
+        var ability_context: Dictionary = catalogue.context_for_citizen(world, person, "knapping", true)
+        if not catalogue.can_use_ability("knapping", store, ability_context) or \
+                not world.toolmaking.workshop_tool_ready(nation, "hammerstone"):
+            return false
     var qty := int(recipe["output"])
     if qty <= 0 or qty > 5 or int(store.get(item_id, 0)) > MAX_STACK - qty:
         return false
@@ -373,6 +378,8 @@ func craft_at(world: RefCounted, item_id: String, actor_id: int) -> bool:
     minted[item_id] = int(minted.get(item_id, 0)) + qty
     world.toolmaking.on_crafted(world, "settlement:" + str(nation),
         item_id, qty, actor_id)
+    if item_id == "knapped_flint":
+        world.toolmaking.wear_workshop(world, nation, "hammerstone")
     _log(world, "craft:" + item_id, "settlement:" + str(nation),
         "settlement:" + str(nation), {item_id: qty})
     world.occupations.on_real_work(world, person, "stone_toolmaker")
