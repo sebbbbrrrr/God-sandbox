@@ -159,12 +159,19 @@ func context_for_citizen(world: RefCounted, person: Dictionary, definition_id: S
     var nation := int(person.get("nation", -1))
     var skills: Dictionary = world.occupations.record_for(person).get("xp", {})
     var role := str(requirements.get("occupation", requirements.get("skill", "")))
+    var roles: Dictionary = {}
+    var capabilities: Dictionary = {}
+    var facilities: Dictionary = {}
+    if role != "":
+        roles[role] = world.occupations.enabled(world, nation, role)
+    if tech != "":
+        capabilities[tech] = world.occupations.has_capability(world, nation, tech)
+    if facility != "":
+        facilities[facility] = world.occupations.facility_present(world, nation, facility)
     return {
         "age_years": world.calendar.age_years(int(person.get("birth_tick", world.tick)), world.tick),
         "skills": skills.duplicate(),
-        "roles": {role: world.occupations.enabled(world, nation, role)} if role != "" else {},
-        "capabilities": {tech: world.occupations.has_capability(world, nation, tech)} if tech != "" else {},
-        "facilities": {facility: world.occupations.facility_present(world, nation, facility)} if facility != "" else {}
+        "roles": roles, "capabilities": capabilities, "facilities": facilities
     }
 
 # Instance state is separate from immutable definitions and can be persisted
