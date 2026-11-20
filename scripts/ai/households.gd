@@ -111,6 +111,8 @@ func form_household(world: RefCounted, first_id: int, second_id: int) -> bool:
             family_by_id.erase(int(b["id"]))
             break
     a["home_id"] = retained_home
+    world.food.on_household_merge(int(a["id"]), int(b["id"]),
+        original_home > 0 and original_home == second_home)
     a["steward_id"] = first_id
     for id in members:
         var member := living_person(world, int(id))
