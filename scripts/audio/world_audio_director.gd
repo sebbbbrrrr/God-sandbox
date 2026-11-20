@@ -15,6 +15,7 @@ var _last_rain_state := false
 var _last_windy_state := false
 var _last_weather_phase := -1
 var _last_night_day := -1
+var _last_night_ms := -100000
 
 func reset() -> void:
     _last_civilisation_ms = -20000
@@ -22,6 +23,7 @@ func reset() -> void:
     _last_windy_state = false
     _last_weather_phase = -1
     _last_night_day = -1
+    _last_night_ms = -100000
 
 static func event_for_era(era: int) -> String:
     return ERA_EVENTS[clampi(era - 1, 0, ERA_EVENTS.size() - 1)]
@@ -108,13 +110,14 @@ func update_weather(weather, world_tick: int, living,
 
 # Calendar-aware evening ambience: triggered only once on entering a new
 # simulated night, never on a frame loop. Does not advance calendar time.
-func update_day_night(world, audio, viewport: Vector2) -> String:
+func update_day_night(world, audio, viewport: Vector2, now_ms: int) -> String:
     var clock: Dictionary = world.calendar.date_at(int(world.tick))
     var day := int(clock.get("day", 0))
     var tick_of_day := int(clock.get("tick_of_day", 0))
-    if tick_of_day < 6 or _last_night_day == day:
+    if tick_of_day < 6 or _last_night_day == day or now_ms - _last_night_ms < 60000:
         return ""
     _last_night_day = day
+    _last_night_ms = now_ms
     if audio.emit_event("ambient.night", viewport * 0.5, false):
         return "ambient.night"
     return ""
