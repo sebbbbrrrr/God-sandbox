@@ -14,7 +14,7 @@ func _initialize() -> void:
         b.step()
     ok = check(a.snapshot() == b.snapshot(), "deterministic minds and simulation") and ok
     var restored = Simulation.from_snapshot(a.snapshot())
-    ok = check(restored != null, "v2 snapshot loads") and ok
+    ok = check(restored != null, "versioned snapshot loads") and ok
     if restored != null:
         for i in range(90):
             a.step()
@@ -61,6 +61,7 @@ func _initialize() -> void:
             all_walkable = false
             break
     ok = check(changed >= 0, "brush editing still available") and ok
+    ok = check(all_walkable, "citizens remain on walkable ground after adjacent flood") and ok
     # No assumption of displacement yet: step logic never chooses flooded destinations.
     ok = check(single.citizen_ai_by_id.size() == single.citizens.size(),
         "mind count consistent after editing") and ok

@@ -22,6 +22,7 @@ var tick: int = 0
 var terrain := PackedByteArray()
 var citizens: Array[Dictionary] = []
 var citizen_ai_by_id: Dictionary = {}
+var ai_context := AI.Perception.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -88,6 +89,7 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         "age": 0
     })
     citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
+    ai_context.added(citizens[-1])
     next_id += 1
     return true
 
@@ -106,6 +108,7 @@ func spawn_initial_population() -> void:
 
 func step() -> void:
     tick += 1
+    ai_context.begin_tick(self)
     for citizen in citizens:
         if citizen["hp"] <= 0:
             continue
@@ -136,6 +139,8 @@ func apply_power(power: int, x: int, y: int) -> bool:
     var idx := index_of(x, y)
     if idx == -1:
         return false
+    ai_context.local_views.clear()
+    ai_context.risk_maps.clear()
     match power:
         0:
             terrain[idx] = MEADOW
@@ -146,6 +151,9 @@ func apply_power(power: int, x: int, y: int) -> bool:
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 1 and abs(citizen["y"] - y) <= 1:
                     citizen["hp"] = maxi(0, citizen["hp"] - 30)
+                    AI.event(self, citizen, "damage", Vector2i(x, y), 30)
+                elif abs(citizen["x"] - x) <= AI.Perception.RADIUS and abs(citizen["y"] - y) <= AI.Perception.RADIUS and AI.Perception.visible(self, Vector2i(citizen["x"], citizen["y"]), Vector2i(x, y)):
+                    AI.event(self, citizen, "witness_damage", Vector2i(x, y), 20)
         2:
             if terrain[idx] == OCEAN:
                 return false
@@ -153,7 +161,10 @@ func apply_power(power: int, x: int, y: int) -> bool:
         3:
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 2 and abs(citizen["y"] - y) <= 2:
+                    var restored_hp: int = 100 - int(citizen["hp"])
                     citizen["hp"] = 100
+                    if restored_hp > 0:
+                        AI.event(self, citizen, "healed", Vector2i(x, y), restored_hp)
         4:
             return add_citizen(x, y, citizens.size() % 2)
         5:
@@ -164,16 +175,16 @@ func apply_power(power: int, x: int, y: int) -> bool:
 
 func snapshot() -> Dictionary:
     return {
-        "version": 2, "seed": seed, "tick": tick, "next_id": next_id,
-        "ai_version": 1, "citizen_ai_by_id": citizen_ai_by_id,
-        "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens,
+        "version": 3, "seed": seed, "tick": tick, "next_id": next_id,
+        "ai_version": 2, "citizen_ai_by_id": citizen_ai_by_id.duplicate(true),
+        "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens.duplicate(true),
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
-        "rng_state": rng.state
+        "rng_state": str(rng.state)
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     var version := int(data.get("version", -1))
-    if version != 1 and version != 2:
+    if version not in [1, 2, 3] or (version == 3 and int(data.get("ai_version", -1)) != 2):
         return null
     var raw := Marshalls.base64_to_raw(str(data.get("terrain", "")))
     if raw.size() != WIDTH * HEIGHT:
@@ -183,25 +194,40 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     result.tick = maxi(0, int(data.get("tick", 0)))
     result.citizens.clear()
     result.citizen_ai_by_id.clear()
-    var saved_people: Array = data.get("citizens", [])
+    var saved_people: Variant = data.get("citizens", [])
+    if not saved_people is Array:
+        return null
+    var ids: Dictionary = {}
     for person in saved_people:
         if typeof(person) != TYPE_DICTIONARY or result.citizens.size() >= MAX_PEOPLE:
             break
         var x := int(person.get("x", -1))
         var y := int(person.get("y", -1))
+        var incoming_id: int = int(person.get("id", 0))
+        if incoming_id <= 0 or ids.has(incoming_id):
+            return null
+        ids[incoming_id] = true
         if result.index_of(x, y) >= 0:
             result.citizens.append({
                 "id": int(person.get("id", 0)), "nation": clampi(int(person.get("nation", 0)), 0, 1),
                 "x": x, "y": y, "hp": clampi(int(person.get("hp", 100)), 0, 100),
                 "age": maxi(0, int(person.get("age", 0)))
             })
-    var stored_ai: Dictionary = data.get("citizen_ai_by_id", {}) if version == 2 and data.get("citizen_ai_by_id", {}) is Dictionary else {}
+    var stored_ai: Dictionary = data.get("citizen_ai_by_id", {}) if version >= 2 and data.get("citizen_ai_by_id", {}) is Dictionary else {}
     var highest_id := 0
     for person in result.citizens:
         var person_id: int = int(person["id"])
         highest_id = maxi(highest_id, person_id)
         result.citizen_ai_by_id[str(person_id)] = AI.validate_state(
             stored_ai.get(str(person_id), null), result.seed, person_id, result.tick)
+    for person in result.citizens:
+        var mind: Dictionary = result.citizen_ai_by_id[str(person["id"])]
+        for i in range(mind["relationships"].size() - 1, -1, -1):
+            var other_id: int = mind["relationships"][i]["id"]
+            if other_id == int(person["id"]) or not result.citizen_ai_by_id.has(str(other_id)):
+                mind["relationships"].remove_at(i)
+        if not result.citizen_ai_by_id.has(str(mind["target_id"])):
+            mind["target_id"] = 0
     result.next_id = maxi(highest_id + 1, int(data.get("next_id", highest_id + 1)))
     var saved_capitals: Array = data.get("capitals", [])
     if saved_capitals.size() == 2:
@@ -209,4 +235,5 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
             if saved_capitals[i] is Array and saved_capitals[i].size() == 2:
                 result.capitals[i] = Vector2i(int(saved_capitals[i][0]), int(saved_capitals[i][1]))
     result.rng.state = int(data.get("rng_state", result.rng.state))
+    result.ai_context.begin_tick(result)
     return result
