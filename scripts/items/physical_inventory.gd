@@ -234,7 +234,7 @@ func drop_on_death(world: RefCounted, person: Dictionary) -> void:
         return
     var index: int = world.index_of(int(person["x"]), int(person["y"]))
     var target := "ground:" + str(index)
-    var can_drop := index >= 0 and world.at(int(person["x"]), int(person["y"])) != world.OCEAN
+    var can_drop: bool = index >= 0 and world.at(int(person["x"]), int(person["y"])) != world.OCEAN
     if can_drop and not balances.has(target) and balances.size() >= MAX_STORES:
         can_drop = false
     if can_drop and not balances.has(target):
