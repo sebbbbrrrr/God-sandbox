@@ -137,20 +137,21 @@ func fixture():
     return w
 
 func harvest(w, pid: int, item_id: String, source: Vector2i, count: int) -> bool:
-    return w.inventory.extract(w, pid, item_id, source, count) and
+    return w.inventory.extract(w, pid, item_id, source, count) and \
         w.inventory.transfer(w, "citizen:" + str(pid), "settlement:0", {item_id: count}, pid)
 
 func bootstrap(w, pid: int) -> bool:
-    if not harvest(w, pid, "stone", Vector2i(21, 20), 2) or
-            not harvest(w, pid, "flint", Vector2i(21, 20), 2) or
-            not harvest(w, pid, "wood", Vector2i(19, 20), 2) or
-            not harvest(w, pid, "plant_fibre", Vector2i(20, 19), 6):
+    if not harvest(w, pid, "stone", Vector2i(21, 20), 2) or \
+            not harvest(w, pid, "flint", Vector2i(21, 20), 2) or \
+            not harvest(w, pid, "wood", Vector2i(19, 20), 2) or \
+            not harvest(w, pid, "plant_fibre", Vector2i(20, 19), 3) or \
+            not harvest(w, pid, "plant_fibre", Vector2i(20, 19), 3):
         return false
     if not w.inventory.craft_at(w, "hammerstone", pid):
         return false
     for i in range(2):
-        if not w.inventory.craft_at(w, "knapped_flint", pid) or
-                not w.inventory.craft_at(w, "cordage", pid) or
+        if not w.inventory.craft_at(w, "knapped_flint", pid) or \
+                not w.inventory.craft_at(w, "cordage", pid) or \
                 not w.inventory.craft_at(w, "stone_axe", pid):
             return false
     return true
