@@ -56,7 +56,7 @@ func miniature(key: String, draw_size: Vector2, tint: Color) -> Image:
 
 # 8-neighbour exposure mask: N,E,S,W,NW,NE,SE,SW. The ash alpha retreats
 # irregularly inside exposed cells instead of presenting 32px square edges.
-# Caching by mask + material variant keeps generation bounded to 4 * 256.
+# Caching by mask + material variant keeps generation bounded to 5 * 256.
 func scorch_tile(exposure: int, variant: int) -> String:
     var key := "scorch_%d_%d" % [exposure, variant]
     if scorch_images.has(key):
