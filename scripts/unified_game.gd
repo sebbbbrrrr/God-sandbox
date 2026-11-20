@@ -204,6 +204,15 @@ func _audio_world_step() -> void:
         simulation_speed > 1)
     construction_audio.observe(world, living_audio, game_audio, origin, ts, size,
         0.0, work_visual_clock)
+    # Play only for a collapse recorded during this exact authoritative tick.
+    var debris: Array = world.construction.destruction.rubble
+    if not debris.is_empty():
+        var newest: Dictionary = debris[debris.size() - 1]
+        if int(newest.get("tick", -1)) == int(world.tick):
+            var cell: Array = newest.get("cell", [])
+            if cell.size() == 2:
+                game_audio.emit_event("work.demolish", origin +
+                    (Vector2(float(cell[0]), float(cell[1])) + Vector2(0.5, 0.5)) * ts, true)
 
 func paint_segment(from_cell: Vector2i, to_cell: Vector2i) -> void:
     if not editable_power():
