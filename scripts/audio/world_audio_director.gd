@@ -24,7 +24,7 @@ func reset() -> void:
 static func event_for_era(era: int) -> String:
     return ERA_EVENTS[clampi(era - 1, 0, ERA_EVENTS.size() - 1)]
 
-static func active_era(world: Object, camera_cell: Vector2) -> Dictionary:
+static func active_era(world, camera_cell: Vector2) -> Dictionary:
     # Residents and building sites are observed near the camera, not across nations.
     var residents := 0
     var count_by_era := {}
@@ -66,7 +66,7 @@ static func active_era(world: Object, camera_cell: Vector2) -> Dictionary:
     return {"era": selected_era, "residents": residents,
         "buildings": nearby_buildings, "nation": nearest_nation}
 
-func update_civilisation(world: Object, audio: Node, camera_cell: Vector2,
+func update_civilisation(world, audio, camera_cell: Vector2,
         viewport: Vector2, now_ms: int) -> String:
     if now_ms - _last_civilisation_ms < INTERVAL_MS:
         return ""
@@ -79,8 +79,8 @@ func update_civilisation(world: Object, audio: Node, camera_cell: Vector2,
         return sound
     return ""
 
-func update_weather(weather: Object, world_tick: int, living: RefCounted,
-        audio: Node, viewport: Vector2) -> Array[String]:
+func update_weather(weather, world_tick: int, living,
+        audio, viewport: Vector2) -> Array[String]:
     var result: Array[String] = []
     if weather == null:
         return result
