@@ -67,7 +67,11 @@ func _matching_serials(holder: String, item_id: String) -> Array[String]:
         if str(instances[serial]["holder"]) == holder and \
                 str(instances[serial]["item_id"]) == item_id:
             ids.append(str(serial))
-    ids.sort_custom(func(a: String, b: String) -> bool: return int(a) < int(b))
+    # Prefer intact tools so workers never check out broken inventory first.
+    ids.sort_custom(func(a: String, b: String) -> bool:
+        if int(instances[a]["condition"]) != int(instances[b]["condition"]):
+            return int(instances[a]["condition"]) > int(instances[b]["condition"])
+        return int(a) < int(b))
     return ids
 
 func can_move(holder: String, units: Dictionary) -> bool:
@@ -353,6 +357,14 @@ func _do_job(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     _end(person, mind)
     return true
 
+# Remove jobs for deceased/archived workers so another citizen can finish work.
+# Cargo stays in the physical ledger and is dropped by D2 death handling.
+func prune(world: RefCounted) -> void:
+    for id in jobs.keys():
+        var person := _person(world, int(id))
+        if person.is_empty() or int(person.get("hp", 0)) <= 0:
+            jobs.erase(id)
+
 func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     if not _living_adolescent(world, person):
         return false
@@ -367,6 +379,18 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     if _has_worker(int(person["nation"])):
         return false
     return _select(world, person, mind)
+
+# Knapping at the yard physically wears one local hammerstone.
+func wear_workshop(world: RefCounted, nation: int, item_id: String) -> void:
+    var ids := _matching_serials("settlement:" + str(nation), item_id)
+    if ids.is_empty():
+        return
+    var instance: Dictionary = instances[ids[0]]
+    instance["condition"] = maxi(0, int(instance["condition"]) - 6)
+    instance["history"].append({"tick": int(world.tick), "work": "knapping",
+        "condition": int(instance["condition"])})
+    if instance["history"].size() > MAX_HISTORY:
+        instance["history"].pop_front()
 
 func repair(world: RefCounted, artisan_id: int, serial: String) -> bool:
     if not instances.has(serial):
@@ -429,6 +453,16 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
         loaded_instances[str(serial)] = row.duplicate(true)
     var saved_instances := instances
     instances = loaded_instances
+    var linked_counts: Dictionary = {}
+    for serial in instances:
+        var inst: Dictionary = instances[serial]
+        var key := str(inst["holder"]) + "|" + str(inst["item_id"])
+        linked_counts[key] = int(linked_counts.get(key, 0)) + 1
+    for key in linked_counts:
+        var fields := str(key).split("|")
+        if int(linked_counts[key]) != world.inventory.held(fields[0], fields[1]):
+            instances = saved_instances
+            return false
     for holder in world.inventory.balances:
         var store: Dictionary = world.inventory.balances[holder]
         for item_id in REPAIR_INPUTS:
