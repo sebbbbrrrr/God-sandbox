@@ -404,6 +404,7 @@ func archive_dead(world: RefCounted) -> void:
             "death_tick": deceased, "nation": int(person["nation"]),
             "cause": str(person.get("death_cause", "unknown")),
             "parent_ids": person.get("parent_ids", []).duplicate(true)}
+        record["career"] = world.occupations.remove_archived(int(person["id"]))
         tombstones.append(record)
         if tombstones.size() > MAX_TOMBSTONES:
             tombstones.pop_front()
