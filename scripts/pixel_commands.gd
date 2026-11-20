@@ -9,6 +9,10 @@ var positions := PackedVector2Array()
 var sizes := PackedVector2Array()
 var tints := PackedColorArray()
 var walk_phases := PackedFloat32Array()
+var sway_factors := PackedFloat32Array()
+var sway_time := 0.0
+var wind_strength := 0.0
+var wind_x := 1.0
 
 func clear_commands() -> void:
     keys.clear()
@@ -16,14 +20,23 @@ func clear_commands() -> void:
     sizes.clear()
     tints.clear()
     walk_phases.clear()
+    sway_factors.clear()
 
 func add(key: String, at_pos: Vector2, draw_size: Vector2 = Vector2.ZERO,
-        tint: Color = Color.WHITE, walk_phase: float = -1.0) -> void:
+        tint: Color = Color.WHITE, walk_phase: float = -1.0, sway: float = 0.0) -> void:
     keys.append(key)
     positions.append(at_pos)
     sizes.append(atlas.size_of(key) if draw_size == Vector2.ZERO else draw_size)
     tints.append(tint)
     walk_phases.append(walk_phase)
+    sway_factors.append(sway)
+
+func set_wind(seconds: float, strength: float, horizontal: float) -> void:
+    sway_time = seconds
+    wind_strength = strength
+    wind_x = horizontal
+    if not keys.is_empty():
+        queue_redraw()
 
 func _draw() -> void:
     for i in range(keys.size()):
@@ -31,6 +44,20 @@ func _draw() -> void:
         var source := atlas.region(keys[i])
         var dest := Rect2(positions[i], sizes[i])
         var phase: float = walk_phases[i]
+        if sway_factors[i] > 0.0 and wind_strength > 0.01:
+            # Wind animates rooted foliage only. Do not change citizen gait.
+            var half_width := sizes[i].x * 0.5
+            var pivot := positions[i] + Vector2(half_width, sizes[i].y)
+            var seed_phase := float(posmod(roundi(positions[i].x) * 17 +
+                roundi(positions[i].y) * 31, 157)) * 0.12
+            var wave := sin(sway_time * (1.35 + 0.23 * sin(seed_phase)) + seed_phase)
+            var tilt := (wind_x * 0.017 + wave * 0.032) * wind_strength * sway_factors[i]
+            draw_set_transform(pivot, tilt, Vector2.ONE)
+            draw_texture_rect_region(texture,
+                Rect2(Vector2(-half_width, -sizes[i].y), sizes[i]),
+                source, tints[i], false, true)
+            draw_set_transform(Vector2.ZERO)
+            continue
         if phase < 0.0 or not keys[i].begins_with("citizen_"):
             draw_texture_rect_region(texture, dest, source, tints[i], false, true)
             continue
