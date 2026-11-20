@@ -1,0 +1,6095 @@
+{
+  "meadow_0": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "meadow_1": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "meadow_2": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "meadow_3": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "forest_0": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "forest_1": {
+    "atlas": "terrain",
+    "rect": [
+      160,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "forest_2": {
+    "atlas": "terrain",
+    "rect": [
+      192,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "forest_3": {
+    "atlas": "terrain",
+    "rect": [
+      224,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "dirt_0": {
+    "atlas": "terrain",
+    "rect": [
+      256,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "dirt_1": {
+    "atlas": "terrain",
+    "rect": [
+      288,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "dirt_2": {
+    "atlas": "terrain",
+    "rect": [
+      320,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "dirt_3": {
+    "atlas": "terrain",
+    "rect": [
+      352,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "ash_0": {
+    "atlas": "terrain",
+    "rect": [
+      384,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "ash_1": {
+    "atlas": "terrain",
+    "rect": [
+      416,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "ash_2": {
+    "atlas": "terrain",
+    "rect": [
+      448,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "ash_3": {
+    "atlas": "terrain",
+    "rect": [
+      480,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      0,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "earth_0": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "water_0": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "water_1": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "water_2": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "water_3": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "shallow_0": {
+    "atlas": "terrain",
+    "rect": [
+      160,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "shallow_1": {
+    "atlas": "terrain",
+    "rect": [
+      192,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "shallow_2": {
+    "atlas": "terrain",
+    "rect": [
+      224,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "shallow_3": {
+    "atlas": "terrain",
+    "rect": [
+      256,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_0": {
+    "atlas": "terrain",
+    "rect": [
+      288,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_1": {
+    "atlas": "terrain",
+    "rect": [
+      320,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_2": {
+    "atlas": "terrain",
+    "rect": [
+      352,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_3": {
+    "atlas": "terrain",
+    "rect": [
+      384,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "mountain_0": {
+    "atlas": "terrain",
+    "rect": [
+      416,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "mountain_1": {
+    "atlas": "terrain",
+    "rect": [
+      448,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "mountain_2": {
+    "atlas": "terrain",
+    "rect": [
+      480,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      32,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "mountain_3": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "sand_0": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "sand_1": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "sand_2": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "sand_3": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "pine_0": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      0,
+      36,
+      49
+    ],
+    "packed_rect": [
+      512,
+      0,
+      36,
+      49
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "pine_1": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      0,
+      36,
+      50
+    ],
+    "packed_rect": [
+      576,
+      0,
+      36,
+      50
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "pine_2": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      0,
+      36,
+      50
+    ],
+    "packed_rect": [
+      640,
+      0,
+      36,
+      50
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "pine_3": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      0,
+      36,
+      46
+    ],
+    "packed_rect": [
+      704,
+      0,
+      36,
+      46
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "pine_4": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      0,
+      36,
+      54
+    ],
+    "packed_rect": [
+      768,
+      0,
+      36,
+      54
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "bush": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      0,
+      25,
+      20
+    ],
+    "packed_rect": [
+      832,
+      0,
+      25,
+      20
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "flower_bush": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      0,
+      25,
+      20
+    ],
+    "packed_rect": [
+      896,
+      0,
+      25,
+      20
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "stump": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      0,
+      25,
+      15
+    ],
+    "packed_rect": [
+      960,
+      0,
+      25,
+      15
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_small": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      64,
+      25,
+      20
+    ],
+    "packed_rect": [
+      512,
+      64,
+      25,
+      20
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_medium": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      64,
+      25,
+      16
+    ],
+    "packed_rect": [
+      576,
+      64,
+      25,
+      16
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "rock_tall": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      64,
+      25,
+      21
+    ],
+    "packed_rect": [
+      640,
+      64,
+      25,
+      21
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "log": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      64,
+      25,
+      16
+    ],
+    "packed_rect": [
+      704,
+      64,
+      25,
+      16
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "grass": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      64,
+      25,
+      19
+    ],
+    "packed_rect": [
+      768,
+      64,
+      25,
+      19
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "flowers_white": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      64,
+      25,
+      22
+    ],
+    "packed_rect": [
+      832,
+      64,
+      25,
+      22
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "flowers_gold": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      64,
+      25,
+      22
+    ],
+    "packed_rect": [
+      896,
+      64,
+      25,
+      22
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "moss_rock": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      64,
+      25,
+      14
+    ],
+    "packed_rect": [
+      960,
+      64,
+      25,
+      14
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "hut": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      128,
+      50,
+      43
+    ],
+    "packed_rect": [
+      512,
+      128,
+      50,
+      43
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cottage": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      128,
+      50,
+      45
+    ],
+    "packed_rect": [
+      576,
+      128,
+      50,
+      45
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "workshop": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      128,
+      50,
+      47
+    ],
+    "packed_rect": [
+      640,
+      128,
+      50,
+      47
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "town_hall": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      128,
+      59,
+      60
+    ],
+    "packed_rect": [
+      704,
+      128,
+      59,
+      60
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "bridge_wood_h": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      128,
+      32,
+      18
+    ],
+    "packed_rect": [
+      768,
+      128,
+      32,
+      18
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "bridge_wood_v": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      128,
+      18,
+      32
+    ],
+    "packed_rect": [
+      832,
+      128,
+      18,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "bridge_stone_h": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      128,
+      32,
+      18
+    ],
+    "packed_rect": [
+      896,
+      128,
+      32,
+      18
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "bridge_stone_v": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      128,
+      18,
+      32
+    ],
+    "packed_rect": [
+      960,
+      128,
+      18,
+      32
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "fence_h": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      192,
+      25,
+      12
+    ],
+    "packed_rect": [
+      512,
+      192,
+      25,
+      12
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "fence_v": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      192,
+      10,
+      23
+    ],
+    "packed_rect": [
+      576,
+      192,
+      10,
+      23
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "well": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      192,
+      21,
+      23
+    ],
+    "packed_rect": [
+      640,
+      192,
+      21,
+      23
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "barrels": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      192,
+      25,
+      21
+    ],
+    "packed_rect": [
+      704,
+      192,
+      25,
+      21
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "woodpile": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      192,
+      25,
+      19
+    ],
+    "packed_rect": [
+      768,
+      192,
+      25,
+      19
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "sign": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      192,
+      16,
+      23
+    ],
+    "packed_rect": [
+      832,
+      192,
+      16,
+      23
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "citizen_gold": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      192,
+      10,
+      17
+    ],
+    "packed_rect": [
+      896,
+      192,
+      10,
+      17
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "citizen_rose": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      192,
+      9,
+      17
+    ],
+    "packed_rect": [
+      960,
+      192,
+      9,
+      17
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_0": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      512,
+      256,
+      25,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_1": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      576,
+      256,
+      25,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_2": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      256,
+      26,
+      24
+    ],
+    "packed_rect": [
+      640,
+      256,
+      26,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_3": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      704,
+      256,
+      25,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_4": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      256,
+      26,
+      24
+    ],
+    "packed_rect": [
+      768,
+      256,
+      26,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_5": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      256,
+      26,
+      24
+    ],
+    "packed_rect": [
+      832,
+      256,
+      26,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_6": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      896,
+      256,
+      25,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_7": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      256,
+      25,
+      24
+    ],
+    "packed_rect": [
+      960,
+      256,
+      25,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "fire": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      320,
+      25,
+      23
+    ],
+    "packed_rect": [
+      512,
+      320,
+      25,
+      23
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "blessing": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      320,
+      21,
+      23
+    ],
+    "packed_rect": [
+      576,
+      320,
+      21,
+      23
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "ripple": {
+    "atlas": "objects",
+    "rect": [
+      128,
+      320,
+      25,
+      15
+    ],
+    "packed_rect": [
+      640,
+      320,
+      25,
+      15
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "reeds": {
+    "atlas": "objects",
+    "rect": [
+      192,
+      320,
+      20,
+      23
+    ],
+    "packed_rect": [
+      704,
+      320,
+      20,
+      23
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "grass_2": {
+    "atlas": "objects",
+    "rect": [
+      256,
+      320,
+      25,
+      19
+    ],
+    "packed_rect": [
+      768,
+      320,
+      25,
+      19
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "fern": {
+    "atlas": "objects",
+    "rect": [
+      320,
+      320,
+      25,
+      22
+    ],
+    "packed_rect": [
+      832,
+      320,
+      25,
+      22
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "ledge": {
+    "atlas": "objects",
+    "rect": [
+      384,
+      320,
+      25,
+      16
+    ],
+    "packed_rect": [
+      896,
+      320,
+      25,
+      16
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "cliff_corner": {
+    "atlas": "objects",
+    "rect": [
+      448,
+      320,
+      23,
+      24
+    ],
+    "packed_rect": [
+      960,
+      320,
+      23,
+      24
+    ],
+    "page": 0,
+    "source": "tools/source/source_sheet.png"
+  },
+  "meadow_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "meadow_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      0,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      512,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "forest_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      32,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      544,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "dirt_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      576,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "ash_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      608,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "earth_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      128,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      640,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "rock_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      160,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      672,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_1": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_2": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_3": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_4": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_5": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_6": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_7": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      192,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      704,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_8": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_9": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_10": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_11": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_12": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_13": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_14": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shallow_edge_15": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_corner_0": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_corner_1": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_corner_2": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "shore_corner_3": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_1": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_2": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_3": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_4": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      224,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      736,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_5": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_6": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_7": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_8": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_9": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_10": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_11": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_12": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_13": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_14": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "coast_cut_15": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "path_h": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "path_v": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "path_cross": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "cliff_inner": {
+    "atlas": "objects",
+    "rect": [
+      0,
+      384,
+      32,
+      24
+    ],
+    "packed_rect": [
+      512,
+      384,
+      32,
+      24
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "cliff_outer": {
+    "atlas": "objects",
+    "rect": [
+      64,
+      384,
+      32,
+      24
+    ],
+    "packed_rect": [
+      576,
+      384,
+      32,
+      24
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "contact_shadow": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "cliff_east": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      256,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      768,
+      32,
+      32
+    ],
+    "page": 0,
+    "source": "tools/build_pixel_assets.py"
+  },
+  "oak": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      0,
+      43,
+      41
+    ],
+    "packed_rect": [
+      512,
+      512,
+      43,
+      41
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      0,
+      0
+    ],
+    "sha256": "8bf079f754672f1941d5830cefb265c2ee0068dfc162eab71c6bac8ffd553303"
+  },
+  "birch": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      0,
+      43,
+      56
+    ],
+    "packed_rect": [
+      576,
+      512,
+      43,
+      56
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      1,
+      0
+    ],
+    "sha256": "f5b8012de02e164deb55707e954a2c7ca18e4882d04480cff26659bd0a729b10"
+  },
+  "willow": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      0,
+      43,
+      44
+    ],
+    "packed_rect": [
+      640,
+      512,
+      43,
+      44
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      2,
+      0
+    ],
+    "sha256": "eca7858efcc52b4f9f515fc75d9c562f55cc4e3c6203e4ddb8e5226b2203e368"
+  },
+  "beech": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      0,
+      43,
+      43
+    ],
+    "packed_rect": [
+      704,
+      512,
+      43,
+      43
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      3,
+      0
+    ],
+    "sha256": "bebdca463c43d960e4db7ad45442d5726a330c74961bc96f2501bc0a10abbe50"
+  },
+  "maple": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      0,
+      43,
+      44
+    ],
+    "packed_rect": [
+      768,
+      512,
+      43,
+      44
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      4,
+      0
+    ],
+    "sha256": "1b41c2c7a08c015992835d7ac62826c408439f5b4f99201defff7caacda8165b"
+  },
+  "spruce": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      0,
+      43,
+      58
+    ],
+    "packed_rect": [
+      832,
+      512,
+      43,
+      58
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      5,
+      0
+    ],
+    "sha256": "d75bcd4172faa84aa103b165a39c741aa69de2ef2fdeb893bade5147e3fa8f7a"
+  },
+  "cedar": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      0,
+      43,
+      41
+    ],
+    "packed_rect": [
+      896,
+      512,
+      43,
+      41
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      6,
+      0
+    ],
+    "sha256": "bef71c0454e059176c8afb03bb47c875c34a4d819a3aa70ce7ecdbf97157ce3c"
+  },
+  "juniper": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      0,
+      43,
+      33
+    ],
+    "packed_rect": [
+      960,
+      512,
+      43,
+      33
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      7,
+      0
+    ],
+    "sha256": "1ac3e9a9d7033c6a2e636e03f9085d3c280af10bd66225aff9ff6c529f3121f9"
+  },
+  "sapling_leaf": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      64,
+      34,
+      35
+    ],
+    "packed_rect": [
+      512,
+      576,
+      34,
+      35
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      0,
+      1
+    ],
+    "sha256": "9e67975f389faf99d358c8c2ddcc01b2ed06ae6be5f2d19efd55b2ab8861e68d"
+  },
+  "sapling_pine": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      64,
+      34,
+      43
+    ],
+    "packed_rect": [
+      576,
+      576,
+      34,
+      43
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      1,
+      1
+    ],
+    "sha256": "147c2076c708c6392f8327bad4030e98314079c6f4e383f643d8840d77cf408f"
+  },
+  "dead_tree": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      64,
+      34,
+      32
+    ],
+    "packed_rect": [
+      640,
+      576,
+      34,
+      32
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      2,
+      1
+    ],
+    "sha256": "026e069cf2c9926b89dda406de4de2c599948f7e6fef25edc272fbd606bc192b"
+  },
+  "fallen_tree": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      64,
+      36,
+      28
+    ],
+    "packed_rect": [
+      704,
+      576,
+      36,
+      28
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      3,
+      1
+    ],
+    "sha256": "a3b12a18ba89a1b54a65dba803f184a511f1b53de4d64443325ab4d771caefb8"
+  },
+  "berry_shrub": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      64,
+      28,
+      22
+    ],
+    "packed_rect": [
+      768,
+      576,
+      28,
+      22
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      4,
+      1
+    ],
+    "sha256": "53bbb3e66d5b237ad5c89727f84077f737b5cab403557abc7926f87776f566aa"
+  },
+  "fern_cluster": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      64,
+      28,
+      22
+    ],
+    "packed_rect": [
+      832,
+      576,
+      28,
+      22
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      5,
+      1
+    ],
+    "sha256": "a76fc41f8896b8af955eebfba4e8f9822d766de574068396d6a2bc764627d2dc"
+  },
+  "wildflowers": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      64,
+      28,
+      25
+    ],
+    "packed_rect": [
+      896,
+      576,
+      28,
+      25
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      6,
+      1
+    ],
+    "sha256": "b124f3c63f6ad42934d4b35b50c4e97d4c550ea73a04958f43fde6e0a512f854"
+  },
+  "tall_grass": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      64,
+      28,
+      24
+    ],
+    "packed_rect": [
+      960,
+      576,
+      28,
+      24
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      7,
+      1
+    ],
+    "sha256": "6925ba0ec41b92ef7f6db48561bb455bbdf1797196863f727418bacee2e5d82c"
+  },
+  "moss_log": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      128,
+      28,
+      18
+    ],
+    "packed_rect": [
+      512,
+      640,
+      28,
+      18
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      0,
+      2
+    ],
+    "sha256": "e86d02d384c450c70dfefc2f271000c92e986e306e4439ce4988367eba45f9a7"
+  },
+  "wet_reeds": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      128,
+      25,
+      25
+    ],
+    "packed_rect": [
+      576,
+      640,
+      25,
+      25
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      1,
+      2
+    ],
+    "sha256": "e37d56811d7967527834a9d40efe7a4bea9f71cfaab48c3827317e2acbe1898b"
+  },
+  "cattails": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      128,
+      18,
+      25
+    ],
+    "packed_rect": [
+      640,
+      640,
+      18,
+      25
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      2,
+      2
+    ],
+    "sha256": "d372768038a45ebf66454b20d923b36fd42ced0e7e22c86c40684a08344efcd3"
+  },
+  "leaf_litter": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      128,
+      24,
+      25
+    ],
+    "packed_rect": [
+      704,
+      640,
+      24,
+      25
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      3,
+      2
+    ],
+    "sha256": "69027035bc49e1c2f53c3b5eda32af9dfe7a286618c950ab059addfbab2090da"
+  },
+  "mushrooms": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      128,
+      28,
+      20
+    ],
+    "packed_rect": [
+      768,
+      640,
+      28,
+      20
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      4,
+      2
+    ],
+    "sha256": "84c60d1530a57c514282e38a61ae6481562d3b164421f1b0e7f353e756171e54"
+  },
+  "exposed_roots": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      128,
+      28,
+      18
+    ],
+    "packed_rect": [
+      832,
+      640,
+      28,
+      18
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      5,
+      2
+    ],
+    "sha256": "8f57e201a7e77bdf9ecec8625f4e63316c69d7d8892695f9ab2205271eed89ac"
+  },
+  "branches": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      128,
+      28,
+      17
+    ],
+    "packed_rect": [
+      896,
+      640,
+      28,
+      17
+    ],
+    "page": 0,
+    "category": "vegetation",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      6,
+      2
+    ],
+    "sha256": "8afb6647512cf4fe9b17abacae526dc5796d9c0acfdb14f34d594724ec91e1dd"
+  },
+  "pebbles": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      128,
+      28,
+      15
+    ],
+    "packed_rect": [
+      960,
+      640,
+      28,
+      15
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      7,
+      2
+    ],
+    "sha256": "4f17b7b5f57b1af2847925618a506c7b3938082a2910565370f85a7ecc5a8911"
+  },
+  "granite_boulder": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      192,
+      28,
+      23
+    ],
+    "packed_rect": [
+      512,
+      704,
+      28,
+      23
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      0,
+      3
+    ],
+    "sha256": "c1db6833083141d179764b90f0c4c16cdaf7dd2b482238744f43c93b92c6511f"
+  },
+  "sandstone_boulder": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      192,
+      28,
+      22
+    ],
+    "packed_rect": [
+      576,
+      704,
+      28,
+      22
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      1,
+      3
+    ],
+    "sha256": "9f5837d31abefe56dd9b41b61a7d51eb9ed26b05858c7bd848c235440e02232d"
+  },
+  "moss_boulder": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      192,
+      28,
+      20
+    ],
+    "packed_rect": [
+      640,
+      704,
+      28,
+      20
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      2,
+      3
+    ],
+    "sha256": "47999adb5743415ceb595d776176b721cce445474c828c2ac0d4bc5abf54b206"
+  },
+  "mountain_spire": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      192,
+      34,
+      32
+    ],
+    "packed_rect": [
+      704,
+      704,
+      34,
+      32
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      3,
+      3
+    ],
+    "sha256": "c1abb4f17a87d365ec29f206d2a090c40f7fb5fc1a0ee763c6a66aeb190840f5"
+  },
+  "cliff_debris": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      192,
+      28,
+      23
+    ],
+    "packed_rect": [
+      768,
+      704,
+      28,
+      23
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      4,
+      3
+    ],
+    "sha256": "d04c80cfff33fd8a115951c9c57787ba9f45ec98c9b36d5eb6b49d9741253f04"
+  },
+  "driftwood": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      192,
+      28,
+      19
+    ],
+    "packed_rect": [
+      832,
+      704,
+      28,
+      19
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      5,
+      3
+    ],
+    "sha256": "64bf6b5be19a907260711a41128143f628217f3d2a41cdd27035f3c4e08366e2"
+  },
+  "coastal_stones": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      192,
+      28,
+      18
+    ],
+    "packed_rect": [
+      896,
+      704,
+      28,
+      18
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      6,
+      3
+    ],
+    "sha256": "462f8d2f9148558bdd3d5190a5989703ad036b1133209bfec590d5acb6a8cf65"
+  },
+  "shells": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      192,
+      28,
+      18
+    ],
+    "packed_rect": [
+      960,
+      704,
+      28,
+      18
+    ],
+    "page": 0,
+    "category": "landscape",
+    "source": "tools/source/nature_phase1b.png",
+    "source_cell": [
+      7,
+      3
+    ],
+    "sha256": "718812374cb171dfa5c00797fa25983f9680f176a92da456fd28f493b93defd0"
+  },
+  "hut_a": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      256,
+      47,
+      49
+    ],
+    "packed_rect": [
+      512,
+      768,
+      47,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      0,
+      0
+    ],
+    "sha256": "c73cee93508b87a77cb308f16a8e921a500e0eda1de2e0f759945c6ab6611383"
+  },
+  "hut_b": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      256,
+      50,
+      48
+    ],
+    "packed_rect": [
+      576,
+      768,
+      50,
+      48
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      1,
+      0
+    ],
+    "sha256": "69cea64c5bc2063bb0e1e7c1310c1c76f1b82cce0e1c880560f8fcda082ba1c3"
+  },
+  "cottage_a": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      256,
+      48,
+      49
+    ],
+    "packed_rect": [
+      640,
+      768,
+      48,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      2,
+      0
+    ],
+    "sha256": "0a1060164d7affef0fd61532c7253ca22adc89dd1a008772616b1938134209b3"
+  },
+  "cottage_b": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      256,
+      50,
+      49
+    ],
+    "packed_rect": [
+      704,
+      768,
+      50,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      3,
+      0
+    ],
+    "sha256": "ef9470e8deb3edff2bcfdd88d25f382975f1b2105445fec24d337a487403f3a7"
+  },
+  "stone_house_a": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      256,
+      50,
+      45
+    ],
+    "packed_rect": [
+      768,
+      768,
+      50,
+      45
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      4,
+      0
+    ],
+    "sha256": "2fb05997d01623bafa49d6f6b952d553b24822e3486f87a2f3097d1972b33321"
+  },
+  "stone_house_b": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      256,
+      49,
+      49
+    ],
+    "packed_rect": [
+      832,
+      768,
+      49,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      5,
+      0
+    ],
+    "sha256": "0470fcc1ca7daa82c16af44275433a90d7090036df2fd20592fd2982576f7eee"
+  },
+  "workshop_a": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      256,
+      50,
+      46
+    ],
+    "packed_rect": [
+      896,
+      768,
+      50,
+      46
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      6,
+      0
+    ],
+    "sha256": "a970bfc659848c04be1a575d26303c0c6295a553e6ffd75184d4eda627ca1329"
+  },
+  "workshop_b": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      256,
+      50,
+      49
+    ],
+    "packed_rect": [
+      960,
+      768,
+      50,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      7,
+      0
+    ],
+    "sha256": "5f1853a988e8cc165ba09c52154c6392edd8df0d291a3fb0bfaceba6c1355094"
+  },
+  "storage_a": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      320,
+      50,
+      40
+    ],
+    "packed_rect": [
+      512,
+      832,
+      50,
+      40
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      0,
+      1
+    ],
+    "sha256": "968a1f84be7646c3b91a54f04336a966ac29adb6087a3fbc42cfed455974f7de"
+  },
+  "storage_b": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      320,
+      47,
+      49
+    ],
+    "packed_rect": [
+      576,
+      832,
+      47,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      1,
+      1
+    ],
+    "sha256": "5d3e006c3f0b8d7644d6f02c1c521b55f3f2eefc09ffdec10abab2976805e201"
+  },
+  "farmhouse_a": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      320,
+      56,
+      49
+    ],
+    "packed_rect": [
+      640,
+      832,
+      56,
+      49
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      2,
+      1
+    ],
+    "sha256": "67f736ae6a77c7deb7174d9f4a78a8e9565bc4f8cf65e0b0d450e95ddf6b285b"
+  },
+  "farmhouse_b": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      320,
+      56,
+      43
+    ],
+    "packed_rect": [
+      704,
+      832,
+      56,
+      43
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      3,
+      1
+    ],
+    "sha256": "64c8e9a56a65d6e262cc32c1a1ee4cbc9f810a25ad2cab65fb8cb1fee6c1f960"
+  },
+  "barn_a": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      320,
+      56,
+      47
+    ],
+    "packed_rect": [
+      768,
+      832,
+      56,
+      47
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      4,
+      1
+    ],
+    "sha256": "eca3336ccdcdea50fdd573ea058e2c09fde9d97a8e388bdb1bca4073d2791273"
+  },
+  "barn_b": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      320,
+      56,
+      50
+    ],
+    "packed_rect": [
+      832,
+      832,
+      56,
+      50
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      5,
+      1
+    ],
+    "sha256": "ff5bdb70244e756e129fc0ff4cc8127839420f794e542e2ded9ef7a9c1b2c36b"
+  },
+  "market_a": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      320,
+      50,
+      40
+    ],
+    "packed_rect": [
+      896,
+      832,
+      50,
+      40
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      6,
+      1
+    ],
+    "sha256": "77e986c0e022750b0fd36698c9a28d38fa108d0488bca87413ad16f62b817fa1"
+  },
+  "market_b": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      320,
+      50,
+      43
+    ],
+    "packed_rect": [
+      960,
+      832,
+      50,
+      43
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      7,
+      1
+    ],
+    "sha256": "cd5cf3a040af7b3b66164957da4c94454be73a9cae3ecc514104eefe6543038c"
+  },
+  "watchtower_a": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      384,
+      32,
+      44
+    ],
+    "packed_rect": [
+      512,
+      896,
+      32,
+      44
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      0,
+      2
+    ],
+    "sha256": "d8b4f90bb51d2d54697467c256d029d489ad6994d9af6b8d8f877a6be3dae4e4"
+  },
+  "watchtower_b": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      384,
+      32,
+      43
+    ],
+    "packed_rect": [
+      576,
+      896,
+      32,
+      43
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      1,
+      2
+    ],
+    "sha256": "6a55307316daaa0892183476b7763c7416b34b04a5e004416fb373c088cfa885"
+  },
+  "town_hall_a": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      384,
+      57,
+      60
+    ],
+    "packed_rect": [
+      640,
+      896,
+      57,
+      60
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      2,
+      2
+    ],
+    "sha256": "ac99b82dde6fab2b80429401a3761d741745b4d8a4776e4794a16f3d63383111"
+  },
+  "town_hall_b": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      384,
+      58,
+      60
+    ],
+    "packed_rect": [
+      704,
+      896,
+      58,
+      60
+    ],
+    "page": 0,
+    "category": "building",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      3,
+      2
+    ],
+    "sha256": "f926937d808800ce1ee414d076dd6e6d991f44edea61fc34e42e071899c565b3"
+  },
+  "fence_gate": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      384,
+      28,
+      12
+    ],
+    "packed_rect": [
+      768,
+      896,
+      28,
+      12
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      4,
+      2
+    ],
+    "sha256": "9b7250581e09a0ec95fc1f2482946a480a163d7b4432450c2b2a8eb61546e325"
+  },
+  "fence_vertical": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      384,
+      28,
+      14
+    ],
+    "packed_rect": [
+      832,
+      896,
+      28,
+      14
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      5,
+      2
+    ],
+    "sha256": "25c20265159577434e08e2d61fe74612fc5fa71220f1fd6d4134f37631cf3dbb"
+  },
+  "garden": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      384,
+      28,
+      20
+    ],
+    "packed_rect": [
+      896,
+      896,
+      28,
+      20
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      6,
+      2
+    ],
+    "sha256": "cd797985bfe94e869a7d4fb6fe12072e67e8bb381212d0c2f018879caa7d1d2b"
+  },
+  "crops": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      384,
+      28,
+      21
+    ],
+    "packed_rect": [
+      960,
+      896,
+      28,
+      21
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      7,
+      2
+    ],
+    "sha256": "15bec6e8504112e67d8e0006a614f7ec93708a11455e82500954d3de0f5e0171"
+  },
+  "well_roof": {
+    "atlas": "expansion",
+    "rect": [
+      0,
+      448,
+      22,
+      23
+    ],
+    "packed_rect": [
+      512,
+      960,
+      22,
+      23
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      0,
+      3
+    ],
+    "sha256": "eb39aa07713cf7dcf3dc71ce685e2fa04a93a093db040a45c36c4a59c6f613b5"
+  },
+  "well_open": {
+    "atlas": "expansion",
+    "rect": [
+      64,
+      448,
+      25,
+      23
+    ],
+    "packed_rect": [
+      576,
+      960,
+      25,
+      23
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      1,
+      3
+    ],
+    "sha256": "cf5d4a05d66b1befa79957177cc34b774104fafbce50ff65043b12f34933f494"
+  },
+  "handcart": {
+    "atlas": "expansion",
+    "rect": [
+      128,
+      448,
+      28,
+      20
+    ],
+    "packed_rect": [
+      640,
+      960,
+      28,
+      20
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      2,
+      3
+    ],
+    "sha256": "c978323019ef448c0011e73d15136395c22a42365871b4204232e395d0bd7905"
+  },
+  "crates": {
+    "atlas": "expansion",
+    "rect": [
+      192,
+      448,
+      28,
+      22
+    ],
+    "packed_rect": [
+      704,
+      960,
+      28,
+      22
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      3,
+      3
+    ],
+    "sha256": "4dfbea7179d6dbbf394056e5ff1ee9ea08ef00041296088764f7449eb3c59c01"
+  },
+  "hay": {
+    "atlas": "expansion",
+    "rect": [
+      256,
+      448,
+      28,
+      21
+    ],
+    "packed_rect": [
+      768,
+      960,
+      28,
+      21
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      4,
+      3
+    ],
+    "sha256": "9cecbd64695236092403f6f0f83c8fc903867fb47a28853f283259898e67d349"
+  },
+  "chopping_block": {
+    "atlas": "expansion",
+    "rect": [
+      320,
+      448,
+      28,
+      23
+    ],
+    "packed_rect": [
+      832,
+      960,
+      28,
+      23
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      5,
+      3
+    ],
+    "sha256": "44a23f80af526eb8cf68b21ed04dea0da6744f50112d5fa244a72ea4ef10410f"
+  },
+  "stone_wall_h": {
+    "atlas": "expansion",
+    "rect": [
+      384,
+      448,
+      28,
+      12
+    ],
+    "packed_rect": [
+      896,
+      960,
+      28,
+      12
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      6,
+      3
+    ],
+    "sha256": "cd8f1f4a8373a157dc6aee4b76e8eb5cea6d10368c826bdcc3d9856ed10ccdb0"
+  },
+  "stone_wall_v": {
+    "atlas": "expansion",
+    "rect": [
+      448,
+      448,
+      19,
+      23
+    ],
+    "packed_rect": [
+      960,
+      960,
+      19,
+      23
+    ],
+    "page": 0,
+    "category": "settlement_prop",
+    "source": "tools/source/settlement_phase1b.png",
+    "source_cell": [
+      7,
+      3
+    ],
+    "sha256": "1102d0ee5e71b8eaf3bc25f31d3205e1e81f4b3207a762befe9a8b33597814cf"
+  },
+  "meadow_4": {
+    "atlas": "terrain",
+    "rect": [
+      160,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      0,
+      0
+    ]
+  },
+  "meadow_5": {
+    "atlas": "terrain",
+    "rect": [
+      192,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      1,
+      0
+    ]
+  },
+  "meadow_6": {
+    "atlas": "terrain",
+    "rect": [
+      224,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      2,
+      0
+    ]
+  },
+  "meadow_7": {
+    "atlas": "terrain",
+    "rect": [
+      256,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      3,
+      0
+    ]
+  },
+  "forest_4": {
+    "atlas": "terrain",
+    "rect": [
+      288,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      0,
+      1
+    ]
+  },
+  "forest_5": {
+    "atlas": "terrain",
+    "rect": [
+      320,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      1,
+      1
+    ]
+  },
+  "forest_6": {
+    "atlas": "terrain",
+    "rect": [
+      352,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      2,
+      1
+    ]
+  },
+  "forest_7": {
+    "atlas": "terrain",
+    "rect": [
+      384,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      3,
+      1
+    ]
+  },
+  "sand_4": {
+    "atlas": "terrain",
+    "rect": [
+      416,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      0,
+      2
+    ]
+  },
+  "sand_5": {
+    "atlas": "terrain",
+    "rect": [
+      448,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      1,
+      2
+    ]
+  },
+  "sand_6": {
+    "atlas": "terrain",
+    "rect": [
+      480,
+      64,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      64,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      2,
+      2
+    ]
+  },
+  "sand_7": {
+    "atlas": "terrain",
+    "rect": [
+      0,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      96,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      3,
+      2
+    ]
+  },
+  "rock_4": {
+    "atlas": "terrain",
+    "rect": [
+      32,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      96,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      0,
+      3
+    ]
+  },
+  "rock_5": {
+    "atlas": "terrain",
+    "rect": [
+      64,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      96,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      1,
+      3
+    ]
+  },
+  "ash_4": {
+    "atlas": "terrain",
+    "rect": [
+      96,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      96,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      2,
+      3
+    ]
+  },
+  "earth_1": {
+    "atlas": "terrain",
+    "rect": [
+      128,
+      96,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      96,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "terrain",
+    "source": "tools/source/terrain_phase1b.png",
+    "source_cell": [
+      3,
+      3
+    ]
+  },
+  "path_join_1": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_2": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_3": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_4": {
+    "atlas": "transitions",
+    "rect": [
+      96,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      96,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_5": {
+    "atlas": "transitions",
+    "rect": [
+      128,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      128,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_6": {
+    "atlas": "transitions",
+    "rect": [
+      160,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      160,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_7": {
+    "atlas": "transitions",
+    "rect": [
+      192,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      192,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_8": {
+    "atlas": "transitions",
+    "rect": [
+      224,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      224,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_9": {
+    "atlas": "transitions",
+    "rect": [
+      256,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      256,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_10": {
+    "atlas": "transitions",
+    "rect": [
+      288,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      288,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_11": {
+    "atlas": "transitions",
+    "rect": [
+      320,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      320,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_12": {
+    "atlas": "transitions",
+    "rect": [
+      352,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      352,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_13": {
+    "atlas": "transitions",
+    "rect": [
+      384,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      384,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_14": {
+    "atlas": "transitions",
+    "rect": [
+      416,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      416,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "path_join_15": {
+    "atlas": "transitions",
+    "rect": [
+      448,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      448,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "ground_shadow": {
+    "atlas": "transitions",
+    "rect": [
+      480,
+      288,
+      32,
+      32
+    ],
+    "packed_rect": [
+      480,
+      800,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "cliff_strata": {
+    "atlas": "transitions",
+    "rect": [
+      0,
+      320,
+      32,
+      32
+    ],
+    "packed_rect": [
+      0,
+      832,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "cliff_rim": {
+    "atlas": "transitions",
+    "rect": [
+      32,
+      320,
+      32,
+      32
+    ],
+    "packed_rect": [
+      32,
+      832,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  },
+  "shore_scatter": {
+    "atlas": "transitions",
+    "rect": [
+      64,
+      320,
+      32,
+      32
+    ],
+    "packed_rect": [
+      64,
+      832,
+      32,
+      32
+    ],
+    "page": 0,
+    "category": "overlay",
+    "source": "tools/expand_pixel_assets.py"
+  }
+}
