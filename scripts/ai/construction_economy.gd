@@ -183,9 +183,10 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
     if str(task["phase"]) == "depot":
         if walk(world, person, mind, depot):
             var material := str(task["material"])
-            stockpiles[int(task["nation"])][material] += 1
-            jobs.erase(id)
-            mind["route"] = []
+            if world.inventory.transfer(world, "citizen:" + id,
+                    "settlement:" + str(task["nation"]), {material: 1}, int(person["id"])):
+                jobs.erase(id)
+                mind["route"] = []
         return true
     var source := Vector2i(int(task["source"][0]), int(task["source"][1]))
     var target := Vector2i(int(task["target"][0]), int(task["target"][1]))
@@ -194,13 +195,12 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         mind["route"] = []
         return false
     if walk(world, person, mind, target) and Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), source) <= 1:
-        var key := str(world.index_of(source.x, source.y))
-        depleted[key] = int(depleted.get(key, 0)) + 1
-        world.occupations.on_real_work(world, person,
-            "woodcutter" if str(task["material"]) == "wood" else "quarry_worker")
-        task[str(task["material"])] = 1
-        task["phase"] = "depot"
-        mind["route"] = []
+        if world.inventory.extract(world, int(person["id"]), str(task["material"]), source):
+            world.occupations.on_real_work(world, person,
+                "woodcutter" if str(task["material"]) == "wood" else "quarry_worker")
+            task[str(task["material"])] = 1 # legacy jobs remain inspectable
+            task["phase"] = "depot"
+            mind["route"] = []
     return true
 
 func build_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: String, task: Dictionary, depot: Vector2i) -> bool:
@@ -213,9 +213,13 @@ func build_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: Str
         # Cancelled project: no instant refund; physically carry cargo home.
         if int(task["wood"]) + int(task["stone"]) > 0:
             if walk(world, person, mind, depot):
-                stockpiles[int(task["nation"])]["wood"] += int(task["wood"])
-                stockpiles[int(task["nation"])]["stone"] += int(task["stone"])
-                jobs.erase(id)
+                var refund: Dictionary = {}
+                for material in ["wood", "stone"]:
+                    if int(task[material]) > 0:
+                        refund[material] = int(task[material])
+                if world.inventory.transfer(world, "citizen:" + id,
+                        "settlement:" + str(task["nation"]), refund, int(person["id"])):
+                    jobs.erase(id)
             return true
         jobs.erase(id)
         return false
@@ -223,8 +227,9 @@ func build_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: Str
         if walk(world, person, mind, depot):
             if int(stockpiles[int(task["nation"])]["wood"]) < HOUSE_WOOD or int(stockpiles[int(task["nation"])]["stone"]) < HOUSE_STONE:
                 return true  # builder waits at depot for supplies, never fabricates them
-            stockpiles[int(task["nation"])]["wood"] -= HOUSE_WOOD
-            stockpiles[int(task["nation"])]["stone"] -= HOUSE_STONE
+            if not world.inventory.transfer(world, "settlement:" + str(task["nation"]),
+                    "citizen:" + id, {"wood": HOUSE_WOOD, "stone": HOUSE_STONE}, int(person["id"])):
+                return true
             task["wood"] = HOUSE_WOOD
             task["stone"] = HOUSE_STONE
             task["phase"] = "site"
@@ -240,6 +245,9 @@ func build_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: Str
         project["progress"] = mini(HOUSE_WORK, int(project["progress"]) + effort)
         world.occupations.on_real_work(world, person, "shelter_builder")
         if int(project["progress"]) == HOUSE_WORK:
+            if not world.inventory.consume(world, "citizen:" + id,
+                    {"wood": HOUSE_WOOD, "stone": HOUSE_STONE}, int(person["id"]), "house"):
+                return false
             houses.append({"id": int(project["id"]), "nation": int(project["nation"]),
                 "x": site.x, "y": site.y, "capacity": 6, "built_tick": int(world.tick)})
             for i in range(projects.size()):
@@ -263,6 +271,7 @@ func on_terrain_changed(world: RefCounted, x: int, y: int) -> void:
             projects.remove_at(i)
 
 func prune(world: RefCounted) -> void:
+    world.inventory.reconcile_deaths(world)
     # Direct brush/terrain writes can bypass the official setter.
     for i in range(houses.size() - 1, -1, -1):
         if world.at(int(houses[i]["x"]), int(houses[i]["y"])) != world.TOWN:
