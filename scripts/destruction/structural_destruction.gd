@@ -114,7 +114,8 @@ func on_tick(engine, world) -> void:
             fires.erase(id)
             continue
         # Spread only on periodic pulses, to nearby real completed buildings.
-        if int(world.tick) % 16 != int(id) % 16:
+        if int(world.tick) - int(state["started"]) < 16 or \
+                posmod(int(world.tick) - int(state["started"]), 16) != 0:
             continue
         var candidates := 0
         for other in engine.houses:
@@ -133,11 +134,13 @@ func on_tick(engine, world) -> void:
     _cursor = (_cursor + inspected) % maxi(1, ids.size())
 
 func snapshot() -> Dictionary:
-    return {"version": 1, "fires": fires.duplicate(true), "rubble": rubble.duplicate(true)}
+    return {"version": 1, "fires": fires.duplicate(true), "rubble": rubble.duplicate(true),
+        "cursor": _cursor}
 
 func load_state(raw: Variant, engine) -> bool:
     fires.clear()
     rubble.clear()
+    _cursor = 0
     if raw == null:
         return true # old world save
     if not raw is Dictionary or int(raw.get("version", 0)) != 1:
@@ -146,6 +149,7 @@ func load_state(raw: Variant, engine) -> bool:
     var saved_rubble: Variant = raw.get("rubble", [])
     if not saved_fires is Dictionary or not saved_rubble is Array or saved_fires.size() > MAX_FIRES or saved_rubble.size() > MAX_RUBBLE:
         return false
+    _cursor = maxi(0, int(raw.get("cursor", 0))) % maxi(1, saved_fires.size())
     for key in saved_fires:
         var id := int(key)
         var state: Variant = saved_fires[key]
