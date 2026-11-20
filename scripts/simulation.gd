@@ -249,7 +249,12 @@ func apply_power(power: int, x: int, y: int) -> bool:
         1:
             if terrain[idx] == OCEAN:
                 return false
-            set_terrain_cell(x, y, ASH)
+            # Occupied structures ignite instead of disappearing because their
+            # footprint changes from TOWN to ASH. Nonbuilding terrain still burns.
+            var occupied := construction.destruction.ignite_at(construction, self,
+                Vector2i(x, y), 3)
+            if not occupied:
+                set_terrain_cell(x, y, ASH)
             for citizen in citizens:
                 if abs(citizen["x"] - x) <= 1 and abs(citizen["y"] - y) <= 1:
                     citizen["hp"] = maxi(0, citizen["hp"] - 30)
