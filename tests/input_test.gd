@@ -86,6 +86,9 @@ func run() -> void:
     game.paused = true
     game.tapped(Vector2(240, 300))
     check(game.hud.inspector_panel.visible, "hand mode opens tile inspector")
+    check(game.hud.inspector_panel.size.y <= 220.0, "inspector stays compact instead of covering the map")
+    game.hud.show_citizen(game.world.citizens[0])
+    check(game.hud.inspector_panel.size.y <= 220.0, "citizen inspector uses bounded height")
     game.hud.hide_inspector()
     game.paused=true
     var point:=Vector2(240,300)
