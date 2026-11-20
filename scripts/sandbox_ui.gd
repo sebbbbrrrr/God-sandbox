@@ -395,6 +395,10 @@ func _choose_category(index: int) -> void:
     _rebuild_power_buttons()
     _refresh_selection()
     _layout()
+    if not reduced_motion:
+        power_grid.modulate.a = 0.42
+        var fade := create_tween()
+        fade.tween_property(power_grid, "modulate:a", 1.0, 0.16).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func _rebuild_power_buttons() -> void:
     for child in power_grid.get_children():
@@ -500,6 +504,9 @@ func open_palette(show: bool) -> void:
         )
 
 func _palette_y() -> float:
+    var viewport_size := get_viewport().get_visible_rect().size
+    if viewport_size.x > viewport_size.y * 1.2:
+        return maxf(78.0, (viewport_size.y - palette_panel.size.y) * 0.45)
     return dock_panel.position.y - palette_panel.size.y - 9
 
 func _show_settings(show: bool) -> void:
@@ -581,11 +588,14 @@ func _layout() -> void:
     top_panel.size = Vector2(width, 62)
     dock_panel.size = Vector2(width, 72)
     dock_panel.position = Vector2(x, size_view.y - 82)
-    palette_panel.size = Vector2(width, palette_panel.get_combined_minimum_size().y)
+    var is_landscape := size_view.x > size_view.y * 1.2
+    var palette_width := minf(370.0, size_view.x * 0.48) if is_landscape else width
+    var palette_x := size_view.x - palette_width - 12.0 if is_landscape else x
+    palette_panel.size = Vector2(palette_width, palette_panel.get_combined_minimum_size().y)
     if panel_tween == null or not panel_tween.is_running():
-        palette_panel.position = Vector2(x, _palette_y() if palette_open else dock_panel.position.y + 8)
+        palette_panel.position = Vector2(palette_x, _palette_y() if palette_open else dock_panel.position.y + 8)
     else:
-        palette_panel.position.x = x
+        palette_panel.position.x = palette_x
     inspector_panel.size = Vector2(minf(size_view.x - 22, 290), inspector_panel.get_combined_minimum_size().y)
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
