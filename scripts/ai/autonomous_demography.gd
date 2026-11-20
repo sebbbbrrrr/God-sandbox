@@ -419,6 +419,17 @@ func archive_dead(world: RefCounted) -> void:
         changed = true
     if changed:
         world.households.dirty = true
+        # Keep the save valid immediately after removal, not a tick later.
+        world.households.reconcile(world)
+        # Restore must not prune references that the uninterrupted world has
+        # kept; remove dangling social IDs deterministically on both paths.
+        for mind in world.citizen_ai_by_id.values():
+            var ties: Array = mind["relationships"]
+            for i in range(ties.size() - 1, -1, -1):
+                if not world.citizen_ai_by_id.has(str(ties[i]["id"])):
+                    ties.remove_at(i)
+            if int(mind["target_id"]) > 0 and not world.citizen_ai_by_id.has(str(mind["target_id"])):
+                mind["target_id"] = 0
 
 func on_tick(world: RefCounted) -> void:
     monitor_pregnancies(world)
