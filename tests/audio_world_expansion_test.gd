@@ -40,6 +40,11 @@ class FakeConstruction:
     extends RefCounted
     var houses: Array[Dictionary] = [{"id": 1, "x": 5, "y": 5}]
 
+class FakeCalendar:
+    extends RefCounted
+    func date_at(tick: int) -> Dictionary:
+        return {"day": int(tick / 8) + 1, "tick_of_day": posmod(tick, 8)}
+
 class FakeWorld:
     extends RefCounted
     var citizens: Array[Dictionary] = [
@@ -48,6 +53,8 @@ class FakeWorld:
     ]
     var construction := FakeConstruction.new()
     var occupations := FakeOccupations.new()
+    var calendar := FakeCalendar.new()
+    var tick := 0
 
 var failed := false
 
@@ -87,6 +94,12 @@ func _initialize() -> void:
     weather.name = "Storm"
     _check(director.update_weather(weather, 13, living, audio, Vector2(480, 850))
         == ["weather.thunder"], "storm entry makes one thunder onset")
+    world.tick = 6
+    _check(director.update_day_night(world, audio, Vector2(480, 850), 61000) == "ambient.night",
+        "first evening has a grounded calendar cue")
+    world.tick = 14
+    _check(director.update_day_night(world, audio, Vector2(480, 850), 69000) == "",
+        "accelerated calendar does not repeat night cue too often")
     if failed:
         push_error("AUDIO_WORLD_EXPANSION_TESTS_FAILED")
     else:
