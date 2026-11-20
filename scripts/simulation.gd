@@ -9,6 +9,7 @@ const Calendar = preload("res://scripts/ai/sim_calendar.gd")
 const Lifecycle = preload("res://scripts/ai/citizen_lifecycle.gd")
 const Households = preload("res://scripts/ai/households.gd")
 const Food = preload("res://scripts/ai/food_survival.gd")
+const Demography = preload("res://scripts/ai/autonomous_demography.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -35,6 +36,7 @@ var calendar := Calendar.new()
 var lifecycle := Lifecycle.new()
 var households := Households.new()
 var food := Food.new()
+var demography := Demography.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -116,6 +118,7 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
     })
     lifecycle.initialise_founder(citizens[-1], seed, tick)
     households.on_citizen_added(self, citizens[-1])
+    demography.initialize_citizen(self, citizens[-1])
     citizen_ai_by_id[str(next_id)] = AI.create_state(seed, next_id, tick)
     ai_context.added(citizens[-1], citizen_ai_by_id[str(next_id)])
     next_id += 1
@@ -186,6 +189,9 @@ func step() -> void:
             continue
         AI.step(self, citizen, ai_context.minds[id], true)
         citizen["age"] += 1
+    # Birth registration/death archival is authoritative but does not alter
+    # the active AI update_slots during their traversal.
+    demography.on_tick(self)
 
 # 0 raise land, 1 fire, 2 forest, 3 bless, 4 spawn, 5 ocean
 func apply_power(power: int, x: int, y: int) -> bool:
@@ -241,7 +247,7 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "construction": construction.snapshot(),
         "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot(),
         "households": households.snapshot(),
-        "food": food.snapshot()
+        "food": food.snapshot(), "demography": demography.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -275,7 +281,10 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 "x": x, "y": y, "hp": clampi(int(person.get("hp", 100)), 0, 100),
                 "age": maxi(0, int(person.get("age", 0))),
                 "hunger": clampi(int(person.get("hunger", 0)), 0, 100),
-                "next_food_tick": int(person.get("next_food_tick", result.tick + 120 + incoming_id % 40))
+                "next_food_tick": int(person.get("next_food_tick", result.tick + 120 + incoming_id % 40)),
+                "can_gestate": bool(person.get("can_gestate", Demography.can_gestate_for(result.seed, incoming_id))),
+                "last_birth_tick": int(person.get("last_birth_tick", -Calendar.TICKS_PER_YEAR * 100)),
+                "last_partner_decision": int(person.get("last_partner_decision", result.tick))
             }
             if person.has("birth_tick"):
                 restored_citizen["birth_tick"] = int(person["birth_tick"])
@@ -328,6 +337,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     if not result.households.load_state(result, data.get("households", null)):
         return null
     if not result.food.load_state(data.get("food", null)):
+        return null
+    if not result.demography.load_state(result, data.get("demography", null)):
         return null
     return result
 
