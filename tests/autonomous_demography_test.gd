@@ -102,6 +102,35 @@ func _initialize() -> void:
         emergency.citizen_ai_by_id[str(emergency.citizens[1]["id"])]) and
         emergency.food.jobs.has(str(emergency.citizens[1]["id"])),
         "food scarcity recruits a hungry non-specialist into physical foraging") and ok
+    var slower_custom = fixture()
+    slower_custom.tick = 180
+    var household_a: int = int(slower_custom.citizens[0]["household_id"])
+    var household_b: int = int(slower_custom.citizens[1]["household_id"])
+    slower_custom.demography.set_household_preferences(household_a,
+        {"social_adulthood_age": 30, "desired_children": 2})
+    slower_custom.demography.set_household_preferences(household_b,
+        {"social_adulthood_age": 18, "desired_children": 0})
+    add_social_history(slower_custom)
+    slower_custom.demography.find_partner(slower_custom)
+    ok = check(slower_custom.demography.partners.is_empty(),
+        "an explicitly chosen later partnership age is respected") and ok
+    slower_custom.demography.set_household_preferences(household_a,
+        {"social_adulthood_age": 18, "desired_children": 2})
+    slower_custom.demography.find_partner(slower_custom)
+    ok = check(slower_custom.demography.partners.size() == 2,
+        "changing the individual social rule can enable partnership") and ok
+    var merged_policy: Dictionary = slower_custom.demography.household_preferences[
+        str(slower_custom.citizens[0]["household_id"])]
+    ok = check(int(merged_policy["desired_children"]) == 0,
+        "forming a family respects either adult's explicit no-children preference") and ok
+    var siblings = fixture()
+    siblings.tick = 180
+    siblings.citizens[0]["parent_ids"] = [99, 101]
+    siblings.citizens[1]["parent_ids"] = [99, 103]
+    add_social_history(siblings)
+    siblings.demography.find_partner(siblings)
+    ok = check(siblings.demography.partners.is_empty(),
+        "known close kin cannot be selected as reproductive partners") and ok
     var declining = fixture()
     declining.tick = 180
     add_social_history(declining)
