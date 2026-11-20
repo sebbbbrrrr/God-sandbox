@@ -87,9 +87,8 @@ func run() -> void:
     check(renderer.atlas.texture(scorch_key)!=null,"scorch mask has renderable texture")
     var left_chunk: PixelChunk = renderer.chunks[Vector2i(0,0)]
     renderer.build_chunk(left_chunk)
-    check(left_chunk.layers[1].keys.has(scorch_key) or left_chunk.layers[1].keys.has(
-        "scorch_%d_%d" % [left_exposure,renderer.variation(15,15,world.seed,5)]),
-        "charred border uses composited ground")
+    var expected_scorch := "scorch_%d_%d" % [left_exposure,Renderer.variation(15,15,world.seed,5)]
+    check(left_chunk.layers[1].keys.has(expected_scorch),"charred border uses composited ground")
     renderer.detail=0
     renderer.build_chunk(left_chunk)
     check(left_chunk.far_sprite.texture!=null,"far LOD bakes alpha-masked scorch")
