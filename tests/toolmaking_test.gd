@@ -15,7 +15,7 @@ func _initialize() -> void:
     ok = check(gather(w, pid, "wood", Vector2i(21, 24), 2) and
         gather(w, pid, "stone", Vector2i(19, 24), 1),
         "worker physically delivers workshop construction materials") and ok
-    var pre := w.inventory.ledger_ok()
+    var pre: bool = w.inventory.ledger_ok()
     ok = check(pre and w.inventory.held("settlement:0", "wood") == 2,
         "extracted materials conserved before construction") and ok
     ok = check(w.toolmaking._begin(w, artisan, mind, "build", {"remaining": 4}),
