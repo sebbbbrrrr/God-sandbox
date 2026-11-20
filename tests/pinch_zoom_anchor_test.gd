@@ -91,7 +91,7 @@ func run() -> void:
         func(): drag(game, 1, moved_b),
         "centroid pan from second finger keeps original world anchor")
     var initial_world: Vector2 = world_under(game, moved_center)
-    var zoomed_distance := game.zoom
+    var zoomed_distance: float = game.zoom
     var tiny_a := moved_a + Vector2(37, 22)
     var tiny_b := moved_b + Vector2(-37, -22)
     drag(game, 0, tiny_a)
