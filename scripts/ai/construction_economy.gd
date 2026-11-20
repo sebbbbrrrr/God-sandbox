@@ -6,6 +6,7 @@ const Placement = preload("res://scripts/construction/placement.gd")
 const StrategicPlanner = preload("res://scripts/civilisation/strategic_planner.gd")
 const Tasks = preload("res://scripts/construction/construction_tasks.gd")
 const Lifecycle = preload("res://scripts/construction/building_lifecycle.gd")
+const StructuralDestruction = preload("res://scripts/destruction/structural_destruction.gd")
 const HOUSE_WOOD := 3
 const HOUSE_STONE := 1
 const HOUSE_WORK := 6
@@ -16,6 +17,7 @@ var catalogue = Catalogue.new()
 var placement = Placement.new()
 var tasks = Tasks.new()
 var lifecycle = Lifecycle.new()
+var destruction = StructuralDestruction.new()
 var settlement_context: Dictionary = {}
 var archived: Array[Dictionary] = []
 var sites_by_id: Dictionary = {}
@@ -316,9 +318,10 @@ func prune(world: RefCounted) -> void:
         if world.tick % 15 == int(site["id"]) % 15 and not site["paused"]:
             reserve_available(world, site)
     lifecycle.tick(self, world)
+    destruction.on_tick(self, world)
 
 func snapshot() -> Dictionary:
-    return {"version": 2, "stockpiles": stockpiles.duplicate(true), "depleted": depleted.duplicate(true), "houses": houses.duplicate(true), "projects": projects.duplicate(true), "jobs": jobs.duplicate(true), "next_building_id": next_building_id, "settlement_context": settlement_context.duplicate(true), "archived": archived.duplicate(true), "site_cursor": site_cursor, "maintenance_cursor": lifecycle.cursor}
+    return {"version": 2, "stockpiles": stockpiles.duplicate(true), "depleted": depleted.duplicate(true), "houses": houses.duplicate(true), "projects": projects.duplicate(true), "jobs": jobs.duplicate(true), "next_building_id": next_building_id, "settlement_context": settlement_context.duplicate(true), "archived": archived.duplicate(true), "site_cursor": site_cursor, "maintenance_cursor": lifecycle.cursor, "destruction": destruction.snapshot()}
 
 func load_state(raw: Variant) -> bool:
     if raw is Dictionary and raw.is_empty():
@@ -387,6 +390,8 @@ func load_state(raw: Variant) -> bool:
     site_cursor = int(raw.get("site_cursor", 0))
     lifecycle.cursor = int(raw.get("maintenance_cursor", 0))
     rebuild_indexes()
+    if not destruction.load_state(raw.get("destruction", null), self):
+        return false
     return true
 
 # Cross-service validation after all save components have been restored.

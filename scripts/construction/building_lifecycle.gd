@@ -144,6 +144,8 @@ func remove(engine: RefCounted, world: RefCounted, id: int, salvage: bool, reaso
     if not world.inventory.close_site(world, house, recovered):
         return false
     Site.history(house, world.tick, reason)
+    # Debris is an environmental record, never credited to inventory twice.
+    engine.destruction.record_removal(house, reason, int(world.tick))
     engine.archived.append(house.duplicate(true))
     if engine.archived.size() > 128:
         engine.archived.pop_front()
