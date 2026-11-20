@@ -74,3 +74,35 @@ Godot tracked static memory at the end of the 1500-citizen case: 41.90 → 42.51
 The extra artwork increases routine close/medium rendering cost on software GL; unchanged batching does not remove pixel-fill or command-processing cost. Painting improves on average. Full network invalidation on real settlement growth still causes a visible worst-case rebuild spike; this was retained in the measurements rather than excluded. No physical Android performance claim is made.
 
 Baseline regression suites passed (306 rendering and 26 input assertions plus simulation suite). Expanded suites passed (482 rendering and 26 input assertions plus simulation suite). Godot editor import and main-scene startup passed. Atlas integrity and byte-identical regeneration passed. Existing save round-trip, legacy migration, RNG continuation, all six powers, raised picking, terrain editing and renderer/simulation isolation remain covered.
+
+## GitHub Actions delivery — verified
+
+Code commit: `4235f56d5941f4e120d22d16e578bac68503a6aa`.
+
+[Successful workflow run 44720613614](https://github.com/sebbbbrrrr/God-sandbox/actions/runs/44720613614) completed all validation, actual GL capture, recording and Android debug export steps.
+
+- [Android debug APK artifact](https://github.com/sebbbbrrrr/God-sandbox/actions/runs/44720613614/artifacts/14621338364): `GodSandbox-debug.apk`, ARM64, approximately 38 MiB; artifact ZIP 39,204,287 bytes. Signing/export succeeded. Physical installation was not performed.
+- [Visual validation artifact](https://github.com/sebbbbrrrr/God-sandbox/actions/runs/44720613614/artifacts/14622205463): 36,887,781-byte ZIP. `build/comparison/before/` and `after/` each contain forest, coast, mountain, settlement and procedural-world PNGs plus benchmark JSON. `build/environment-tour.mp4` contains the 12-second 480 × 850 / 30 fps actual Godot tour. Logs and additional captures are included.
+- Artifacts expire **4 December 2026** under the existing 14-day retention policy.
+
+CI environment: Godot 4.5.2, Ubuntu GitHub-hosted runner, Mesa 26.0.8 llvmpipe LLVM 21.1.8 software GL. This is a separate matched pair from the local measurements above; do not compare local-before numbers to CI-after numbers.
+
+| Zoom / citizens | Mean frame ms before → after | p95 ms before → after | Worst ms before → after |
+| --- | --- | --- | --- |
+| 0.5 / 160 | 5.40 → 5.51 | 6.41 → 6.81 | 8.04 → 8.82 |
+| 1 / 160 | 9.02 → 10.35 | 10.12 → 11.42 | 11.05 → 13.94 |
+| 2 / 160 | 6.95 → 8.09 | 7.70 → 8.81 | 8.30 → 10.79 |
+| 1 / 500 | 9.25 → 10.55 | 11.03 → 12.33 | 12.69 → 13.49 |
+| 1 / 1500 | 10.32 → 11.67 | 14.45 → 16.22 | 80.19 → 67.93 |
+
+Draw calls remain 74 at distant zoom and 38 in the other cases, before and after. End-of-case Godot tracked static memory at 1500 citizens: 41.88 → 42.55 MiB.
+
+| Paint screen pixels per tile | Mean rebuild ms before → after | p95 ms before → after | Worst ms before → after |
+| --- | --- | --- | --- |
+| 8 | 20.73 → 15.15 | 21.06 → 15.85 | 21.27 → 15.88 |
+| 24 | 16.32 → 10.45 | 16.55 → 11.03 | 16.65 → 11.34 |
+| 48 | 16.37 → 10.70 | 16.61 → 11.13 | 16.64 → 11.59 |
+
+Single-edit diagnostic: 17.33 → 10.75 ms. Brush means improve by 27–36% in this run. Added scenery costs approximately 13–16% more mean frame time in the medium/close cases; distant mean changes by about 2%. This is an art expansion with a measured paint-path optimization, not a claim of universal rendering acceleration. The 1500-citizen growth/rebuild worst case remains 67.93 ms on this software renderer and needs further work.
+
+All CI checks passed: reproducible atlas packing, import/compilation, simulation regression, 482 rendering assertions, 26 input assertions, main-scene smoke startup, five matched views per version, frame/paint benchmarks, 360-frame movie encoding and signed Android debug export. No save or simulation format was changed. Main and the citizen AI branch were not merged or modified.
