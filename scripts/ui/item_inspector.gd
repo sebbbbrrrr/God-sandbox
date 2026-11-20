@@ -145,6 +145,8 @@ func geometry(viewport: Vector2, toolbar: float = 188.0) -> Dictionary:
     var visible_rows := maxi(2, int(floor(rows_height / ROW_HEIGHT)))
     var action_y := top + height - 62.0
     return {"panel": bounds, "close": Rect2(left + width - 49.0, top + 8.0, 40.0, 39.0),
+        "tabs": [Rect2(left + 12.0, top + 45.0, 92.0, 29.0),
+            Rect2(left + 110.0, top + 45.0, 92.0, 29.0)],
         "rows": Rect2(left + 9.0, rows_y, width - 18.0, float(visible_rows) * ROW_HEIGHT),
         "rows_count": visible_rows,
         "detail_y": rows_y + float(visible_rows) * ROW_HEIGHT + 15.0,
@@ -276,6 +278,26 @@ func apply_action(world: RefCounted, key: String) -> bool:
     sync(world)
     return success
 
+func change_tab(world: RefCounted, tab: String) -> bool:
+    if tab == "pack":
+        if focus_citizen_id <= 0 or actor(world).is_empty():
+            return false
+        return open_for(world, "citizen:" + str(focus_citizen_id), "citizen")
+    if tab == "stores":
+        var nation := -1
+        if not actor(world).is_empty():
+            nation = int(actor(world)["nation"])
+        elif holder_id.begins_with("settlement:"):
+            nation = int(holder_id.get_slice(":", 1))
+        if nation not in [0, 1]:
+            return false
+        var focus := focus_citizen_id
+        if not open_for(world, "settlement:" + str(nation), "settlement"):
+            return false
+        focus_citizen_id = focus
+        return true
+    return false
+
 func tap(world: RefCounted, point: Vector2, viewport: Vector2, toolbar: float = 188.0) -> bool:
     if not visible:
         return false
@@ -285,6 +307,13 @@ func tap(world: RefCounted, point: Vector2, viewport: Vector2, toolbar: float = 
         return true
     if (g["close"] as Rect2).has_point(point):
         close()
+        return true
+    var tabs: Array = g["tabs"]
+    if (tabs[0] as Rect2).has_point(point):
+        change_tab(world, "pack")
+        return true
+    if (tabs[1] as Rect2).has_point(point):
+        change_tab(world, "stores")
         return true
     var selected := row_at(world, point, viewport, toolbar)
     if not selected.is_empty():
