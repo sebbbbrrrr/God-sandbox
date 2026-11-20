@@ -1,0 +1,111 @@
+name: D4 Android Debug APK QA
+
+on:
+  push:
+    branches:
+      - feature/item-visualisation-interaction-d4
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: d4-debug-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Godot 4.5.2 D4 smoke, UI tests and APK export
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      GODOT_VERSION: "4.5.2"
+      GODOT_STATUS: "stable"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Install Android build dependencies
+        run: |
+          set -euo pipefail
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          sudo apt-get update -qq
+          sudo apt-get install -y unzip
+      - name: Download Godot editor and Android export templates
+        run: |
+          set -euo pipefail
+          BASE="https://github.com/godotengine/godot-builds/releases/download/$GODOT_VERSION-$GODOT_STATUS"
+          curl -fL --retry 3 "$BASE/Godot_v$GODOT_VERSION-$GODOT_STATUS_linux.x86_64.zip" -o godot.zip
+          unzip -q godot.zip
+          mv "Godot_v$GODOT_VERSION-$GODOT_STATUS_linux.x86_64" godot
+          chmod +x godot
+          curl -fL --retry 3 "$BASE/Godot_v$GODOT_VERSION-$GODOT_STATUS_export_templates.tpz" -o export.tpz
+          mkdir -p "$HOME/.local/share/godot/export_templates/$GODOT_VERSION.$GODOT_STATUS"
+          unzip -q export.tpz -d extracted
+          cp extracted/templates/* "$HOME/.local/share/godot/export_templates/$GODOT_VERSION.$GODOT_STATUS/"
+          ./godot --headless --version
+      - name: Configure Android debug signing
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v -keystore "$HOME/.android/debug.keystore" \
+            -storepass android -alias androiddebugkey -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=God Sandbox,C=GB"
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$HOME/.android/debug.keystore" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android" >> "$GITHUB_ENV"
+      - name: Configure Godot Android paths
+        run: |
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.5.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+      - name: Import project and fail closed on parse errors
+        run: |
+          set -euo pipefail
+          ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/d4-import.log
+          if grep -Ei "SCRIPT ERROR|Parse Error|Failed to load script" /tmp/d4-import.log; then exit 1; fi
+      - name: Exercise inspector and modal input
+        run: |
+          set -euo pipefail
+          for test in item_inspector_test game_item_ui_test; do
+            ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/$test.log"
+            if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" "/tmp/$test.log"; then exit 1; fi
+          done
+      - name: Smoke-test game scene
+        run: ./godot --headless --path . --quit-after 30
+      - name: Export Android debug APK
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-D4-debug.apk
+          test -s build/GodSandbox-D4-debug.apk
+          ls -lh build/GodSandbox-D4-debug.apk
+      - name: Upload D4 debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodSandbox-D4-Android-debug
+          path: build/GodSandbox-D4-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload validation diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d4-android-debug-logs
+          path: |
+            /tmp/d4-import.log
+            /tmp/item_inspector_test.log
+            /tmp/game_item_ui_test.log
+          if-no-files-found: warn
+          retention-days: 7
