@@ -12,6 +12,7 @@ const Food = preload("res://scripts/ai/food_survival.gd")
 const Demography = preload("res://scripts/ai/autonomous_demography.gd")
 const Occupations = preload("res://scripts/ai/era_occupations.gd")
 const Inventory = preload("res://scripts/items/physical_inventory.gd")
+const Toolmaking = preload("res://scripts/items/autonomous_toolmaking.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -41,6 +42,7 @@ var food := Food.new()
 var demography := Demography.new()
 var occupations := Occupations.new()
 var inventory := Inventory.new()
+var toolmaking := Toolmaking.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -261,7 +263,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "calendar": calendar.snapshot(), "lifecycle": lifecycle.snapshot(),
         "households": households.snapshot(),
         "food": food.snapshot(), "demography": demography.snapshot(),
-        "occupations": occupations.snapshot(), "inventory": inventory.snapshot()
+        "occupations": occupations.snapshot(), "inventory": inventory.snapshot(),
+        "toolmaking": toolmaking.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -367,6 +370,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     if not result.demography.load_state(result, data.get("demography", null)):
         return null
     if not result.occupations.load_state(result, data.get("occupations", null)):
+        return null
+    if not result.toolmaking.load_state(result, data.get("toolmaking", null)):
         return null
     return result
 
