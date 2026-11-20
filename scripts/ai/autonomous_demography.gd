@@ -349,12 +349,8 @@ func delivery_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
     if not world.households.join_newborn(world, baby, person, person):
         # This is prevalidated by care_at_birth. No silent removal of babies.
         return true
-    last_birth[key] = int(world.tick)
-    var born_family_id: String = str(person["household_id"])
-    family_birth_counts[born_family_id] = int(family_birth_counts.get(born_family_id, 0)) + 1
-    person["last_birth_tick"] = int(world.tick)
+    record_family_birth(world, baby, int(person["id"]))
     pregnancies.erase(key)
-    births_total += 1
     mind["route"] = []
     return true
 
@@ -372,6 +368,15 @@ func on_death(world: RefCounted, person: Dictionary) -> void:
         fail_pregnancy(world, person, "gestational_parent_died")
     # Pregnancy may remain viable if the non-gestational parent dies. The
     # child's original biological parent IDs are preserved in the record.
+
+func record_family_birth(world: RefCounted, baby: Dictionary, gestator_id: int) -> void:
+    var house_key := str(baby["household_id"])
+    family_birth_counts[house_key] = int(family_birth_counts.get(house_key, 0)) + 1
+    last_birth[str(gestator_id)] = int(world.tick)
+    var gestator: Dictionary = world.ai_context.people.get(gestator_id, {})
+    if not gestator.is_empty():
+        gestator["last_birth_tick"] = int(world.tick)
+    births_total += 1
 
 func archive_dead(world: RefCounted) -> void:
     # Dead citizens occupy renderer slots until two years after death,
