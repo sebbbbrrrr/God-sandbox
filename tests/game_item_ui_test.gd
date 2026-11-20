@@ -4,9 +4,14 @@ const World = preload("res://scripts/simulation.gd")
 
 func _initialize() -> void:
     var ok := true
-    root.size = Vector2i(480, 850) # Headless runners default to a tiny viewport.
+    # The headless root window has zero drawable size; isolate the real game
+    # inside an explicitly sized offscreen viewport instead.
+    var viewport: SubViewport = SubViewport.new()
+    viewport.size = Vector2i(480, 850)
+    viewport.disable_3d = true
+    root.add_child(viewport)
     var game = Game.new()
-    root.add_child(game)
+    viewport.add_child(game)
     game.world = scene_world()
     game.camera_center = Vector2(20, 20)
     game.selected_power = -1
@@ -66,8 +71,10 @@ func _initialize() -> void:
         "regular raise-land power remains active when inspector is closed") and ok
     ok = check(game.world.inventory.ledger_ok(),
         "inspection and tool visuals never mutate the physical item ledger") and ok
-    root.remove_child(game)
+    viewport.remove_child(game)
     game.free()
+    root.remove_child(viewport)
+    viewport.free()
     if ok:
         print("GAME_ITEM_UI_TESTS_PASSED")
     quit(0 if ok else 1)
