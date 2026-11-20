@@ -66,10 +66,29 @@ func _initialize() -> void:
         str(w.toolmaking.equipped.get(str(pid), "")) == axe_serial and
         w.toolmaking.tool_for(w, artisan, "wood") == axe_serial,
         "citizen physically checks out and equips owned axe") and ok
+    # Exercise the actual housing gatherer integration: one physical extraction
+    # with a real axe must extract two units and wear its particular serial.
+    w.set_terrain_cell(21, 25, World.FOREST)
+    var start: Vector2i = Vector2i(int(artisan["x"]), int(artisan["y"]))
+    artisan["x"] = 21
+    artisan["y"] = 25
+    w.ai_context.moved(artisan, start)
+    var action: Dictionary = {"kind": "gather", "nation": 0, "phase": "source",
+        "material": "wood", "source": [21, 25], "target": [21, 25],
+        "wood": 0, "stone": 0, "amount": 0}
+    w.construction.jobs[str(pid)] = action
     var condition: int = int(w.toolmaking.instances[axe_serial]["condition"])
-    w.toolmaking.wear(w, artisan, "wood")
-    ok = check(int(w.toolmaking.instances[axe_serial]["condition"]) < condition,
-        "successful resource work reduces unique equipment condition") and ok
+    ok = check(w.construction.gather_step(w, artisan, mind, str(pid), action, w.capitals[0]) and
+        int(action["amount"]) == 2 and int(w.inventory.held("citizen:" + str(pid), "wood")) == 2 and
+        int(w.toolmaking.instances[axe_serial]["condition"]) < condition,
+        "real woodcutter task uses axe for two finite units and applies physical wear") and ok
+    for i in range(10):
+        if not w.construction.jobs.has(str(pid)):
+            break
+        w.construction.gather_step(w, artisan, mind, str(pid), action, w.capitals[0])
+    ok = check(not w.construction.jobs.has(str(pid)) and
+        w.inventory.held("settlement:0", "wood") == 2,
+        "working citizen physically returns extracted timber to settlement") and ok
     for i in range(9):
         w.toolmaking.wear(w, artisan, "wood")
     ok = check(int(w.toolmaking.instances[axe_serial]["condition"]) == 0 and
