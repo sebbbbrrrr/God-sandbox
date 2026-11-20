@@ -24,6 +24,7 @@ var jobs: Dictionary = {}      # citizen ID -> physically executed job/cargo
 var produced := {"berries": 0, "fish": 0, "grain": 0}
 var consumed := {"berries": 0, "fish": 0, "grain": 0}
 var lost := {"berries": 0, "fish": 0, "grain": 0}
+var planted := {"berries": 0, "fish": 0, "grain": 0}
 
 func empty_food() -> Dictionary:
     return {"berries": 0, "fish": 0, "grain": 0}
@@ -252,19 +253,37 @@ func find_plot(world: RefCounted, nation: int) -> Vector2i:
 func create_farm(world: RefCounted, nation: int) -> bool:
     if nation not in [0, 1] or not bool(techniques[nation].get("cultivation", false)):
         return false
-    if int(depots[nation]["grain"]) < 1 or farms.size() >= MAX_FARMS:
+    if int(depots[nation]["grain"]) < 1:
         return false
-    var plot := find_plot(world, nation)
-    if plot.x < 0:
+    var reused: Dictionary = {}
+    for existing in farms:
+        if int(existing["nation"]) == nation and bool(existing["harvested"]) and int(existing["fertility"]) > 0:
+            reused = existing
+            break
+    if reused.is_empty() and farms.size() >= MAX_FARMS:
         return false
+    var plot := Vector2i(-1, -1)
+    if reused.is_empty():
+        plot = find_plot(world, nation)
+        if plot.x < 0:
+            return false
+    else:
+        plot = Vector2i(int(reused["x"]), int(reused["y"]))
     depots[nation]["grain"] = int(depots[nation]["grain"]) - 1
+    planted["grain"] = int(planted["grain"]) + 1
     var yield: int = 5
     if bool(techniques[nation].get("irrigation", false)):
         yield += 2
-    farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
-        "sown_tick": world.tick, "ready_tick": world.tick + 240,
-        "fertility": 5, "yield": yield, "harvested": false})
-    next_farm_id += 1
+    if reused.is_empty():
+        farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
+            "sown_tick": world.tick, "ready_tick": world.tick + 240,
+            "fertility": 5, "yield": yield, "harvested": false})
+        next_farm_id += 1
+    else:
+        reused["sown_tick"] = world.tick
+        reused["ready_tick"] = world.tick + 240
+        reused["yield"] = yield
+        reused["harvested"] = false
     return true
 
 func ready_farm(world: RefCounted, nation: int) -> Dictionary:
@@ -282,7 +301,8 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var home: Vector2i = world.capitals[nation]
     if home.x < 0 or not world.is_walkable(home.x, home.y):
         return false
-    if int(person.get("hunger", 0)) >= 24 and not jobs.has(id):
+    if int(person.get("hunger", 0)) >= 24 and not jobs.has(id) and (
+            total(depots[nation]) > 0 or total(pantry_for(int(person["household_id"]))) > 0):
         var family: Dictionary = world.households.family_for(int(person["household_id"]))
         var house: Dictionary = world.households.house_by_id(world, int(family.get("home_id", 0)))
         var target := home
@@ -371,6 +391,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             if int(farm["id"]) == int(job["farm_id"]) and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
                 amount = int(farm["yield"])
                 farm["harvested"] = true
+                farm["fertility"] = maxi(0, int(farm["fertility"]) - 1)
                 break
     else:
         amount = mini(CARRY_AMOUNT, resource_left(world, source))
@@ -389,6 +410,12 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
 func on_tick_households(world: RefCounted) -> void:
     if world.tick % 60 != 0:
         return
+    # Recover a little fallow soil capacity once per game year; no crop
+    # outputs are created until a new seed and harvesting work are supplied.
+    if world.tick % Calendar.TICKS_PER_YEAR == 0:
+        for farm in farms:
+            if bool(farm["harvested"]):
+                farm["fertility"] = mini(5, int(farm["fertility"]) + 1)
     for nation in range(2):
         if bool(techniques[nation].get("cultivation", false)):
             var count := 0
@@ -413,7 +440,8 @@ func snapshot() -> Dictionary:
         "wild_cycle": wild_cycle, "wild_taken": wild_taken.duplicate(true),
         "farms": farms.duplicate(true), "next_farm_id": next_farm_id,
         "jobs": jobs.duplicate(true), "produced": produced.duplicate(true),
-        "consumed": consumed.duplicate(true), "lost": lost.duplicate(true)}
+        "consumed": consumed.duplicate(true), "lost": lost.duplicate(true),
+        "planted": planted.duplicate(true)}
 
 func load_state(raw: Variant) -> bool:
     if raw == null:
@@ -447,7 +475,7 @@ func load_state(raw: Variant) -> bool:
             return false
         farms.append(farm.duplicate(true))
     next_farm_id = maxi(1, int(raw.get("next_farm_id", 1)))
-    for field in ["produced", "consumed", "lost"]:
+    for field in ["produced", "consumed", "lost", "planted"]:
         if not raw.get(field) is Dictionary:
             return false
         for kind in FOOD_TYPES:
@@ -465,6 +493,6 @@ func ledger_ok() -> bool:
         for job in jobs.values():
             if str(job.get("type", "")) == kind:
                 held += int(job.get("amount", 0))
-        if int(produced[kind]) != held + int(consumed[kind]) + int(lost[kind]):
+        if int(produced[kind]) != held + int(consumed[kind]) + int(lost[kind]) + int(planted[kind]):
             return false
     return true
