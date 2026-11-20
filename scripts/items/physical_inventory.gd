@@ -248,6 +248,16 @@ func drop_on_death(world: RefCounted, person: Dictionary) -> void:
         _log(world, "death_drop" if can_drop else "death_loss", holder_id, target if can_drop else "", {item_id: qty})
     balances.erase(holder_id)
 
+# Dead citizens retain no invisible inventories. Deaths can occur outside jobs.
+func reconcile_deaths(world: RefCounted) -> void:
+    for holder_id in balances.keys():
+        if not str(holder_id).begins_with("citizen:"):
+            continue
+        var citizen_id := int(str(holder_id).trim_prefix("citizen:"))
+        var person := _person(world, citizen_id)
+        if not person.is_empty() and int(person.get("hp", 0)) <= 0:
+            drop_on_death(world, person)
+
 func on_terrain_changed(world: RefCounted, x: int, y: int) -> void:
     if world.at(x, y) not in [world.OCEAN, world.ASH]:
         return
