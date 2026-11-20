@@ -293,6 +293,10 @@ func snapshot(legacy: bool = false) -> Dictionary:
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
+    # JSON numbers arrive as doubles. Restore canonical integer identities/counts
+    # before building holder keys; binary/native snapshots need no extra copy.
+    if typeof(data.get("tick", 0)) == TYPE_FLOAT:
+        data = Construction.Catalogue.normalize(data.duplicate(true))
     var version := int(data.get("version", -1))
     if version not in [1, 2, 3, 4] or (version == 3 and int(data.get("ai_version", -1)) != 2) or (version == 4 and int(data.get("ai_version", -1)) != 3):
         return null
@@ -381,7 +385,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     if data.has("lifecycle") and not result.lifecycle.load_state(data["lifecycle"]):
         return null
-    result.construction.load_state(data.get("construction", {}))
+    if not result.construction.load_state(data.get("construction", {})):
+        return null
     result.ai_context.begin_tick(result)
     # v1-v4 worlds are accepted. Only absent D2 state permits migration;
     # corrupted present ledgers must fail closed rather than mint duplicates.
@@ -403,6 +408,8 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
     if not result.occupations.load_state(result, data.get("occupations", null)):
         return null
     if not result.toolmaking.load_state(result, data.get("toolmaking", null)):
+        return null
+    if not result.construction.validate_restored(result):
         return null
     return result
 

@@ -26,7 +26,7 @@ func check(condition: bool, label: String) -> void:
         print("PASS: " + label)
 
 func fixture(count: int = 2) -> RefCounted:
-    var world = Simulation.new(10101)
+    var world = Simulation.new(10101, false)
     world.terrain.fill(Simulation.MEADOW)
     world.citizens.clear()
     world.citizen_ai_by_id.clear()

@@ -1,0 +1,105 @@
+{
+  "results": [
+    {
+      "suite": "import",
+      "passed": true,
+      "seconds": 6.644
+    },
+    {
+      "suite": "simulation",
+      "passed": true,
+      "seconds": 5.568
+    },
+    {
+      "suite": "citizen_ai",
+      "passed": true,
+      "seconds": 10.683
+    },
+    {
+      "suite": "citizen_cognition",
+      "passed": true,
+      "seconds": 0.822
+    },
+    {
+      "suite": "civilisation_calendar_lifecycle",
+      "passed": true,
+      "seconds": 0.528
+    },
+    {
+      "suite": "household_care",
+      "passed": true,
+      "seconds": 0.56
+    },
+    {
+      "suite": "food_survival",
+      "passed": true,
+      "seconds": 0.804
+    },
+    {
+      "suite": "autonomous_demography",
+      "passed": true,
+      "seconds": 0.532
+    },
+    {
+      "suite": "era_occupations",
+      "passed": true,
+      "seconds": 0.552
+    },
+    {
+      "suite": "item_catalogue",
+      "passed": true,
+      "seconds": 0.164
+    },
+    {
+      "suite": "physical_inventory",
+      "passed": true,
+      "seconds": 0.434
+    },
+    {
+      "suite": "construction",
+      "passed": true,
+      "seconds": 4.356
+    },
+    {
+      "suite": "toolmaking",
+      "passed": true,
+      "seconds": 0.443
+    },
+    {
+      "suite": "toolmaking_autonomy",
+      "passed": true,
+      "seconds": 10.127
+    },
+    {
+      "suite": "item_inspector",
+      "passed": true,
+      "seconds": 0.541
+    },
+    {
+      "suite": "game_item_ui",
+      "passed": true,
+      "seconds": 0.662
+    },
+    {
+      "suite": "unified_integration",
+      "passed": true,
+      "seconds": 0.712
+    },
+    {
+      "suite": "pinch_zoom_anchor",
+      "passed": true,
+      "seconds": 0.61
+    },
+    {
+      "suite": "universal_construction",
+      "passed": true,
+      "seconds": 5.098
+    },
+    {
+      "suite": "demo_scene",
+      "passed": true,
+      "seconds": 0.802
+    }
+  ],
+  "passed": true
+}

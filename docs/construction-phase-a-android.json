@@ -1,0 +1,8 @@
+{
+  "export_log_errors": false,
+  "zip_crc_ok": true,
+  "bytes": 29248989,
+  "sha256": "61778aea04a85866b7e2b2af650180bd02849460df068d88d96262c4c2b09464",
+  "arm64": true,
+  "physical_device_tested": false
+}

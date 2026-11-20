@@ -1,0 +1,66 @@
+{
+  "engine": "4.5.2-stable (official)",
+  "passed": true,
+  "platform": "Linux headless CPU; not Android FPS",
+  "results": [
+    {
+      "frame_cpu_p50_ms": 0.207,
+      "frame_cpu_p95_ms": 12.553,
+      "frames": 240,
+      "scenario": "actual_frontend_20_citizens",
+      "speed": 1,
+      "ticks": 80
+    },
+    {
+      "frame_cpu_p50_ms": 0.943,
+      "frame_cpu_p95_ms": 12.861,
+      "frames": 240,
+      "scenario": "actual_frontend_20_citizens",
+      "speed": 2,
+      "ticks": 159
+    },
+    {
+      "frame_cpu_p50_ms": 3.951,
+      "frame_cpu_p95_ms": 13.135,
+      "frames": 240,
+      "scenario": "actual_frontend_20_citizens",
+      "speed": 4,
+      "ticks": 318
+    },
+    {
+      "ledger": true,
+      "population": 100,
+      "scenario": "full_world",
+      "step_cpu_p50_ms": 4.567,
+      "step_cpu_p95_ms": 19.57,
+      "ticks": 240
+    },
+    {
+      "ledger": true,
+      "population": 500,
+      "scenario": "full_world",
+      "step_cpu_p50_ms": 17.756,
+      "step_cpu_p95_ms": 36.422,
+      "ticks": 240
+    },
+    {
+      "citizen_dispatch_p95_ms": 39.111,
+      "construction_prune_p95_ms": 0.112,
+      "scenario": "profile_500_citizens",
+      "ticks": 120
+    },
+    {
+      "active_sites": 128,
+      "completed_buildings": 3000,
+      "scenario": "construction_service_only",
+      "service_cpu_p50_ms": 0.255,
+      "service_cpu_p95_ms": 0.333,
+      "ticks": 600
+    },
+    {
+      "cycles": 60,
+      "remaining_sites": 0,
+      "scenario": "repeat_cancel"
+    }
+  ]
+}

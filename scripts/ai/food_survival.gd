@@ -542,7 +542,7 @@ func load_state(raw: Variant) -> bool:
     wild_cycle = int(raw.get("wild_cycle", -1))
     if not raw.get("techniques") is Array or raw["techniques"].size() != 2:
         return false
-    techniques = raw["techniques"].duplicate(true)
+    techniques.assign(raw["techniques"].duplicate(true))
     if not raw.get("farms") is Array or raw["farms"].size() > MAX_FARMS:
         return false
     farms.clear()

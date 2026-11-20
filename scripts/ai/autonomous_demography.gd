@@ -472,7 +472,7 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
         family_birth_counts = raw["family_birth_counts"].duplicate(true)
     household_preferences = raw["household_preferences"].duplicate(true)
     family_security = raw["family_security"].duplicate(true)
-    tombstones = raw["tombstones"].duplicate(true)
+    tombstones.assign(raw["tombstones"].duplicate(true))
     births_total = maxi(0, int(raw.get("births_total", 0)))
     deaths_archived = maxi(0, int(raw.get("deaths_archived", 0)))
     for key in pregnancies:

@@ -14,17 +14,10 @@ func _initialize() -> void:
     ok = check(a.citizens.size() == 20, "no timer-based phantom population growth") and ok
     ok = check(a.construction.houses.size() >= 1, "citizens physically construct housing") and ok
     ok = check(a.construction.projects.size() <= 1, "one active housing project per nation") and ok
-    var wood := int(a.construction.stockpiles[0]["wood"])
-    var stone := int(a.construction.stockpiles[0]["stone"])
-    for task in a.construction.jobs.values():
-        wood += int(task["wood"])
-        stone += int(task["stone"])
-    wood += a.construction.houses.size() * Economy.HOUSE_WOOD
-    stone += a.construction.houses.size() * Economy.HOUSE_STONE
     var wood_extracted := int(a.construction.depleted.get(str(a.index_of(13, 16)), 0))
     var stone_extracted := int(a.construction.depleted.get(str(a.index_of(19, 16)), 0))
-    ok = check(wood == wood_extracted and stone == stone_extracted,
-        "finite resource conservation: extraction = stock + cargo + completed homes") and ok
+    ok = check(a.inventory.ledger_ok() and wood_extracted == int(a.inventory.minted.get("wood", 0)) + int(a.inventory.minted.get("plant_fibre", 0)) and stone_extracted == int(a.inventory.minted.get("stone", 0)) + int(a.inventory.minted.get("flint", 0)),
+        "finite resource conservation across stores, cargo, sites, homes and toolmaking") and ok
     var loaded = Simulation.from_snapshot(a.snapshot())
     ok = check(loaded != null, "construction snapshot loads") and ok
     if loaded != null:
@@ -40,7 +33,7 @@ func _initialize() -> void:
         a.set_terrain_cell(int(site["x"]), int(site["y"]), Simulation.ASH)
         ok = check(a.construction.houses.size() == before - 1,
             "fire removes a completed building") and ok
-    var legacy: Dictionary = a.snapshot()
+    var legacy: Dictionary = make_village().snapshot()
     legacy.erase("construction")
     var migrated = Simulation.from_snapshot(legacy)
     ok = check(migrated != null and migrated.construction.houses.is_empty(),

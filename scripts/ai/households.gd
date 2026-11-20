@@ -252,7 +252,7 @@ func reconcile(world: RefCounted) -> void:
             families.remove_at(i)
             continue
         var home := house_by_id(world, int(family["home_id"]))
-        if home.is_empty() or int(home["nation"]) != int(family["nation"]):
+        if home.is_empty() or int(home["nation"]) != int(family["nation"]) or int(home.get("capacity", 0)) <= 0:
             family["home_id"] = 0
         var old_steward: int = int(family["steward_id"])
         if living_person(world, old_steward).is_empty():
