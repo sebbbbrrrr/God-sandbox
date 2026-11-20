@@ -91,7 +91,11 @@ func form_household(world: RefCounted, first_id: int, second_id: int) -> bool:
     # A household can be formed before housing exists; it cannot silently keep
     # a home whose real bed capacity is smaller than the merged family.
     var retained_home := 0
-    if original_home > 0 and has_room(world, original_home, member_count(world, b)):
+    if original_home > 0 and original_home == second_home:
+        # Both families already occupy the same physical house; the merger
+        # does not add a new resident or consume an additional bed.
+        retained_home = original_home
+    elif original_home > 0 and has_room(world, original_home, member_count(world, b)):
         retained_home = original_home
     elif second_home > 0 and has_room(world, second_home, member_count(world, a)):
         retained_home = second_home
