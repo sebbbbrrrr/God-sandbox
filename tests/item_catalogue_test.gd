@@ -50,7 +50,9 @@ func _initialize() -> void:
         int(forged.get("bronze_ingot", 0)) == 1 and forged.size() == 1,
         "actual adopted metallurgy and smelter allow conserved production") and ok
     var batch := {"wood": 2, "knapped_flint": 2, "plant_fibre": 1}
-    ok = check(catalogue.craft("arrows", batch, context) and
+    var trained_crafter: Dictionary = context.duplicate(true)
+    trained_crafter["skills"] = {"stone_toolmaker": 30}
+    ok = check(catalogue.craft("arrows", batch, trained_crafter) and
         int(batch.get("arrows", 0)) == 6, "batch outputs respect quantity") and ok
     var ability_ctx := {"age_years": 18, "skills": {"forager": 0},
         "capabilities": {}, "facilities": {}, "roles": {"forager": true}}
