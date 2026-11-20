@@ -154,6 +154,23 @@ func grant_capability(world: RefCounted, nation: int, tech: String, evidence: St
     adopted_by_settlement[key] = known
     return true
 
+func lose_capability(world: RefCounted, nation: int, tech: String, reason: String) -> bool:
+    # Future collapse / specialist-death events can withdraw actually lost
+    # manufacturing knowledge without deleting citizens' past skills.
+    if nation not in [0, 1] or reason not in [
+            "knowledge_lost", "catastrophe", "infrastructure_lost"]:
+        return false
+    if tech in ["cultivation", "irrigation"]:
+        return world.food.set_technique(nation, tech, false)
+    var key := settlement_key(world, nation)
+    if key == "" or not adopted_by_settlement.has(key):
+        return false
+    var skills: Dictionary = adopted_by_settlement[key]
+    if not skills.has(tech):
+        return false
+    skills.erase(tech)
+    return true
+
 func facility_present(world: RefCounted, nation: int, facility: String) -> bool:
     if facility == "":
         return true
