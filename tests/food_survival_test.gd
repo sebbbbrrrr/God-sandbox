@@ -96,7 +96,7 @@ func _initialize() -> void:
     ok = check(int(a.food.produced["grain"]) > produced_before and a.food.ledger_ok(),
         "grain is produced by a worker harvesting a mature farm") and ok
     var household_id: int = int(a.citizens[0]["household_id"])
-    var stores := a.food.depots[0]
+    var stores: Dictionary = a.food.depots[0]
     if a.food.total(stores) == 0:
         stores["grain"] = int(stores["grain"]) + 1
         a.food.produced["grain"] += 1
