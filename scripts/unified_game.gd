@@ -30,7 +30,7 @@ var visual_refresh_accum := 0.0
 var hud_refresh_accum := 0.0
 var units_need_refresh := false
 var work_visual_clock := 0.0
-var game_audio: Node
+var game_audio
 var living_audio = LivingWorldAudio.new()
 var construction_audio = ConstructionAudioBridge.new()
 var world_audio_director = WorldAudioDirector.new()
