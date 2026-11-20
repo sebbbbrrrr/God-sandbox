@@ -192,6 +192,10 @@ func _initialize() -> void:
         bereaved.demography.tombstones.size() == 1 and
         bereaved.citizens[-1]["parent_ids"].has(int(father["id"])),
         "dead citizens release live simulation slots but leave history and ancestry") and ok
+    var after_archive: Dictionary = bereaved.snapshot()
+    var archive_reloaded = World.from_snapshot(after_archive)
+    ok = check(archive_reloaded != null and archive_reloaded.snapshot() == after_archive,
+        "the exact archive tick can be saved without dangling household IDs") and ok
     var legacy: Dictionary = a.snapshot()
     legacy.erase("demography")
     for citizen in legacy["citizens"]:
