@@ -321,7 +321,7 @@ func create_farm(world: RefCounted, nation: int) -> bool:
     if reused.is_empty():
         farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
             "sown_tick": world.tick, "ready_tick": world.tick + 240,
-            "fertility": 5, "yield": crop_yield, "collected": 0, "harvested": false)
+            "fertility": 5, "yield": crop_yield, "collected": 0, "harvested": false})
         next_farm_id += 1
     else:
         reused["sown_tick"] = world.tick
