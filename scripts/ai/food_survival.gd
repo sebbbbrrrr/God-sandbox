@@ -21,6 +21,7 @@ var wild_cycle := -1
 var farms: Array[Dictionary] = []
 var next_farm_id := 1
 var jobs: Dictionary = {}      # citizen ID -> physically executed job/cargo
+var next_job_scan: Dictionary = {}  # staggered, persisted per-worker search budget
 var produced := {"berries": 0, "fish": 0, "grain": 0}
 var consumed := {"berries": 0, "fish": 0, "grain": 0}
 var lost := {"berries": 0, "fish": 0, "grain": 0}
@@ -352,6 +353,9 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             take_ration(world, person)
         return true
     if not jobs.has(id):
+        if int(world.tick) < int(next_job_scan.get(id, 0)):
+            return false
+        next_job_scan[id] = int(world.tick) + 18 + int(person["id"]) % 7
         var reserves_low: bool = total(depots[nation]) < 8
         var emergency: bool = reserves_low and int(person.get("hunger", 0)) >= 36
         if (int(person["id"]) % 4 == 0 or emergency) and gatherers(nation) < MAX_GATHERERS:
@@ -478,13 +482,19 @@ func on_tick_households(world: RefCounted) -> void:
         if amount > 0:
             lost[str(job["type"])] += amount
         jobs.erase(id)
+    # Reclaim records after death or historical archiving.
+    for key in next_job_scan.keys():
+        var candidate: Dictionary = world.ai_context.people.get(int(key), {})
+        if candidate.is_empty() or int(candidate["hp"]) <= 0:
+            next_job_scan.erase(key)
 
 func snapshot() -> Dictionary:
     return {"version": 1, "depots": depots.duplicate(true), "pantries": pantries.duplicate(true),
         "customs": customs.duplicate(true), "techniques": techniques.duplicate(true),
         "wild_cycle": wild_cycle, "wild_taken": wild_taken.duplicate(true),
         "farms": farms.duplicate(true), "next_farm_id": next_farm_id,
-        "jobs": jobs.duplicate(true), "produced": produced.duplicate(true),
+        "jobs": jobs.duplicate(true), "next_job_scan": next_job_scan.duplicate(true),
+        "produced": produced.duplicate(true),
         "consumed": consumed.duplicate(true), "lost": lost.duplicate(true),
         "planted": planted.duplicate(true)}
 
@@ -508,6 +518,10 @@ func load_state(raw: Variant) -> bool:
     customs = raw["customs"].duplicate(true)
     wild_taken = raw["wild_taken"].duplicate(true)
     jobs = raw["jobs"].duplicate(true)
+    if raw.has("next_job_scan"):
+        if not raw["next_job_scan"] is Dictionary:
+            return false
+        next_job_scan = raw["next_job_scan"].duplicate(true)
     wild_cycle = int(raw.get("wild_cycle", -1))
     if not raw.get("techniques") is Array or raw["techniques"].size() != 2:
         return false
