@@ -478,8 +478,16 @@ func load_state(raw: Variant) -> bool:
     for field in ["produced", "consumed", "lost", "planted"]:
         if not raw.get(field) is Dictionary:
             return false
+        var dest: Dictionary = produced
+        match field:
+            "consumed":
+                dest = consumed
+            "lost":
+                dest = lost
+            "planted":
+                dest = planted
         for kind in FOOD_TYPES:
-            get(field)[kind] = maxi(0, int(raw[field].get(kind, 0)))
+            dest[kind] = maxi(0, int(raw[field].get(kind, 0)))
     return true
 
 func ledger_ok() -> bool:
