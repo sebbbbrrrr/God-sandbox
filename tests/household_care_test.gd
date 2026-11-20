@@ -76,6 +76,10 @@ func _initialize() -> void:
     # The eldest household steward dies; the surviving adult inherits the
     # household's stewardship (not an invented private property title).
     a.lifecycle.record_death(a, a.citizens[0], "injury")
+    var death_snapshot: Dictionary = a.snapshot()
+    var death_restored = World.from_snapshot(death_snapshot)
+    ok = check(death_restored != null and death_restored.snapshot() == death_snapshot,
+        "save between death and household reconciliation retains lineage") and ok
     a.households.reconcile(a)
     var family: Dictionary = a.households.family_for(int(child["household_id"]))
     ok = check(int(family["steward_id"]) == second and
@@ -121,6 +125,16 @@ func _initialize() -> void:
     ok = check(limit.register_birth(12, 12, 0, left, right) and
         not limit.register_birth(12, 12, 0, left, right),
         "an additional bed allows exactly one additional resident") and ok
+    var shared = village()
+    add_house(shared, 302, 2)
+    shared.households.reconcile(shared)
+    ok = check(shared.households.occupancy(shared, 302) == 2 and
+        shared.households.form_household(shared, int(shared.citizens[0]["id"]),
+            int(shared.citizens[1]["id"])),
+        "two existing co-residents can form a household") and ok
+    ok = check(int(shared.citizens[0]["home_id"]) == 302 and
+        shared.households.occupancy(shared, 302) == 2,
+        "forming a household does not double-count already occupied beds") and ok
     if ok:
         print("HOUSEHOLD_CARE_TESTS_PASSED")
     quit(0 if ok else 1)
