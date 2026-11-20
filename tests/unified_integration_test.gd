@@ -2,6 +2,7 @@ extends SceneTree
 
 const Game = preload("res://scripts/unified_game.gd")
 const World = preload("res://scripts/simulation.gd")
+const SaveStore = preload("res://scripts/ai/save_store.gd")
 const Commands = preload("res://scripts/pixel_commands.gd")
 var ok := true
 
@@ -80,7 +81,7 @@ func run() -> void:
     check(restored != null and restored.snapshot() == snapshot,
         "citizen AI, construction, economy and visual elevation survive JSON restore")
     var encoded: Variant = game.world.prepare_save_bytes()
-    var decoded: Variant = game.world.SaveStore.decode(encoded)
+    var decoded: Variant = SaveStore.decode(encoded)
     var binary = World.from_snapshot(decoded) if decoded is Dictionary else null
     check(binary != null and binary.snapshot() == snapshot,
         "compressed save retains backend state and graphical elevation")
