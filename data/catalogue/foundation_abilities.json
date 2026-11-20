@@ -104,8 +104,8 @@
       "capability": "",
       "facility": "",
       "effect_id": "knapping",
-      "implemented": false,
-      "notes": "The ability gate describes eligibility; the action effect must be performed by an authoritative simulation work hook."
+      "implemented": true,
+      "notes": "Real stone-toolmaking now requires a functioning hammerstone at the tool yard, citizen expertise and material inputs; it causes tool wear."
     },
     {
       "id": "woodcutting",

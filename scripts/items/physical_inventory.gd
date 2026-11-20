@@ -157,6 +157,8 @@ func transfer(world: RefCounted, source: String, target: String, units: Dictiona
         updated[item_id] = int(updated.get(item_id, 0)) + qty
     if str(to["kind"]) == "citizen" and _weight(updated) > MAX_CARRY_KG:
         return false
+    if not world.toolmaking.can_move(source, units):
+        return false
     if not balances.has(target) and balances.size() >= MAX_STORES:
         return false
     if not balances.has(target):
@@ -168,13 +170,14 @@ func transfer(world: RefCounted, source: String, target: String, units: Dictiona
         if int(original[item_id]) == 0 and not (source.begins_with("settlement:") and item_id in ["wood", "stone"]):
             original.erase(item_id)
         dst[item_id] = int(dst.get(item_id, 0)) + qty
+    world.toolmaking.move_instances(source, target, units)
     _log(world, "transfer", source, target, units)
     return true
 
-# The only first-slice environmental source: finite wood and stone cells.
+# D3: finite wood, stone, flint and plant-fibre sources; shared biome depletion.
 # Both the terrain precondition and the citizen's proximity are mandatory.
 func extract(world: RefCounted, citizen_id: int, item_id: String, source: Vector2i, quantity: int = 1) -> bool:
-    if item_id not in ["wood", "stone"] or quantity <= 0 or quantity > 4:
+    if item_id not in ["wood", "stone", "flint", "plant_fibre"] or quantity <= 0 or quantity > 4:
         return false
     var person := _person(world, citizen_id)
     if person.is_empty() or int(person.get("hp", 0)) <= 0:
@@ -218,11 +221,14 @@ func consume(world: RefCounted, holder_id: String, units: Dictionary, actor_id: 
     for item_id in units:
         if int(inventory.get(item_id, 0)) < int(units[item_id]):
             return false
+    if not world.toolmaking.can_move(holder_id, units):
+        return false
     for item_id in units:
         inventory[item_id] = int(inventory[item_id]) - int(units[item_id])
         if int(inventory[item_id]) == 0:
             inventory.erase(item_id)
         consumed[item_id] = int(consumed.get(item_id, 0)) + int(units[item_id])
+    world.toolmaking.lose_instances(holder_id, units)
     _log(world, "consume:" + reason.substr(0, 24), holder_id, "", units)
     return true
 
@@ -243,8 +249,10 @@ func drop_on_death(world: RefCounted, person: Dictionary) -> void:
         var qty := int(inventory[item_id])
         if can_drop and int(balances[target].get(item_id, 0)) <= MAX_STACK - qty:
             balances[target][item_id] = int(balances[target].get(item_id, 0)) + qty
+            world.toolmaking.move_instances(holder_id, target, {item_id: qty})
         else:
             destroyed[item_id] = int(destroyed.get(item_id, 0)) + qty
+            world.toolmaking.lose_instances(holder_id, {item_id: qty})
         _log(world, "death_drop" if can_drop else "death_loss", holder_id, target if can_drop else "", {item_id: qty})
     balances.erase(holder_id)
 
@@ -266,6 +274,7 @@ func on_terrain_changed(world: RefCounted, x: int, y: int) -> void:
     for item_id in contents:
         destroyed[item_id] = int(destroyed.get(item_id, 0)) + int(contents[item_id])
     if not contents.is_empty():
+        world.toolmaking.lose_instances(holder_id, contents)
         _log(world, "terrain_loss", holder_id, "", contents)
     balances.erase(holder_id)
 
@@ -293,6 +302,88 @@ func import_legacy(world: RefCounted) -> void:
                     balances[holder] = {}
                 balances[holder][item_id] = int(balances[holder].get(item_id, 0)) + qty
                 minted[item_id] = int(minted.get(item_id, 0)) + qty
+
+# A real knapping experiment consumes flint and a sacrificial hammer stone.
+# Only a physically built tool area can establish the stone-working capability.
+func prototype_knapping(world: RefCounted, actor_id: int) -> bool:
+    var person := _person(world, actor_id)
+    if person.is_empty() or int(person.get("hp", 0)) <= 0:
+        return false
+    var nation := int(person["nation"])
+    var depot: Vector2i = world.capitals[nation]
+    if depot.x < 0 or _distance(depot, Vector2i(int(person["x"]), int(person["y"]))) > 1 or \
+            world.calendar.age_years(int(person.get("birth_tick", world.tick)), world.tick) < 13 or \
+            not world.occupations.facility_present(world, nation, "tool_area") or \
+            world.occupations.has_capability(world, nation, "stone_working"):
+        return false
+    var store: Dictionary = stockpile(nation)
+    if int(store.get("flint", 0)) < 1 or int(store.get("stone", 0)) < 1 or \
+            int(store.get("knapped_flint", 0)) >= MAX_STACK:
+        return false
+    if not world.occupations.grant_capability(world, nation, "stone_working", "experiment"):
+        return false
+    # Conditions above ensure this is an all-or-nothing physical transform.
+    for ingredient in ["flint", "stone"]:
+        store[ingredient] = int(store[ingredient]) - 1
+        if int(store[ingredient]) == 0 and ingredient != "stone":
+            store.erase(ingredient)
+        consumed[ingredient] = int(consumed.get(ingredient, 0)) + 1
+    store["knapped_flint"] = int(store.get("knapped_flint", 0)) + 1
+    minted["knapped_flint"] = int(minted.get("knapped_flint", 0)) + 1
+    _log(world, "experiment:knapping", "settlement:" + str(nation),
+        "settlement:" + str(nation), {"flint": 1, "stone": 1, "knapped_flint": 1})
+    world.occupations.on_real_work(world, person, "stone_toolmaker")
+    return true
+
+# D3: atomic physical workshop craft. The catalogue validates age, local
+# knowledge, real career and materials; an actual citizen spends work time.
+func craft_at(world: RefCounted, item_id: String, actor_id: int) -> bool:
+    if item_id not in ["knapped_flint", "cordage", "hammerstone",
+            "flint_knife", "stone_axe", "stone_pick"]:
+        return false
+    var person := _person(world, actor_id)
+    if person.is_empty() or int(person.get("hp", 0)) <= 0:
+        return false
+    var nation := int(person["nation"])
+    var depot: Vector2i = world.capitals[nation]
+    if depot.x < 0 or _distance(depot, Vector2i(int(person["x"]), int(person["y"]))) > 1 or \
+            not world.occupations.enabled(world, nation, "stone_toolmaker"):
+        return false
+    var record: Dictionary = catalogue.item(item_id)
+    var recipe: Variant = record.get("recipe", null)
+    if not recipe is Dictionary:
+        return false
+    var store: Dictionary = stockpile(nation)
+    var context: Dictionary = catalogue.context_for_citizen(world, person, item_id)
+    if not catalogue.can_craft(item_id, store, context):
+        return false
+    if item_id == "knapped_flint":
+        var ability_context: Dictionary = catalogue.context_for_citizen(world, person, "knapping", true)
+        if not catalogue.can_use_ability("knapping", store, ability_context) or \
+                not world.toolmaking.workshop_tool_ready(nation, "hammerstone"):
+            return false
+    var qty := int(recipe["output"])
+    if qty <= 0 or qty > 5 or int(store.get(item_id, 0)) > MAX_STACK - qty:
+        return false
+    if str(record.get("category", "")) == "tool" and not world.toolmaking.can_register(item_id, qty):
+        return false
+    # All checks precede mutation; preserve compatibility aliases for zeros.
+    for ingredient in recipe["inputs"]:
+        var amount: int = int(recipe["inputs"][ingredient])
+        store[ingredient] = int(store[ingredient]) - amount
+        if int(store[ingredient]) == 0 and ingredient not in ["wood", "stone"]:
+            store.erase(ingredient)
+        consumed[ingredient] = int(consumed.get(ingredient, 0)) + amount
+    store[item_id] = int(store.get(item_id, 0)) + qty
+    minted[item_id] = int(minted.get(item_id, 0)) + qty
+    world.toolmaking.on_crafted(world, "settlement:" + str(nation),
+        item_id, qty, actor_id)
+    if item_id == "knapped_flint":
+        world.toolmaking.wear_workshop(world, nation, "hammerstone")
+    _log(world, "craft:" + item_id, "settlement:" + str(nation),
+        "settlement:" + str(nation), {item_id: qty})
+    world.occupations.on_real_work(world, person, "stone_toolmaker")
+    return true
 
 func snapshot() -> Dictionary:
     return {"version": VERSION, "balances": balances.duplicate(true),

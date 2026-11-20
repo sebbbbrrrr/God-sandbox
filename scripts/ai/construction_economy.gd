@@ -28,7 +28,7 @@ func plan(world: RefCounted) -> void:
             if int(person["nation"]) == nation and int(person["hp"]) > 0:
                 population += 1
         for house in houses:
-            if int(house["nation"]) == nation:
+            if int(house["nation"]) == nation and int(house.get("capacity", 0)) > 0:
                 house_count += 1
         if house_count >= mini(12, ceili(float(population) / 6.0)) or not project_for(nation).is_empty():
             continue
@@ -69,9 +69,15 @@ func find_house_site(world: RefCounted, center: Vector2i) -> Vector2i:
 
 func left_at(world: RefCounted, x: int, y: int, material: String) -> int:
     var biome: int = world.at(x, y)
-    if (material == "wood" and biome != world.FOREST) or (material == "stone" and biome != world.MOUNTAIN):
+    if material in ["wood", "plant_fibre"] and biome != world.FOREST:
         return 0
-    return maxi(0, (6 if material == "wood" else 10) - int(depleted.get(str(world.index_of(x, y)), 0)))
+    if material in ["stone", "flint"] and biome != world.MOUNTAIN:
+        return 0
+    if material not in ["wood", "plant_fibre", "stone", "flint"]:
+        return 0
+    # Resources from the same cell share depletion; no independent
+    # timber/fibre or stone/flint duplication from a single tile.
+    return maxi(0, (6 if biome == world.FOREST else 10) - int(depleted.get(str(world.index_of(x, y)), 0)))
 
 func approach(world: RefCounted, from: Vector2i, source: Vector2i) -> Vector2i:
     var best := Vector2i(-1, -1)
@@ -120,9 +126,9 @@ func missing_material(nation: int) -> String:
         if str(job["kind"]) != "gather" or int(job["nation"]) != nation:
             continue
         if str(job["material"]) == "wood":
-            timber_in_transit += 1
+            timber_in_transit += maxi(1, int(job.get("amount", 0)))
         elif str(job["material"]) == "stone":
-            stone_in_transit += 1
+            stone_in_transit += maxi(1, int(job.get("amount", 0)))
     if int(stockpiles[nation]["wood"]) + timber_in_transit < HOUSE_WOOD:
         return "wood"
     if int(stockpiles[nation]["stone"]) + stone_in_transit < HOUSE_STONE:
@@ -154,12 +160,13 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             var material := missing_material(nation)
             if material.is_empty():
                 return false
+            world.toolmaking.try_equip(world, person, material)
             var source := source_for(world, person, material)
             if source.is_empty():
                 return false
             job = {"kind": "gather", "nation": nation, "phase": "source",
                 "material": material, "source": source["source"], "target": source["target"],
-                "wood": 0, "stone": 0}
+                "wood": 0, "stone": 0, "amount": 0}
         jobs[id] = job
         mind["route"] = []
         mind["next_path_tick"] = world.tick
@@ -184,7 +191,7 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         if walk(world, person, mind, depot):
             var material := str(task["material"])
             if world.inventory.transfer(world, "citizen:" + id,
-                    "settlement:" + str(task["nation"]), {material: 1}, int(person["id"])):
+                    "settlement:" + str(task["nation"]), {material: maxi(1, int(task.get("amount", 1)))}, int(person["id"])):
                 jobs.erase(id)
                 mind["route"] = []
         return true
@@ -195,10 +202,16 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         mind["route"] = []
         return false
     if walk(world, person, mind, target) and Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), source) <= 1:
-        if world.inventory.extract(world, int(person["id"]), str(task["material"]), source):
+        var material := str(task["material"])
+        var use_tool: bool = world.toolmaking.tool_for(world, person, material) != ""
+        var count: int = mini(2 if use_tool else 1, left_at(world, source.x, source.y, material))
+        if world.inventory.extract(world, int(person["id"]), material, source, count):
             world.occupations.on_real_work(world, person,
-                "woodcutter" if str(task["material"]) == "wood" else "quarry_worker")
-            task[str(task["material"])] = 1 # legacy jobs remain inspectable
+                "woodcutter" if material == "wood" else "quarry_worker", count)
+            task[material] = count # old job inspection stays compatible
+            task["amount"] = count
+            if use_tool:
+                world.toolmaking.wear(world, person, material)
             task["phase"] = "depot"
             mind["route"] = []
     return true

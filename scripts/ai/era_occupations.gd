@@ -33,7 +33,7 @@ const ROLE_ROWS := [
     ["food_courier",1,"transport","","house","",true],
     ["oral_mentor",1,"communication","","","",true],
     ["hunter",1,"agriculture","hunting_tools","","wildlife",false],
-    ["stone_toolmaker",1,"materials","stone_working","tool_area","",false],
+    ["stone_toolmaker",1,"materials","stone_working","tool_area","",true],
     ["ceremony_facilitator",1,"communication","","gathering_site","",false],
     ["crop_farmer",2,"agriculture","cultivation","farm","meadow",true],
     ["herder",2,"agriculture","domestication","pasture","grassland",false],
