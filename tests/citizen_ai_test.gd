@@ -40,7 +40,7 @@ func _initialize() -> void:
                 break
         if spawn_cell.x >= 0:
             break
-    var before := single.citizens.size()
+    var before: int = single.citizens.size()
     ok = check(single.apply_power(4, spawn_cell.x, spawn_cell.y), "spawn power succeeds") and ok
     ok = check(single.citizens.size() == before + 1 and
         single.citizen_ai_by_id.has(str(single.citizens[-1]["id"])),

@@ -9,7 +9,7 @@ const GOAL_SAFE := "seek_safety"
 const GOAL_SETTLEMENT := "seek_settlement"
 const MAX_MEMORIES := 8
 
-static func trait(world_seed: int, person_id: int, salt: int) -> int:
+static func trait_value(world_seed: int, person_id: int, salt: int) -> int:
     var value := posmod(world_seed, 1000003)
     value = posmod(value * 37 + person_id * 1009 + salt * 7919, 1000003)
     value = posmod(value * 103 + 17011, 1000003)
@@ -18,11 +18,11 @@ static func trait(world_seed: int, person_id: int, salt: int) -> int:
 static func create_state(world_seed: int, person_id: int, tick: int) -> Dictionary:
     return {
         "personality": {
-            "curiosity": trait(world_seed, person_id, 1),
-            "sociability": trait(world_seed, person_id, 2),
-            "diligence": trait(world_seed, person_id, 3),
-            "aggression": trait(world_seed, person_id, 4),
-            "caution": trait(world_seed, person_id, 5)
+            "curiosity": trait_value(world_seed, person_id, 1),
+            "sociability": trait_value(world_seed, person_id, 2),
+            "diligence": trait_value(world_seed, person_id, 3),
+            "aggression": trait_value(world_seed, person_id, 4),
+            "caution": trait_value(world_seed, person_id, 5)
         },
         "needs": {"fatigue": 0, "social": 0, "safety": 0},
         "goal": GOAL_EXPLORE,
@@ -61,7 +61,7 @@ static func decide(world: RefCounted, person: Dictionary, state: Dictionary) -> 
     var current := Vector2i(int(person["x"]), int(person["y"]))
     var needs: Dictionary = state["needs"]
     var traits: Dictionary = state["personality"]
-    var danger := danger_near(world, current) or not world.is_walkable(current.x, current.y)
+    var danger: bool = danger_near(world, current) or not world.is_walkable(current.x, current.y)
     if danger:
         state["goal"] = GOAL_SAFE
         needs["safety"] = 100
@@ -93,7 +93,7 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary) -> vo
         return
     # Bounded one-cell movement, never pathfinds across the entire map.
     var dirs := [Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
-    var offset := trait(world.seed + world.tick, int(person["id"]), 9) % 4
+    var offset := trait_value(world.seed + world.tick, int(person["id"]), 9) % 4
     var best := pos
     var best_score := -1000000
     var home: Vector2i = world.capitals[int(person["nation"])]
