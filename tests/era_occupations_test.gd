@@ -40,6 +40,10 @@ func _initialize() -> void:
     ok = check(occupations.grant_capability(w, 0, "steam_engine", "experiment") and
         not occupations.enabled(w, 0, "steam_engineer"),
         "even known steam theory cannot create a working engineer without machinery") and ok
+    w.construction.houses.append({"id": 888, "nation": 0, "x": 11,
+        "y": 12, "type": "engine_works", "capacity": 0, "built_tick": w.tick})
+    ok = check(not occupations.enabled(w, 0, "steam_engineer"),
+        "catalogued industrial employment remains disabled without actual industrial work code") and ok
     w.food.depots[0]["grain"] = 1
     w.food.produced["grain"] = 1
     ok = check(w.food.set_technique(0, "cultivation") and
@@ -47,7 +51,8 @@ func _initialize() -> void:
         occupations.enabled(w, 0, "crop_farmer") and
         int(occupations.era_summary(w, 0)["highest_demonstrated_era"]) == 2,
         "genuine cultivated land and knowledge make an agricultural occupation possible") and ok
-    w.food.set_technique(0, "cultivation", false)
+    ok = check(occupations.lose_capability(w, 0, "cultivation", "knowledge_lost"),
+        "a local knowledge-loss event can disable a formerly practical trade") and ok
     ok = check(not occupations.enabled(w, 0, "crop_farmer") and
         w.food.ready_farm(w, 0).is_empty() and
         int(occupations.era_summary(w, 0)["highest_demonstrated_era"]) == 1,
