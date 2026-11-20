@@ -21,6 +21,17 @@ func run() -> void:
     renderer.setup(world)
     root.add_child(renderer)
     check(renderer.atlas.entries.size()==330,"all 330 atlas entries")
+    var weather_sample := renderer.weather
+    weather_sample.set_time(75.0 + 20.0)
+    check(weather_sample.description()=="Breezy" and weather_sample.wind_strength>0.1,"breezy weather follows deterministic phases")
+    weather_sample.set_time(225.0 + 20.0)
+    check(weather_sample.rain_strength>0.4,"rain reaches the renderer without changing terrain")
+    weather_sample.set_time(375.0 + 20.0)
+    check(weather_sample.description()=="Storm" and weather_sample.rain_strength>0.8,"storm weather increases precipitation")
+    var weather_wind := weather_sample.wind_strength
+    weather_sample.set_time(375.0 + 20.0)
+    check(is_equal_approx(weather_sample.wind_strength,weather_wind),"weather is deterministic at a saved tick")
+    weather_sample.set_time(0.0)
     for key in renderer.atlas.entries:
         var tex := renderer.atlas.texture(key)
         check(tex != null and Rect2(Vector2.ZERO,tex.get_size()).encloses(renderer.atlas.region(key)),"atlas bounds: "+key)
@@ -84,6 +95,9 @@ func run() -> void:
     var builds := renderer.rebuilds
     renderer.update_view(Vector2.ZERO,32,Rect2(0,0,480,600))
     check(renderer.rebuilds==builds,"static view never regenerates terrain")
+    renderer.animate(0.2)
+    check(renderer.rebuilds==builds,"sway redraw never rebuilds static terrain")
+    check(renderer.weather_overlay != null,"weather overlay is instantiated")
     for chunk in renderer.chunks.values(): chunk.dirty=false
     world.set_terrain(15,15,Sim.MEADOW)
     var dirty := 0
@@ -128,6 +142,12 @@ func run() -> void:
     renderer.update_view(Vector2(-400,-800),32,Rect2(0,0,480,600))
     renderer.animate(1.0)
     check(renderer.effects.keys.size()<=96,"bounded water animation")
+    var vegetation_count := 0
+    for chunk in renderer.chunks.values():
+        for row in chunk.wind_rows:
+            vegetation_count += row.sway_factors.size()
+            check(row.keys.size()==row.sway_factors.size(),"vegetation sway metadata aligns with sprites")
+    check(vegetation_count>0,"vegetation is present in weather-only cached rows")
     check(world.rng.state==rng_before and world.citizens==citizens_before,"renderer never changes simulation")
     check(Renderer.variation(13,12,4,5)==Renderer.variation(13,12,4,5),"seeded sprite placement")
     check(world.apply_power(0,20,20) and world.apply_power(2,20,20),"raise and forest")

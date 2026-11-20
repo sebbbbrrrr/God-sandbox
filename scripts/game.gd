@@ -95,7 +95,7 @@ func _process(delta: float) -> void:
             autosave_ticks = 0
             save_world()
     world_renderer.update_view(world_origin(),tile_size(),Rect2(0,50,get_viewport_rect().size.x,get_viewport_rect().size.y-toolbar_height()-50))
-    world_renderer.animate(delta)
+    world_renderer.animate(delta * simulation_speed if not paused else 0.0)
     render_accum += delta
     if render_accum >= (1.0 / 30.0):
         render_accum = 0.0
@@ -144,6 +144,8 @@ func draw_interface(sz: Vector2) -> void:
     draw_rect(Rect2(0, 0, sz.x, 50), Color("#203432"))
     label("GOD SANDBOX", Vector2(12, 22), 17, Color("#f5ecd8"))
     label("Year %d  •  %d souls" % [1 + world.tick / 3600, world.citizens.size()], Vector2(12, 40), 11, Color("#c2cebd"))
+    if sz.x >= 440.0:
+        label(world_renderer.weather.description(), Vector2(sz.x - 244, 40), 11, Color("#c2cebd"))
     draw_rect(Rect2(sz.x - 169, 8, 53, 34), Color("#d1ac72") if selected_power == -1 else Color("#54705d"))
     draw_rect(Rect2(sz.x - 111, 8, 48, 34), Color("#54705d"))
     draw_rect(Rect2(sz.x - 58, 8, 50, 34), Color("#54705d"))

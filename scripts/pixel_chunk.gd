@@ -4,6 +4,7 @@ class_name PixelChunk
 const Commands = preload("res://scripts/pixel_commands.gd")
 var layers: Array[PixelCommands] = []
 var rows: Array[PixelCommands] = []
+var wind_rows: Array[PixelCommands] = []
 var coord := Vector2i.ZERO
 var dirty := true
 var built_detail := -1
@@ -31,11 +32,18 @@ func setup(atlas: PixelAtlas, chunk_coord: Vector2i) -> void:
         row.z_index = 100 + (coord.y * 16 + i) * 2
         rows.append(row)
         add_child(row)
+        var foliage := Commands.new()
+        foliage.atlas = atlas
+        foliage.z_index = row.z_index
+        wind_rows.append(foliage)
+        add_child(foliage)
 
 func clear_commands() -> void:
     for layer in layers:
         layer.clear_commands()
     for row in rows:
+        row.clear_commands()
+    for row in wind_rows:
         row.clear_commands()
 
 func finish(detail: int) -> void:
@@ -46,6 +54,9 @@ func finish(detail: int) -> void:
         layer.visible=detail!=0
         layer.queue_redraw()
     for row in rows:
+        row.visible=detail!=0
+        row.queue_redraw()
+    for row in wind_rows:
         row.visible=detail!=0
         row.queue_redraw()
     far_sprite.visible=detail==0
