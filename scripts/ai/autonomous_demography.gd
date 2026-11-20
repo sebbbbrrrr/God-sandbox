@@ -48,12 +48,14 @@ func set_household_preferences(household_id: int, data: Dictionary) -> bool:
     var desired_children: int = int(data.get("desired_children", 2))
     var minimum_spacing_years: int = int(data.get("minimum_spacing_years", 2))
     var partnership_interest: int = int(data.get("partnership_interest", 55))
-    if desired_children < 0 or desired_children > 4 or minimum_spacing_years < 1 or minimum_spacing_years > 8 or partnership_interest < 0 or partnership_interest > 100:
+    var social_adulthood: int = int(data.get("social_adulthood_age", 18))
+    if desired_children < 0 or desired_children > 4 or minimum_spacing_years < 1 or minimum_spacing_years > 8 or partnership_interest < 0 or partnership_interest > 100 or social_adulthood < 18 or social_adulthood > 30:
         return false
     household_preferences[str(household_id)] = {
         "desired_children": desired_children,
         "minimum_spacing_years": minimum_spacing_years,
-        "partnership_interest": partnership_interest}
+        "partnership_interest": partnership_interest,
+        "social_adulthood_age": social_adulthood}
     return true
 
 func on_household_merge(primary_id: int, absorbed_id: int) -> void:
@@ -71,6 +73,8 @@ func on_household_merge(primary_id: int, absorbed_id: int) -> void:
                 int(incoming["minimum_spacing_years"]))
             existing["partnership_interest"] = mini(int(existing["partnership_interest"]),
                 int(incoming["partnership_interest"]))
+            existing["social_adulthood_age"] = maxi(int(existing.get("social_adulthood_age", 18)),
+                int(incoming.get("social_adulthood_age", 18)))
         else:
             household_preferences[primary_key] = incoming.duplicate(true)
     household_preferences.erase(absorbed_key)
@@ -129,10 +133,15 @@ func partnership_interest(world: RefCounted, a: Dictionary) -> int:
     return clampi(50 + (int(mind["personality"]["sociability"]) - 50) / 2
         - (int(mind["personality"]["caution"]) - 50) / 3, 0, 100)
 
+func meets_social_adulthood(world: RefCounted, citizen: Dictionary) -> bool:
+    var policy: Dictionary = household_preferences.get(str(citizen["household_id"]), {})
+    var minimum: int = int(policy.get("social_adulthood_age", 18))
+    return world.calendar.age_years(int(citizen["birth_tick"]), world.tick) >= minimum
+
 func find_partner(world: RefCounted) -> void:
     # Bounded local candidate lists from the existing spatial index.
     for a in world.citizens:
-        if not eligible_adult(world, a) or partners.has(str(a["id"])):
+        if not eligible_adult(world, a) or not meets_social_adulthood(world, a) or partners.has(str(a["id"])):
             continue
         if partnership_interest(world, a) < 35:
             continue
@@ -140,7 +149,7 @@ func find_partner(world: RefCounted) -> void:
         var candidate: Dictionary = {}
         var best_score := 12
         for b in nearby:
-            if int(b["id"]) <= int(a["id"]) or not eligible_adult(world, b):
+            if int(b["id"]) <= int(a["id"]) or not eligible_adult(world, b) or not meets_social_adulthood(world, b):
                 continue
             if partners.has(str(b["id"])) or int(a["nation"]) != int(b["nation"]) or related(a, b):
                 continue
