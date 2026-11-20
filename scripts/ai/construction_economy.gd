@@ -203,7 +203,7 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         return false
     if walk(world, person, mind, target) and Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), source) <= 1:
         var material := str(task["material"])
-        var use_tool := world.toolmaking.tool_for(world, person, material) != ""
+        var use_tool: bool = world.toolmaking.tool_for(world, person, material) != ""
         var count: int = mini(2 if use_tool else 1, left_at(world, source.x, source.y, material))
         if world.inventory.extract(world, int(person["id"]), material, source, count):
             world.occupations.on_real_work(world, person,
