@@ -326,7 +326,7 @@ func camera_view_center() -> Vector2:
     return Vector2(size.x * 0.5, (size.y - toolbar_height()) * 0.5)
 
 func zoom_at_screen(screen_point: Vector2, factor: float) -> void:
-    if not is_finite(factor) or factor <= 0.0:
+    if is_nan(factor) or is_inf(factor) or factor <= 0.0:
         return
     var old_size: float = tile_size()
     var stable_world: Vector2 = camera_center + (screen_point - camera_view_center()) / old_size
