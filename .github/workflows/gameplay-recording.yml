@@ -1,0 +1,83 @@
+name: God Sandbox Gameplay Recording
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - design/citizen-ai-foundation
+    paths:
+      - .github/workflows/gameplay-recording.yml
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GODOT_VERSION: "4.5.2"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install virtual display and video encoder
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb xauth ffmpeg libgl1-mesa-dri libgl1 libx11-6
+
+      - name: Download Godot 4.5.2
+        run: |
+          set -euo pipefail
+          url="https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip"
+          curl -fL --retry 3 "$url" -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip
+          mv Godot_v4.5.2-stable_linux.x86_64 godot
+          chmod +x godot
+          ./godot --headless --version
+
+      - name: Import and validate scripts
+        run: |
+          set -o pipefail
+          ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/import.log
+          if grep -Ei 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/import.log; then
+            echo "Godot reported script errors" >&2
+            exit 1
+          fi
+
+      - name: Record actual rendered game
+        run: |
+          set -euo pipefail
+          mkdir -p recordings
+          export LIBGL_ALWAYS_SOFTWARE=1
+          Xvfb :99 -screen 0 720x1000x24 -ac +extension GLX +render -noreset >/tmp/xvfb.log 2>&1 &
+          xvfb_pid=$!
+          trap 'kill "$xvfb_pid" 2>/dev/null || true' EXIT
+          export DISPLAY=:99
+          sleep 3
+          ./godot --path . --rendering-method gl_compatibility --resolution 480x850 --position 0,0 > /tmp/game.log 2>&1 &
+          game_pid=$!
+          trap 'kill "$game_pid" "$xvfb_pid" 2>/dev/null || true' EXIT
+          sleep 6
+          if ! kill -0 "$game_pid" 2>/dev/null; then
+            cat /tmp/game.log
+            echo "Godot closed before capture" >&2
+            exit 1
+          fi
+          ffmpeg -hide_banner -loglevel warning -y -f x11grab -framerate 24 -video_size 480x850 -i :99.0+0,0 -t 12 -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -movflags +faststart recordings/GodSandbox-gameplay.mp4
+          test -s recordings/GodSandbox-gameplay.mp4
+          ffmpeg -hide_banner -loglevel error -i recordings/GodSandbox-gameplay.mp4 -f null -
+          echo "Generated:"
+          ls -lh recordings/GodSandbox-gameplay.mp4
+
+      - name: Upload recording and diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodSandbox-gameplay-recording
+          path: |
+            recordings/*.mp4
+            /tmp/game.log
+            /tmp/import.log
+            /tmp/xvfb.log
+          if-no-files-found: warn
+          retention-days: 7
