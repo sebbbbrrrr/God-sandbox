@@ -47,9 +47,9 @@ func _initialize() -> void:
     ok = check(game.world.terrain == previous_terrain,
         "modal intercepts touch streams before camera gestures and terrain brush") and ok
     game.inspector.close()
-    var extracted := game.world.inventory.extract(game.world, 1,
+    var extracted: bool = game.world.inventory.extract(game.world, 1,
         "wood", Vector2i(19, 20), 1)
-    var dropped := game.world.inventory.transfer(game.world,
+    var dropped: bool = game.world.inventory.transfer(game.world,
         "citizen:1", "ground:" + str(game.world.index_of(20, 20)),
         {"wood": 1}, 1)
     ok = check(extracted and dropped, "physical dropped resources created without debug spawning") and ok
@@ -57,7 +57,7 @@ func _initialize() -> void:
         "ground-cache inspection takes priority after a citizen is selected") and ok
     game.inspector.close()
     game.selected_power = 0
-    var before := game.world.terrain.duplicate()
+    var before: PackedByteArray = game.world.terrain.duplicate()
     game.tapped(center)
     ok = check(game.world.terrain != before,
         "regular raise-land power remains active when inspector is closed") and ok
