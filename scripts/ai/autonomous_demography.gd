@@ -16,6 +16,7 @@ const MAX_TOMBSTONES := 1000
 var partners: Dictionary = {} # citizen ID -> committed partner ID
 var pregnancies: Dictionary = {} # gestational citizen ID -> due dates/parentage
 var last_birth: Dictionary = {}
+var family_birth_counts: Dictionary = {} # retained children born in household
 var household_preferences: Dictionary = {} # opt-in local individual/cultural family goals
 var family_security: Dictionary = {} # rolling observed pantry and health state
 var tombstones: Array[Dictionary] = []
@@ -61,6 +62,9 @@ func on_household_merge(primary_id: int, absorbed_id: int) -> void:
     if not household_preferences.has(primary_key) and household_preferences.has(absorbed_key):
         household_preferences[primary_key] = household_preferences[absorbed_key]
     household_preferences.erase(absorbed_key)
+    family_birth_counts[primary_key] = int(family_birth_counts.get(primary_key, 0)) + int(
+        family_birth_counts.get(absorbed_key, 0))
+    family_birth_counts.erase(absorbed_key)
     if not family_security.has(primary_key) and family_security.has(absorbed_key):
         family_security[primary_key] = family_security[absorbed_key]
     family_security.erase(absorbed_key)
@@ -192,6 +196,9 @@ func update_security(world: RefCounted) -> void:
     for key in household_preferences.keys():
         if world.households.family_for(int(key)).is_empty():
             household_preferences.erase(key)
+    for key in family_birth_counts.keys():
+        if world.households.family_for(int(key)).is_empty():
+            family_birth_counts.erase(key)
 
 func try_conception(world: RefCounted) -> void:
     if world.citizens.size() >= world.MAX_PEOPLE:
@@ -204,8 +211,8 @@ func try_conception(world: RefCounted) -> void:
         if seen.has(key):
             continue
         seen[key] = true
-        var a: Dictionary = world.ai_context.people.get(a_num, {})
-        var b: Dictionary = world.ai_context.people.get(b_num, {})
+        var a: Dictionary = world.ai_context.people.get(mini(a_num, b_num), {})
+        var b: Dictionary = world.ai_context.people.get(maxi(a_num, b_num), {})
         if a.is_empty() or b.is_empty() or not eligible_adult(world, a) or not eligible_adult(world, b):
             continue
         if int(a["household_id"]) != int(b["household_id"]):
@@ -227,7 +234,8 @@ func try_conception(world: RefCounted) -> void:
         var desired: int = int(preference.get("desired_children", 2))
         var spacing: int = maxi(MIN_SPACING_TICKS,
             int(preference.get("minimum_spacing_years", 2)) * Calendar.TICKS_PER_YEAR)
-        if desired <= 0 or resident_children >= mini(MAX_DEPENDENTS, desired):
+        if desired <= 0 or resident_children >= MAX_DEPENDENTS or int(
+                family_birth_counts.get(str(family["id"]), 0)) >= desired:
             continue
         var home: Dictionary = world.households.house_by_id(world, int(family["home_id"]))
         if home.is_empty() or not world.households.has_room(world, int(family["home_id"]), 1):
@@ -330,6 +338,8 @@ func delivery_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
         # This is prevalidated by care_at_birth. No silent removal of babies.
         return true
     last_birth[key] = int(world.tick)
+    var born_family_id: String = str(person["household_id"])
+    family_birth_counts[born_family_id] = int(family_birth_counts.get(born_family_id, 0)) + 1
     person["last_birth_tick"] = int(world.tick)
     pregnancies.erase(key)
     births_total += 1
@@ -396,6 +406,7 @@ func snapshot() -> Dictionary:
     return {"version": 1, "partners": partners.duplicate(true),
         "pregnancies": pregnancies.duplicate(true),
         "last_birth": last_birth.duplicate(true),
+        "family_birth_counts": family_birth_counts.duplicate(true),
         "household_preferences": household_preferences.duplicate(true),
         "family_security": family_security.duplicate(true),
         "tombstones": tombstones.duplicate(true),
@@ -417,6 +428,10 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
     partners = raw["partners"].duplicate(true)
     pregnancies = raw["pregnancies"].duplicate(true)
     last_birth = raw["last_birth"].duplicate(true)
+    if raw.has("family_birth_counts"):
+        if not raw["family_birth_counts"] is Dictionary:
+            return false
+        family_birth_counts = raw["family_birth_counts"].duplicate(true)
     household_preferences = raw["household_preferences"].duplicate(true)
     family_security = raw["family_security"].duplicate(true)
     tombstones = raw["tombstones"].duplicate(true)
