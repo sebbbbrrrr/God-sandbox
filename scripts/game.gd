@@ -318,6 +318,36 @@ func pan_camera(delta: Vector2) -> void:
     camera_center.x = clampf(camera_center.x, 0.0, float(world.WIDTH))
     camera_center.y = clampf(camera_center.y, 0.0, float(world.HEIGHT))
 
+# Keep a consistent camera coordinate system for taps, wheel zoom and
+# two-finger pinch. Unified pixel UI overrides this with the full viewport
+# centre because its floating HUD does not shorten the world canvas.
+func camera_view_center() -> Vector2:
+    var size: Vector2 = ui_size()
+    return Vector2(size.x * 0.5, (size.y - toolbar_height()) * 0.5)
+
+func zoom_at_screen(screen_point: Vector2, factor: float) -> void:
+    if not is_finite(factor) or factor <= 0.0:
+        return
+    var old_size: float = tile_size()
+    var stable_world: Vector2 = camera_center + (screen_point - camera_view_center()) / old_size
+    zoom = clampf(zoom * factor, 0.5, 4.0)
+    camera_center = stable_world - (screen_point - camera_view_center()) / tile_size()
+    camera_center.x = clampf(camera_center.x, 0.0, float(world.WIDTH))
+    camera_center.y = clampf(camera_center.y, 0.0, float(world.HEIGHT))
+
+# The world coordinate beneath the OLD centroid must appear beneath the
+# NEW centroid after the gesture. Do not pan first and then recompute the
+# anchor: that double-applies centroid movement and causes oceanward drift.
+func pinch_camera(previous: Vector2, current: Vector2,
+        old_distance: float, new_distance: float) -> void:
+    var old_size: float = tile_size()
+    var stable_world: Vector2 = camera_center + (previous - camera_view_center()) / old_size
+    if old_distance > 1.0 and new_distance > 1.0:
+        zoom = clampf(zoom * new_distance / old_distance, 0.5, 4.0)
+    camera_center = stable_world - (current - camera_view_center()) / tile_size()
+    camera_center.x = clampf(camera_center.x, 0.0, float(world.WIDTH))
+    camera_center.y = clampf(camera_center.y, 0.0, float(world.HEIGHT))
+
 func pinch_distance() -> float:
     if touches.size() < 2:
         return 0.0
@@ -479,15 +509,7 @@ func _input(event: InputEvent) -> void:
             if touches.size() == 2:
                 var centroid := touch_centroid()
                 var distance := pinch_distance()
-                pan_camera(centroid - previous_centroid)
-                if last_pinch_distance > 1.0 and distance > 1.0:
-                    var world_under_fingers := (centroid - world_origin()) / tile_size()
-                    zoom = clampf(zoom * distance / last_pinch_distance, 0.5, 4.0)
-                    var screen_center := Vector2(ui_size().x * 0.5,
-                        (ui_size().y - toolbar_height()) * 0.5)
-                    camera_center = world_under_fingers - (centroid - screen_center) / tile_size()
-                    camera_center.x = clampf(camera_center.x, 0.0, float(world.WIDTH))
-                    camera_center.y = clampf(camera_center.y, 0.0, float(world.HEIGHT))
+                pinch_camera(previous_centroid, centroid, last_pinch_distance, distance)
                 last_pinch_distance = distance
                 previous_centroid = centroid
         elif not multi_touch and event.index == primary_touch_index:
@@ -534,9 +556,9 @@ func _input(event: InputEvent) -> void:
                     tapped(event.position)
                 stroke_active = false
         elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP:
-            zoom = minf(zoom * 1.1, 4.0)
+            zoom_at_screen(event.position, 1.1)
         elif event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-            zoom = maxf(zoom / 1.1, 0.5)
+            zoom_at_screen(event.position, 1.0 / 1.1)
         queue_redraw()
 
 func tapped(position: Vector2) -> void:
