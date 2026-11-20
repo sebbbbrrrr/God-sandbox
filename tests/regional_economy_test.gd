@@ -45,9 +45,9 @@ func _initialize() -> void:
     check(system.route.size() >= 3 and system.road_queue.size() > 0,
         "deterministic continent route produces citizen construction sites")
     check(not system.connected(world), "road planning does not instantly construct infrastructure")
-    var origin := world.citizens[0]
+    var origin: Dictionary = world.citizens[0]
     var origin_mind: Dictionary = world.citizen_ai_by_id[str(origin["id"])]
-    var foreign := world.citizens[1]
+    var foreign: Dictionary = world.citizens[1]
     var foreign_mind: Dictionary = world.citizen_ai_by_id[str(foreign["id"])]
     for i in range(500):
         world.tick += 1
@@ -61,6 +61,18 @@ func _initialize() -> void:
         "living builders walk and complete contiguous physical road segments")
     check(system.road_queue.is_empty(), "road labour and assignments finish without phantom work")
     check(world.inventory.ledger_ok(), "road building does not mint materials")
+    # Road crews end near their last work cell; return them to their own depot
+    # before harvesting physical, adjacent fixture nodes.
+    for i in range(60):
+        world.tick += 1
+        world.ai_context.begin_tick(world)
+        var a_home: bool = system._move(world, origin, origin_mind, world.capitals[0])
+        var b_home: bool = system._move(world, foreign, foreign_mind, world.capitals[1])
+        if a_home and b_home:
+            break
+    check(Vector2i(int(origin["x"]), int(origin["y"])) == world.capitals[0] and
+        Vector2i(int(foreign["x"]), int(foreign["y"])) == world.capitals[1],
+        "construction workers physically return to their capitals")
     supply(world, 0, "wood", 5, Vector2i(9, 12))
     supply(world, 1, "stone", 5, Vector2i(23, 12))
     check(not world.inventory.exchange_at_market(world, 1, 1, {"wood": 1}, {"stone": 1}),
