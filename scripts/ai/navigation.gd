@@ -81,7 +81,7 @@ static func plan(world: RefCounted, state: Dictionary, start: Vector2i, target: 
             var next: Vector2i = current + direction
             if not world.is_walkable(next.x, next.y) or visited.has(next) or manhattan(start, next) > MAX_ROUTE:
                 continue
-            var cost: int = int(costs[current]) + 10 + hazard_cost(world, state, next)
+            var cost: int = int(costs[current]) + world.regional_economy.road_cost(world, next) + hazard_cost(world, state, next)
             if not costs.has(next) or cost < int(costs[next]):
                 costs[next] = cost
                 parents[next] = current

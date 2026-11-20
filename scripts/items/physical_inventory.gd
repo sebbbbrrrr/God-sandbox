@@ -200,6 +200,59 @@ func transfer(world: RefCounted, source: String, target: String,
     _log(world, "transfer", source, target, units)
     return true
 
+# Physically settled barter: a living merchant must arrive with their actual
+# cargo. Both legs move in one validated transaction; no cross-nation access
+# is granted to the ordinary transfer API.
+func exchange_at_market(world: RefCounted, citizen_id: int, foreign_nation: int,
+        offer: Dictionary, payment: Dictionary) -> bool:
+    if foreign_nation not in [0, 1] or not _bundle_valid(offer) or not _bundle_valid(payment):
+        return false
+    if not world.regional_economy.authorizes_exchange(citizen_id, foreign_nation, offer, payment):
+        return false
+    var person := _person(world, citizen_id)
+    if person.is_empty() or int(person.get("hp", 0)) <= 0 or int(person["nation"]) == foreign_nation:
+        return false
+    var cargo_id := "citizen:" + str(citizen_id)
+    var depot_id := "settlement:" + str(foreign_nation)
+    var depot: Vector2i = world.capitals[foreign_nation]
+    if _distance(Vector2i(int(person["x"]), int(person["y"])), depot) > 1:
+        return false
+    var carried: Dictionary = balances.get(cargo_id, {})
+    var market: Dictionary = balances.get(depot_id, {})
+    var new_cargo: Dictionary = carried.duplicate()
+    for item_id in offer:
+        if available(cargo_id, str(item_id)) < int(offer[item_id]):
+            return false
+        new_cargo[item_id] = int(new_cargo.get(item_id, 0)) - int(offer[item_id])
+    for item_id in payment:
+        if available(depot_id, str(item_id)) < int(payment[item_id]):
+            return false
+        if int(new_cargo.get(item_id, 0)) > MAX_STACK - int(payment[item_id]):
+            return false
+        new_cargo[item_id] = int(new_cargo.get(item_id, 0)) + int(payment[item_id])
+    if _weight(new_cargo) > MAX_CARRY_KG:
+        return false
+    for item_id in offer:
+        if int(market.get(item_id, 0)) > MAX_STACK - int(offer[item_id]):
+            return false
+    if not world.toolmaking.can_move(cargo_id, offer) or not world.toolmaking.can_move(depot_id, payment):
+        return false
+    for item_id in offer:
+        carried[item_id] = int(carried.get(item_id, 0)) - int(offer[item_id])
+        if int(carried[item_id]) == 0:
+            carried.erase(item_id)
+        market[item_id] = int(market.get(item_id, 0)) + int(offer[item_id])
+    for item_id in payment:
+        market[item_id] = int(market[item_id]) - int(payment[item_id])
+        if int(market[item_id]) == 0:
+            market.erase(item_id)
+        carried[item_id] = int(carried.get(item_id, 0)) + int(payment[item_id])
+    world.toolmaking.move_instances(cargo_id, depot_id, offer)
+    world.toolmaking.move_instances(depot_id, cargo_id, payment)
+    _log(world, "barter_export", cargo_id, depot_id, offer)
+    _log(world, "barter_import", depot_id, cargo_id, payment)
+    return true
+
 # D3: finite wood, stone, flint and plant-fibre sources; shared biome depletion.
 # Both the terrain precondition and the citizen's proximity are mandatory.
 func extract(world: RefCounted, citizen_id: int, item_id: String, source: Vector2i, quantity: int = 1) -> bool:

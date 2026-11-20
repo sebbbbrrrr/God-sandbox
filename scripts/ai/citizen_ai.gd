@@ -185,6 +185,9 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     # Work is a physical commitment, interrupted by immediate danger.
     if not urgent and world.construction.work_step(world, person, state):
         return
+    # Remaining available adults can extend real roads or haul bilateral barter.
+    if not urgent and world.regional_economy.work_step(world, person, state):
+        return
     var think: bool = int(world.tick) >= int(state["next_decision"]) or (urgent and state["goal"] != GOAL_SAFE)
     if think and scheduled and not urgent and not world.ai_context.routine_grants.has(int(person["id"])):
         world.ai_context.metrics["deferred_decisions"] += 1

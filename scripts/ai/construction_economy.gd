@@ -3,6 +3,7 @@ extends "res://scripts/construction/material_gathering.gd"
 const Catalogue = preload("res://scripts/construction/building_catalogue.gd")
 const Site = preload("res://scripts/construction/site_state.gd")
 const Placement = preload("res://scripts/construction/placement.gd")
+const StrategicPlanner = preload("res://scripts/civilisation/strategic_planner.gd")
 const Tasks = preload("res://scripts/construction/construction_tasks.gd")
 const Lifecycle = preload("res://scripts/construction/building_lifecycle.gd")
 const HOUSE_WOOD := 3
@@ -86,16 +87,22 @@ func evaluate_request(world: RefCounted, request: Dictionary) -> Dictionary:
         return {"ok": true, "definition_id": str(id), "materials": row["materials"].duplicate(true), "labour": int(row["labour"]), "missing": missing}
     return {"ok": false, "reason": "knowledge_workforce_or_resources"}
 
-func find_location(world: RefCounted, row: Dictionary, center: Vector2i, orientation: int) -> Vector2i:
-    for distance in range(1, 9):
+func find_location(world: RefCounted, row: Dictionary, center: Vector2i, orientation: int, nation: int) -> Vector2i:
+    var choice := Vector2i(-1, -1)
+    var best := -2147483647
+    for distance in range(1, 10):
         for dy in range(-distance, distance + 1):
             for dx in range(-distance, distance + 1):
                 if absi(dx) + absi(dy) != distance:
                     continue
-                var cell = center + Vector2i(dx, dy)
-                if placement.validate(world, row, cell, orientation) == "":
-                    return cell
-    return Vector2i(-1, -1)
+                var cell := center + Vector2i(dx, dy)
+                if placement.validate(world, row, cell, orientation) != "":
+                    continue
+                var score: int = StrategicPlanner.rank(world, row, cell, center, nation)
+                if score > best:
+                    best = score
+                    choice = cell
+    return choice
 
 func request_construction(world: RefCounted, request: Dictionary) -> Dictionary:
     if projects.size() >= MAX_SITES:
@@ -109,7 +116,7 @@ func request_construction(world: RefCounted, request: Dictionary) -> Dictionary:
     var center: Vector2i = world.capitals[nation]
     if request.get("preferred_area") is Array and request["preferred_area"].size() == 2:
         center = Vector2i(int(request["preferred_area"][0]), int(request["preferred_area"][1]))
-    var cell = find_location(world, row, center, orientation)
+    var cell = find_location(world, row, center, orientation, nation)
     if request.get("location") is Array and request["location"].size() == 2:
         cell = Vector2i(int(request["location"][0]), int(request["location"][1]))
     var invalid = placement.validate(world, row, cell, orientation)

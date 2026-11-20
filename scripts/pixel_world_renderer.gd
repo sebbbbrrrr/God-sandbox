@@ -24,6 +24,7 @@ var unit_rows: Array[PixelCommands] = []
 var walks: CitizenWalk
 var walk_draw_accum := 0.0
 var rendered_building_count := -1
+var rendered_roads_revision := -1
 var facility_cells: Dictionary = {}
 var physical_buildings: Dictionary = {}
 var physical_footprints: Dictionary = {}
@@ -169,7 +170,7 @@ func tile_at(pixel: Vector2) -> Vector2i:
     return base
 
 func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> void:
-    if world.construction.houses.size() != rendered_building_count:
+    if world.construction.houses.size() != rendered_building_count or world.regional_economy.revision != rendered_roads_revision:
         paths_dirty = true
     if not view_dirty and not paths_dirty and position==origin.round() and previous_screen_tile==screen_tile and previous_screen_rect==screen_rect:
         return
@@ -426,6 +427,11 @@ func rebuild_paths() -> void:
                 path_cells[point]=int(path_cells.get(point,0))|direction
                 path_cells[previous]=int(path_cells.get(previous,0))|direction
                 previous=point
+    # Authoritative roads coexist with older decorative settlement path hints.
+    for key in world.regional_economy.roads:
+        var index := int(key)
+        if index >= 0 and index < world.WIDTH * world.HEIGHT:
+            path_cells[Vector2i(index % world.WIDTH, index / world.WIDTH)] = 15
     # Local deterministic minima reserve a one-cell gap between large building footprints.
     for cell in town_cells:
         if physical_footprints.has(cell):
@@ -450,6 +456,7 @@ func rebuild_paths() -> void:
         connected[cell]=mask if mask>0 else 15
     path_cells=connected
     for chunk in chunks.values(): chunk.dirty=true
+    rendered_roads_revision = world.regional_economy.revision
     paths_dirty=false
 
 func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0, tint: Color = Color.WHITE, sway: float = 0.0) -> void:
