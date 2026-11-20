@@ -1,4 +1,5 @@
 extends RefCounted
+const PhysicalSprites = preload("res://scripts/visuals/physical_sprite_atlas.gd")
 # D4: original high-density pixel motifs drawn as tiny atlas-like shapes.
 # No external textures or font assets, no nodes per item and no GPU particles.
 const P := {
@@ -95,6 +96,8 @@ static func pixel_count(item_id: String) -> int:
 static func draw_item(canvas: CanvasItem, item_id: String, center: Vector2, pixel: float) -> void:
     if pixel < 0.6:
         return
+    if PhysicalSprites.draw_item(canvas, item_id, center, pixel * 10.0):
+        return
     var rows: Array = sprite(item_id)
     var x0 := floorf(center.x - 4.5 * pixel)
     var y0 := floorf(center.y - 4.5 * pixel)
@@ -134,7 +137,10 @@ static func draw_ground(canvas: CanvasItem, tile_rect: Rect2, item_id: String,
     var center := tile_rect.position + tile_rect.size * Vector2(0.5, 0.55)
     canvas.draw_rect(Rect2(center + Vector2(-4, 3) * scale,
         Vector2(8, 2) * scale), Color(0.12, 0.16, 0.14, 0.64))
-    draw_item(canvas, item_id, center, scale)
+    var stack_key := "resource.%s.stack_large" % item_id if count >= 16 else (
+        "resource.%s.stack_small" % item_id if count >= 4 else "")
+    if stack_key == "" or not PhysicalSprites.draw(canvas, stack_key, center, scale * 10.0):
+        draw_item(canvas, item_id, center, scale)
     if selected:
         canvas.draw_rect(Rect2(tile_rect.position + Vector2.ONE,
             tile_rect.size - Vector2.ONE * 2.0), Color("#e9d1a3"), false,

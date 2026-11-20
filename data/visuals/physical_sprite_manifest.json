@@ -1,0 +1,4320 @@
+{
+  "schema_version": 1,
+  "atlas": "res://assets/pixel/physical_atlas.png",
+  "sprite_size": 32,
+  "total_regions": 420,
+  "counts": {
+    "materials": 85,
+    "tools": 75,
+    "citizens": 90,
+    "construction": 60,
+    "workstations": 35,
+    "storage": 30,
+    "household": 25,
+    "effects": 20
+  },
+  "items": {
+    "wood": "item.wood",
+    "stone": "item.stone",
+    "flint": "item.flint",
+    "clay": "item.clay",
+    "sand": "item.sand",
+    "reeds": "item.reeds",
+    "plant_fibre": "item.plant_fibre",
+    "bone": "item.bone",
+    "hide": "item.hide",
+    "fresh_water": "item.fresh_water",
+    "berries": "item.berries",
+    "mushrooms": "item.mushrooms",
+    "raw_fish": "item.raw_fish",
+    "raw_meat": "item.raw_meat",
+    "grain": "item.grain",
+    "medicinal_herb": "item.medicinal_herb",
+    "copper_ore": "item.copper_ore",
+    "tin_ore": "item.tin_ore",
+    "wood_plank": "item.wood_plank",
+    "timber_beam": "item.timber_beam",
+    "knapped_flint": "item.knapped_flint",
+    "cordage": "item.cordage",
+    "tanned_leather": "item.tanned_leather",
+    "woven_cloth": "item.woven_cloth",
+    "charcoal": "item.charcoal",
+    "clay_brick": "item.clay_brick",
+    "bronze_ingot": "item.bronze_ingot",
+    "flour": "item.flour",
+    "stone_axe": "item.stone_axe",
+    "flint_knife": "item.flint_knife",
+    "stone_pick": "item.stone_pick",
+    "hammerstone": "item.hammerstone",
+    "bone_needle": "item.bone_needle",
+    "wooden_hoe": "item.wooden_hoe",
+    "stone_sickle": "item.stone_sickle",
+    "fishing_rod": "item.fishing_rod",
+    "fishing_net": "item.fishing_net",
+    "flint_scraper": "item.flint_scraper",
+    "wooden_shovel": "item.wooden_shovel",
+    "hand_saw": "item.hand_saw",
+    "stone_hammer": "item.stone_hammer",
+    "spindle": "item.spindle",
+    "stone_mortar": "item.stone_mortar",
+    "bronze_axe": "item.bronze_axe",
+    "bronze_sickle": "item.bronze_sickle",
+    "wooden_plough": "item.wooden_plough",
+    "wooden_club": "item.wooden_club",
+    "wooden_spear": "item.wooden_spear",
+    "flint_spear": "item.flint_spear",
+    "sling": "item.sling",
+    "shortbow": "item.shortbow",
+    "arrows": "item.arrows",
+    "bronze_dagger": "item.bronze_dagger",
+    "bronze_spear": "item.bronze_spear",
+    "wooden_post": "item.wooden_post",
+    "foundation_stones": "item.foundation_stones",
+    "thatch_bundle": "item.thatch_bundle",
+    "wattle_panel": "item.wattle_panel",
+    "brick_wall_block": "item.brick_wall_block",
+    "wooden_door": "item.wooden_door",
+    "wooden_shutter": "item.wooden_shutter",
+    "stone_floor_tile": "item.stone_floor_tile",
+    "wooden_fence": "item.wooden_fence",
+    "handcart": "item.handcart",
+    "canoe": "item.canoe",
+    "cooked_fish": "item.cooked_fish",
+    "cooked_meat": "item.cooked_meat",
+    "bread": "item.bread",
+    "berry_stew": "item.berry_stew",
+    "mushroom_soup": "item.mushroom_soup",
+    "dried_meat": "item.dried_meat",
+    "porridge": "item.porridge",
+    "grain_ration": "item.grain_ration",
+    "herbal_broth": "item.herbal_broth",
+    "roasted_grain": "item.roasted_grain",
+    "bandage": "item.bandage",
+    "herbal_poultice": "item.herbal_poultice",
+    "splint": "item.splint",
+    "boiled_water": "item.boiled_water",
+    "medicinal_tea": "item.medicinal_tea",
+    "clay_pot": "item.clay_pot",
+    "woven_basket": "item.woven_basket",
+    "wooden_bowl": "item.wooden_bowl",
+    "clay_cup": "item.clay_cup",
+    "bedroll": "item.bedroll",
+    "wooden_stool": "item.wooden_stool",
+    "torch": "item.torch",
+    "carved_talisman": "item.carved_talisman",
+    "pigment_pot": "item.pigment_pot",
+    "clay_tablet": "item.clay_tablet",
+    "hide_cloak": "item.hide_cloak",
+    "hide_tunic": "item.hide_tunic",
+    "linen_tunic": "item.linen_tunic",
+    "leather_sandals": "item.leather_sandals",
+    "leather_boots": "item.leather_boots",
+    "leather_belt": "item.leather_belt",
+    "woven_hat": "item.woven_hat",
+    "bronze_helmet": "item.bronze_helmet",
+    "tally_stones": "item.tally_stones",
+    "observation_tablet": "item.observation_tablet"
+  },
+  "sprites": {
+    "item.wood": {
+      "rect": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood"
+    },
+    "item.stone": {
+      "rect": [
+        32,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "stone"
+    },
+    "item.flint": {
+      "rect": [
+        64,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "flint"
+    },
+    "item.clay": {
+      "rect": [
+        96,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay"
+    },
+    "item.sand": {
+      "rect": [
+        128,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "sand"
+    },
+    "item.reeds": {
+      "rect": [
+        160,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "reeds"
+    },
+    "item.plant_fibre": {
+      "rect": [
+        192,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "plant_fibre"
+    },
+    "item.bone": {
+      "rect": [
+        224,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bone"
+    },
+    "item.hide": {
+      "rect": [
+        256,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "hide"
+    },
+    "item.fresh_water": {
+      "rect": [
+        288,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "fresh_water"
+    },
+    "item.berries": {
+      "rect": [
+        320,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "berries"
+    },
+    "item.mushrooms": {
+      "rect": [
+        352,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "mushrooms"
+    },
+    "item.raw_fish": {
+      "rect": [
+        384,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "raw_fish"
+    },
+    "item.raw_meat": {
+      "rect": [
+        416,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "raw_meat"
+    },
+    "item.grain": {
+      "rect": [
+        448,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "grain"
+    },
+    "item.medicinal_herb": {
+      "rect": [
+        480,
+        0,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "medicinal_herb"
+    },
+    "item.copper_ore": {
+      "rect": [
+        0,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "copper_ore"
+    },
+    "item.tin_ore": {
+      "rect": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tin_ore"
+    },
+    "item.wood_plank": {
+      "rect": [
+        64,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood_plank"
+    },
+    "item.timber_beam": {
+      "rect": [
+        96,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "timber_beam"
+    },
+    "item.knapped_flint": {
+      "rect": [
+        128,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "knapped_flint"
+    },
+    "item.cordage": {
+      "rect": [
+        160,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "cordage"
+    },
+    "item.tanned_leather": {
+      "rect": [
+        192,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tanned_leather"
+    },
+    "item.woven_cloth": {
+      "rect": [
+        224,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "woven_cloth"
+    },
+    "item.charcoal": {
+      "rect": [
+        256,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "charcoal"
+    },
+    "item.clay_brick": {
+      "rect": [
+        288,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay_brick"
+    },
+    "item.bronze_ingot": {
+      "rect": [
+        320,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bronze_ingot"
+    },
+    "item.flour": {
+      "rect": [
+        352,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "flour"
+    },
+    "resource.wood.single": {
+      "rect": [
+        384,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood"
+    },
+    "resource.wood.stack_small": {
+      "rect": [
+        416,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood"
+    },
+    "resource.wood.stack_large": {
+      "rect": [
+        448,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood"
+    },
+    "resource.stone.single": {
+      "rect": [
+        480,
+        32,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "stone"
+    },
+    "resource.stone.stack_small": {
+      "rect": [
+        0,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "stone"
+    },
+    "resource.stone.stack_large": {
+      "rect": [
+        32,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "stone"
+    },
+    "resource.flint.single": {
+      "rect": [
+        64,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "flint"
+    },
+    "resource.flint.stack_small": {
+      "rect": [
+        96,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "flint"
+    },
+    "resource.flint.stack_large": {
+      "rect": [
+        128,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "flint"
+    },
+    "resource.clay.single": {
+      "rect": [
+        160,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay"
+    },
+    "resource.clay.stack_small": {
+      "rect": [
+        192,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay"
+    },
+    "resource.clay.stack_large": {
+      "rect": [
+        224,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay"
+    },
+    "resource.sand.single": {
+      "rect": [
+        256,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "sand"
+    },
+    "resource.sand.stack_small": {
+      "rect": [
+        288,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "sand"
+    },
+    "resource.sand.stack_large": {
+      "rect": [
+        320,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "sand"
+    },
+    "resource.reeds.single": {
+      "rect": [
+        352,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "reeds"
+    },
+    "resource.reeds.stack_small": {
+      "rect": [
+        384,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "reeds"
+    },
+    "resource.reeds.stack_large": {
+      "rect": [
+        416,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "reeds"
+    },
+    "resource.plant_fibre.single": {
+      "rect": [
+        448,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "plant_fibre"
+    },
+    "resource.plant_fibre.stack_small": {
+      "rect": [
+        480,
+        64,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "plant_fibre"
+    },
+    "resource.plant_fibre.stack_large": {
+      "rect": [
+        0,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "plant_fibre"
+    },
+    "resource.copper_ore.single": {
+      "rect": [
+        32,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "copper_ore"
+    },
+    "resource.copper_ore.stack_small": {
+      "rect": [
+        64,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "copper_ore"
+    },
+    "resource.copper_ore.stack_large": {
+      "rect": [
+        96,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "copper_ore"
+    },
+    "resource.tin_ore.single": {
+      "rect": [
+        128,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tin_ore"
+    },
+    "resource.tin_ore.stack_small": {
+      "rect": [
+        160,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tin_ore"
+    },
+    "resource.tin_ore.stack_large": {
+      "rect": [
+        192,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tin_ore"
+    },
+    "resource.wood_plank.single": {
+      "rect": [
+        224,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood_plank"
+    },
+    "resource.wood_plank.stack_small": {
+      "rect": [
+        256,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood_plank"
+    },
+    "resource.wood_plank.stack_large": {
+      "rect": [
+        288,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "wood_plank"
+    },
+    "resource.timber_beam.single": {
+      "rect": [
+        320,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "timber_beam"
+    },
+    "resource.timber_beam.stack_small": {
+      "rect": [
+        352,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "timber_beam"
+    },
+    "resource.timber_beam.stack_large": {
+      "rect": [
+        384,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "timber_beam"
+    },
+    "resource.charcoal.single": {
+      "rect": [
+        416,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "charcoal"
+    },
+    "resource.charcoal.stack_small": {
+      "rect": [
+        448,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "charcoal"
+    },
+    "resource.charcoal.stack_large": {
+      "rect": [
+        480,
+        96,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "charcoal"
+    },
+    "resource.bronze_ingot.single": {
+      "rect": [
+        0,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bronze_ingot"
+    },
+    "resource.bronze_ingot.stack_small": {
+      "rect": [
+        32,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bronze_ingot"
+    },
+    "resource.bronze_ingot.stack_large": {
+      "rect": [
+        64,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bronze_ingot"
+    },
+    "resource.grain.single": {
+      "rect": [
+        96,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "grain"
+    },
+    "resource.grain.stack_small": {
+      "rect": [
+        128,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "grain"
+    },
+    "resource.grain.stack_large": {
+      "rect": [
+        160,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "grain"
+    },
+    "resource.hide.single": {
+      "rect": [
+        192,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "hide"
+    },
+    "resource.hide.stack_small": {
+      "rect": [
+        224,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "hide"
+    },
+    "resource.hide.stack_large": {
+      "rect": [
+        256,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "hide"
+    },
+    "resource.bone.single": {
+      "rect": [
+        288,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bone"
+    },
+    "resource.bone.stack_small": {
+      "rect": [
+        320,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bone"
+    },
+    "resource.bone.stack_large": {
+      "rect": [
+        352,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "bone"
+    },
+    "resource.tanned_leather.single": {
+      "rect": [
+        384,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tanned_leather"
+    },
+    "resource.tanned_leather.stack_small": {
+      "rect": [
+        416,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tanned_leather"
+    },
+    "resource.tanned_leather.stack_large": {
+      "rect": [
+        448,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "tanned_leather"
+    },
+    "resource.clay_brick.single": {
+      "rect": [
+        480,
+        128,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay_brick"
+    },
+    "resource.clay_brick.stack_small": {
+      "rect": [
+        0,
+        160,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay_brick"
+    },
+    "resource.clay_brick.stack_large": {
+      "rect": [
+        32,
+        160,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "clay_brick"
+    },
+    "resource.foundation_stones.single": {
+      "rect": [
+        64,
+        160,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "foundation_stones"
+    },
+    "resource.foundation_stones.stack_small": {
+      "rect": [
+        96,
+        160,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "foundation_stones"
+    },
+    "resource.foundation_stones.stack_large": {
+      "rect": [
+        128,
+        160,
+        32,
+        32
+      ],
+      "category": "materials",
+      "kind": "foundation_stones"
+    },
+    "item.stone_axe": {
+      "rect": [
+        160,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "item.flint_knife": {
+      "rect": [
+        192,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "item.stone_pick": {
+      "rect": [
+        224,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "item.hammerstone": {
+      "rect": [
+        256,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "item.bone_needle": {
+      "rect": [
+        288,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bone_needle"
+    },
+    "item.wooden_hoe": {
+      "rect": [
+        320,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "item.stone_sickle": {
+      "rect": [
+        352,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_sickle"
+    },
+    "item.fishing_rod": {
+      "rect": [
+        384,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "fishing_rod"
+    },
+    "item.fishing_net": {
+      "rect": [
+        416,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "fishing_net"
+    },
+    "item.flint_scraper": {
+      "rect": [
+        448,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_scraper"
+    },
+    "item.wooden_shovel": {
+      "rect": [
+        480,
+        160,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_shovel"
+    },
+    "item.hand_saw": {
+      "rect": [
+        0,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "item.stone_hammer": {
+      "rect": [
+        32,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_hammer"
+    },
+    "item.spindle": {
+      "rect": [
+        64,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "spindle"
+    },
+    "item.stone_mortar": {
+      "rect": [
+        96,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_mortar"
+    },
+    "item.bronze_axe": {
+      "rect": [
+        128,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "item.bronze_sickle": {
+      "rect": [
+        160,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_sickle"
+    },
+    "item.wooden_plough": {
+      "rect": [
+        192,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_plough"
+    },
+    "item.wooden_club": {
+      "rect": [
+        224,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_club"
+    },
+    "item.wooden_spear": {
+      "rect": [
+        256,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_spear"
+    },
+    "item.flint_spear": {
+      "rect": [
+        288,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_spear"
+    },
+    "item.sling": {
+      "rect": [
+        320,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "sling"
+    },
+    "item.shortbow": {
+      "rect": [
+        352,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "shortbow"
+    },
+    "item.arrows": {
+      "rect": [
+        384,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "arrows"
+    },
+    "item.bronze_dagger": {
+      "rect": [
+        416,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_dagger"
+    },
+    "item.bronze_spear": {
+      "rect": [
+        448,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_spear"
+    },
+    "tool.stone_axe.held": {
+      "rect": [
+        480,
+        192,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_axe.raised": {
+      "rect": [
+        0,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_axe.swing": {
+      "rect": [
+        32,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_axe.contact": {
+      "rect": [
+        64,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_axe.recovery": {
+      "rect": [
+        96,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_axe.dropped": {
+      "rect": [
+        128,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_axe.worn": {
+      "rect": [
+        160,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_axe"
+    },
+    "tool.stone_pick.held": {
+      "rect": [
+        192,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.stone_pick.raised": {
+      "rect": [
+        224,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.stone_pick.swing": {
+      "rect": [
+        256,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.stone_pick.contact": {
+      "rect": [
+        288,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.stone_pick.recovery": {
+      "rect": [
+        320,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.stone_pick.dropped": {
+      "rect": [
+        352,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.stone_pick.worn": {
+      "rect": [
+        384,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "stone_pick"
+    },
+    "tool.hammerstone.held": {
+      "rect": [
+        416,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.hammerstone.raised": {
+      "rect": [
+        448,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.hammerstone.swing": {
+      "rect": [
+        480,
+        224,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.hammerstone.contact": {
+      "rect": [
+        0,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.hammerstone.recovery": {
+      "rect": [
+        32,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.hammerstone.dropped": {
+      "rect": [
+        64,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.hammerstone.worn": {
+      "rect": [
+        96,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hammerstone"
+    },
+    "tool.flint_knife.held": {
+      "rect": [
+        128,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.flint_knife.raised": {
+      "rect": [
+        160,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.flint_knife.swing": {
+      "rect": [
+        192,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.flint_knife.contact": {
+      "rect": [
+        224,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.flint_knife.recovery": {
+      "rect": [
+        256,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.flint_knife.dropped": {
+      "rect": [
+        288,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.flint_knife.worn": {
+      "rect": [
+        320,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "flint_knife"
+    },
+    "tool.wooden_hoe.held": {
+      "rect": [
+        352,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.wooden_hoe.raised": {
+      "rect": [
+        384,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.wooden_hoe.swing": {
+      "rect": [
+        416,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.wooden_hoe.contact": {
+      "rect": [
+        448,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.wooden_hoe.recovery": {
+      "rect": [
+        480,
+        256,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.wooden_hoe.dropped": {
+      "rect": [
+        0,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.wooden_hoe.worn": {
+      "rect": [
+        32,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "wooden_hoe"
+    },
+    "tool.hand_saw.held": {
+      "rect": [
+        64,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.hand_saw.raised": {
+      "rect": [
+        96,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.hand_saw.swing": {
+      "rect": [
+        128,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.hand_saw.contact": {
+      "rect": [
+        160,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.hand_saw.recovery": {
+      "rect": [
+        192,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.hand_saw.dropped": {
+      "rect": [
+        224,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.hand_saw.worn": {
+      "rect": [
+        256,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "hand_saw"
+    },
+    "tool.bronze_axe.held": {
+      "rect": [
+        288,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "tool.bronze_axe.raised": {
+      "rect": [
+        320,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "tool.bronze_axe.swing": {
+      "rect": [
+        352,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "tool.bronze_axe.contact": {
+      "rect": [
+        384,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "tool.bronze_axe.recovery": {
+      "rect": [
+        416,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "tool.bronze_axe.dropped": {
+      "rect": [
+        448,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "tool.bronze_axe.worn": {
+      "rect": [
+        480,
+        288,
+        32,
+        32
+      ],
+      "category": "tools",
+      "kind": "bronze_axe"
+    },
+    "citizen.carry.0": {
+      "rect": [
+        0,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "carry"
+    },
+    "citizen.carry.1": {
+      "rect": [
+        32,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "carry"
+    },
+    "citizen.carry.2": {
+      "rect": [
+        64,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "carry"
+    },
+    "citizen.carry.3": {
+      "rect": [
+        96,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "carry"
+    },
+    "citizen.carry.4": {
+      "rect": [
+        128,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "carry"
+    },
+    "citizen.carry.5": {
+      "rect": [
+        160,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "carry"
+    },
+    "citizen.chop.0": {
+      "rect": [
+        192,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "chop"
+    },
+    "citizen.chop.1": {
+      "rect": [
+        224,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "chop"
+    },
+    "citizen.chop.2": {
+      "rect": [
+        256,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "chop"
+    },
+    "citizen.chop.3": {
+      "rect": [
+        288,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "chop"
+    },
+    "citizen.chop.4": {
+      "rect": [
+        320,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "chop"
+    },
+    "citizen.chop.5": {
+      "rect": [
+        352,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "chop"
+    },
+    "citizen.mine.0": {
+      "rect": [
+        384,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mine"
+    },
+    "citizen.mine.1": {
+      "rect": [
+        416,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mine"
+    },
+    "citizen.mine.2": {
+      "rect": [
+        448,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mine"
+    },
+    "citizen.mine.3": {
+      "rect": [
+        480,
+        320,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mine"
+    },
+    "citizen.mine.4": {
+      "rect": [
+        0,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mine"
+    },
+    "citizen.mine.5": {
+      "rect": [
+        32,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mine"
+    },
+    "citizen.dig.0": {
+      "rect": [
+        64,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "dig"
+    },
+    "citizen.dig.1": {
+      "rect": [
+        96,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "dig"
+    },
+    "citizen.dig.2": {
+      "rect": [
+        128,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "dig"
+    },
+    "citizen.dig.3": {
+      "rect": [
+        160,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "dig"
+    },
+    "citizen.dig.4": {
+      "rect": [
+        192,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "dig"
+    },
+    "citizen.dig.5": {
+      "rect": [
+        224,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "dig"
+    },
+    "citizen.saw.0": {
+      "rect": [
+        256,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "saw"
+    },
+    "citizen.saw.1": {
+      "rect": [
+        288,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "saw"
+    },
+    "citizen.saw.2": {
+      "rect": [
+        320,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "saw"
+    },
+    "citizen.saw.3": {
+      "rect": [
+        352,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "saw"
+    },
+    "citizen.saw.4": {
+      "rect": [
+        384,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "saw"
+    },
+    "citizen.saw.5": {
+      "rect": [
+        416,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "saw"
+    },
+    "citizen.hammer.0": {
+      "rect": [
+        448,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "hammer"
+    },
+    "citizen.hammer.1": {
+      "rect": [
+        480,
+        352,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "hammer"
+    },
+    "citizen.hammer.2": {
+      "rect": [
+        0,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "hammer"
+    },
+    "citizen.hammer.3": {
+      "rect": [
+        32,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "hammer"
+    },
+    "citizen.hammer.4": {
+      "rect": [
+        64,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "hammer"
+    },
+    "citizen.hammer.5": {
+      "rect": [
+        96,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "hammer"
+    },
+    "citizen.lift.0": {
+      "rect": [
+        128,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "lift"
+    },
+    "citizen.lift.1": {
+      "rect": [
+        160,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "lift"
+    },
+    "citizen.lift.2": {
+      "rect": [
+        192,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "lift"
+    },
+    "citizen.lift.3": {
+      "rect": [
+        224,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "lift"
+    },
+    "citizen.lift.4": {
+      "rect": [
+        256,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "lift"
+    },
+    "citizen.lift.5": {
+      "rect": [
+        288,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "lift"
+    },
+    "citizen.mason.0": {
+      "rect": [
+        320,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mason"
+    },
+    "citizen.mason.1": {
+      "rect": [
+        352,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mason"
+    },
+    "citizen.mason.2": {
+      "rect": [
+        384,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mason"
+    },
+    "citizen.mason.3": {
+      "rect": [
+        416,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mason"
+    },
+    "citizen.mason.4": {
+      "rect": [
+        448,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mason"
+    },
+    "citizen.mason.5": {
+      "rect": [
+        480,
+        384,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "mason"
+    },
+    "citizen.roof.0": {
+      "rect": [
+        0,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "roof"
+    },
+    "citizen.roof.1": {
+      "rect": [
+        32,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "roof"
+    },
+    "citizen.roof.2": {
+      "rect": [
+        64,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "roof"
+    },
+    "citizen.roof.3": {
+      "rect": [
+        96,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "roof"
+    },
+    "citizen.roof.4": {
+      "rect": [
+        128,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "roof"
+    },
+    "citizen.roof.5": {
+      "rect": [
+        160,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "roof"
+    },
+    "citizen.farm.0": {
+      "rect": [
+        192,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "farm"
+    },
+    "citizen.farm.1": {
+      "rect": [
+        224,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "farm"
+    },
+    "citizen.farm.2": {
+      "rect": [
+        256,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "farm"
+    },
+    "citizen.farm.3": {
+      "rect": [
+        288,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "farm"
+    },
+    "citizen.farm.4": {
+      "rect": [
+        320,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "farm"
+    },
+    "citizen.farm.5": {
+      "rect": [
+        352,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "farm"
+    },
+    "citizen.harvest.0": {
+      "rect": [
+        384,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "harvest"
+    },
+    "citizen.harvest.1": {
+      "rect": [
+        416,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "harvest"
+    },
+    "citizen.harvest.2": {
+      "rect": [
+        448,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "harvest"
+    },
+    "citizen.harvest.3": {
+      "rect": [
+        480,
+        416,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "harvest"
+    },
+    "citizen.harvest.4": {
+      "rect": [
+        0,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "harvest"
+    },
+    "citizen.harvest.5": {
+      "rect": [
+        32,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "harvest"
+    },
+    "citizen.weave.0": {
+      "rect": [
+        64,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "weave"
+    },
+    "citizen.weave.1": {
+      "rect": [
+        96,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "weave"
+    },
+    "citizen.weave.2": {
+      "rect": [
+        128,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "weave"
+    },
+    "citizen.weave.3": {
+      "rect": [
+        160,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "weave"
+    },
+    "citizen.weave.4": {
+      "rect": [
+        192,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "weave"
+    },
+    "citizen.weave.5": {
+      "rect": [
+        224,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "weave"
+    },
+    "citizen.forge.0": {
+      "rect": [
+        256,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "forge"
+    },
+    "citizen.forge.1": {
+      "rect": [
+        288,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "forge"
+    },
+    "citizen.forge.2": {
+      "rect": [
+        320,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "forge"
+    },
+    "citizen.forge.3": {
+      "rect": [
+        352,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "forge"
+    },
+    "citizen.forge.4": {
+      "rect": [
+        384,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "forge"
+    },
+    "citizen.forge.5": {
+      "rect": [
+        416,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "forge"
+    },
+    "citizen.pickup.0": {
+      "rect": [
+        448,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "pickup"
+    },
+    "citizen.pickup.1": {
+      "rect": [
+        480,
+        448,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "pickup"
+    },
+    "citizen.pickup.2": {
+      "rect": [
+        0,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "pickup"
+    },
+    "citizen.pickup.3": {
+      "rect": [
+        32,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "pickup"
+    },
+    "citizen.pickup.4": {
+      "rect": [
+        64,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "pickup"
+    },
+    "citizen.pickup.5": {
+      "rect": [
+        96,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "pickup"
+    },
+    "citizen.unload.0": {
+      "rect": [
+        128,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "unload"
+    },
+    "citizen.unload.1": {
+      "rect": [
+        160,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "unload"
+    },
+    "citizen.unload.2": {
+      "rect": [
+        192,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "unload"
+    },
+    "citizen.unload.3": {
+      "rect": [
+        224,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "unload"
+    },
+    "citizen.unload.4": {
+      "rect": [
+        256,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "unload"
+    },
+    "citizen.unload.5": {
+      "rect": [
+        288,
+        480,
+        32,
+        32
+      ],
+      "category": "citizens",
+      "kind": "unload"
+    },
+    "item.wooden_post": {
+      "rect": [
+        320,
+        480,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wooden_post"
+    },
+    "item.foundation_stones": {
+      "rect": [
+        352,
+        480,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "foundation_stones"
+    },
+    "item.thatch_bundle": {
+      "rect": [
+        384,
+        480,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "thatch_bundle"
+    },
+    "item.wattle_panel": {
+      "rect": [
+        416,
+        480,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wattle_panel"
+    },
+    "item.brick_wall_block": {
+      "rect": [
+        448,
+        480,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "brick_wall_block"
+    },
+    "item.wooden_door": {
+      "rect": [
+        480,
+        480,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wooden_door"
+    },
+    "item.wooden_shutter": {
+      "rect": [
+        0,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wooden_shutter"
+    },
+    "item.stone_floor_tile": {
+      "rect": [
+        32,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stone_floor_tile"
+    },
+    "item.wooden_fence": {
+      "rect": [
+        64,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wooden_fence"
+    },
+    "construction.stakes.0": {
+      "rect": [
+        96,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stakes"
+    },
+    "construction.stakes.1": {
+      "rect": [
+        128,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stakes"
+    },
+    "construction.stakes.2": {
+      "rect": [
+        160,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stakes"
+    },
+    "construction.trench.0": {
+      "rect": [
+        192,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "trench"
+    },
+    "construction.trench.1": {
+      "rect": [
+        224,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "trench"
+    },
+    "construction.trench.2": {
+      "rect": [
+        256,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "trench"
+    },
+    "construction.foundation.0": {
+      "rect": [
+        288,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "foundation"
+    },
+    "construction.foundation.1": {
+      "rect": [
+        320,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "foundation"
+    },
+    "construction.foundation.2": {
+      "rect": [
+        352,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "foundation"
+    },
+    "construction.stonecourse.0": {
+      "rect": [
+        384,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stonecourse"
+    },
+    "construction.stonecourse.1": {
+      "rect": [
+        416,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stonecourse"
+    },
+    "construction.stonecourse.2": {
+      "rect": [
+        448,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "stonecourse"
+    },
+    "construction.post.0": {
+      "rect": [
+        480,
+        512,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "post"
+    },
+    "construction.post.1": {
+      "rect": [
+        0,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "post"
+    },
+    "construction.post.2": {
+      "rect": [
+        32,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "post"
+    },
+    "construction.beam.0": {
+      "rect": [
+        64,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "beam"
+    },
+    "construction.beam.1": {
+      "rect": [
+        96,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "beam"
+    },
+    "construction.beam.2": {
+      "rect": [
+        128,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "beam"
+    },
+    "construction.brace.0": {
+      "rect": [
+        160,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "brace"
+    },
+    "construction.brace.1": {
+      "rect": [
+        192,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "brace"
+    },
+    "construction.brace.2": {
+      "rect": [
+        224,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "brace"
+    },
+    "construction.plank.0": {
+      "rect": [
+        256,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "plank"
+    },
+    "construction.plank.1": {
+      "rect": [
+        288,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "plank"
+    },
+    "construction.plank.2": {
+      "rect": [
+        320,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "plank"
+    },
+    "construction.wattle.0": {
+      "rect": [
+        352,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wattle"
+    },
+    "construction.wattle.1": {
+      "rect": [
+        384,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wattle"
+    },
+    "construction.wattle.2": {
+      "rect": [
+        416,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wattle"
+    },
+    "construction.wall.0": {
+      "rect": [
+        448,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wall"
+    },
+    "construction.wall.1": {
+      "rect": [
+        480,
+        544,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wall"
+    },
+    "construction.wall.2": {
+      "rect": [
+        0,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "wall"
+    },
+    "construction.roof_frame.0": {
+      "rect": [
+        32,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "roof_frame"
+    },
+    "construction.roof_frame.1": {
+      "rect": [
+        64,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "roof_frame"
+    },
+    "construction.roof_frame.2": {
+      "rect": [
+        96,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "roof_frame"
+    },
+    "construction.thatch.0": {
+      "rect": [
+        128,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "thatch"
+    },
+    "construction.thatch.1": {
+      "rect": [
+        160,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "thatch"
+    },
+    "construction.thatch.2": {
+      "rect": [
+        192,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "thatch"
+    },
+    "construction.ridge.0": {
+      "rect": [
+        224,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "ridge"
+    },
+    "construction.ridge.1": {
+      "rect": [
+        256,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "ridge"
+    },
+    "construction.ridge.2": {
+      "rect": [
+        288,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "ridge"
+    },
+    "construction.door.0": {
+      "rect": [
+        320,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "door"
+    },
+    "construction.door.1": {
+      "rect": [
+        352,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "door"
+    },
+    "construction.door.2": {
+      "rect": [
+        384,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "door"
+    },
+    "construction.window.0": {
+      "rect": [
+        416,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "window"
+    },
+    "construction.window.1": {
+      "rect": [
+        448,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "window"
+    },
+    "construction.window.2": {
+      "rect": [
+        480,
+        576,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "window"
+    },
+    "construction.scaffold.0": {
+      "rect": [
+        0,
+        608,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "scaffold"
+    },
+    "construction.scaffold.1": {
+      "rect": [
+        32,
+        608,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "scaffold"
+    },
+    "construction.scaffold.2": {
+      "rect": [
+        64,
+        608,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "scaffold"
+    },
+    "construction.rubble.0": {
+      "rect": [
+        96,
+        608,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "rubble"
+    },
+    "construction.rubble.1": {
+      "rect": [
+        128,
+        608,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "rubble"
+    },
+    "construction.rubble.2": {
+      "rect": [
+        160,
+        608,
+        32,
+        32
+      ],
+      "category": "construction",
+      "kind": "rubble"
+    },
+    "workstation.woodbench.idle": {
+      "rect": [
+        192,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "woodbench"
+    },
+    "workstation.woodbench.prepared": {
+      "rect": [
+        224,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "woodbench"
+    },
+    "workstation.woodbench.active": {
+      "rect": [
+        256,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "woodbench"
+    },
+    "workstation.woodbench.finishing": {
+      "rect": [
+        288,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "woodbench"
+    },
+    "workstation.woodbench.completed": {
+      "rect": [
+        320,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "woodbench"
+    },
+    "workstation.flintbench.idle": {
+      "rect": [
+        352,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "flintbench"
+    },
+    "workstation.flintbench.prepared": {
+      "rect": [
+        384,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "flintbench"
+    },
+    "workstation.flintbench.active": {
+      "rect": [
+        416,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "flintbench"
+    },
+    "workstation.flintbench.finishing": {
+      "rect": [
+        448,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "flintbench"
+    },
+    "workstation.flintbench.completed": {
+      "rect": [
+        480,
+        608,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "flintbench"
+    },
+    "workstation.forge.idle": {
+      "rect": [
+        0,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "forge"
+    },
+    "workstation.forge.prepared": {
+      "rect": [
+        32,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "forge"
+    },
+    "workstation.forge.active": {
+      "rect": [
+        64,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "forge"
+    },
+    "workstation.forge.finishing": {
+      "rect": [
+        96,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "forge"
+    },
+    "workstation.forge.completed": {
+      "rect": [
+        128,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "forge"
+    },
+    "workstation.kiln.idle": {
+      "rect": [
+        160,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kiln"
+    },
+    "workstation.kiln.prepared": {
+      "rect": [
+        192,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kiln"
+    },
+    "workstation.kiln.active": {
+      "rect": [
+        224,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kiln"
+    },
+    "workstation.kiln.finishing": {
+      "rect": [
+        256,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kiln"
+    },
+    "workstation.kiln.completed": {
+      "rect": [
+        288,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kiln"
+    },
+    "workstation.loom.idle": {
+      "rect": [
+        320,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "loom"
+    },
+    "workstation.loom.prepared": {
+      "rect": [
+        352,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "loom"
+    },
+    "workstation.loom.active": {
+      "rect": [
+        384,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "loom"
+    },
+    "workstation.loom.finishing": {
+      "rect": [
+        416,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "loom"
+    },
+    "workstation.loom.completed": {
+      "rect": [
+        448,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "loom"
+    },
+    "workstation.tannery.idle": {
+      "rect": [
+        480,
+        640,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "tannery"
+    },
+    "workstation.tannery.prepared": {
+      "rect": [
+        0,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "tannery"
+    },
+    "workstation.tannery.active": {
+      "rect": [
+        32,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "tannery"
+    },
+    "workstation.tannery.finishing": {
+      "rect": [
+        64,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "tannery"
+    },
+    "workstation.tannery.completed": {
+      "rect": [
+        96,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "tannery"
+    },
+    "workstation.kitchen.idle": {
+      "rect": [
+        128,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kitchen"
+    },
+    "workstation.kitchen.prepared": {
+      "rect": [
+        160,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kitchen"
+    },
+    "workstation.kitchen.active": {
+      "rect": [
+        192,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kitchen"
+    },
+    "workstation.kitchen.finishing": {
+      "rect": [
+        224,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kitchen"
+    },
+    "workstation.kitchen.completed": {
+      "rect": [
+        256,
+        672,
+        32,
+        32
+      ],
+      "category": "workstations",
+      "kind": "kitchen"
+    },
+    "item.handcart": {
+      "rect": [
+        288,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "handcart"
+    },
+    "item.canoe": {
+      "rect": [
+        320,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "canoe"
+    },
+    "storage.basket.empty": {
+      "rect": [
+        352,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "basket"
+    },
+    "storage.basket.low": {
+      "rect": [
+        384,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "basket"
+    },
+    "storage.basket.medium": {
+      "rect": [
+        416,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "basket"
+    },
+    "storage.basket.full": {
+      "rect": [
+        448,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "basket"
+    },
+    "storage.sack.empty": {
+      "rect": [
+        480,
+        672,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sack"
+    },
+    "storage.sack.low": {
+      "rect": [
+        0,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sack"
+    },
+    "storage.sack.medium": {
+      "rect": [
+        32,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sack"
+    },
+    "storage.sack.full": {
+      "rect": [
+        64,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sack"
+    },
+    "storage.chest.empty": {
+      "rect": [
+        96,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "chest"
+    },
+    "storage.chest.low": {
+      "rect": [
+        128,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "chest"
+    },
+    "storage.chest.medium": {
+      "rect": [
+        160,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "chest"
+    },
+    "storage.chest.full": {
+      "rect": [
+        192,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "chest"
+    },
+    "storage.cart.empty": {
+      "rect": [
+        224,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "cart"
+    },
+    "storage.cart.low": {
+      "rect": [
+        256,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "cart"
+    },
+    "storage.cart.medium": {
+      "rect": [
+        288,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "cart"
+    },
+    "storage.cart.full": {
+      "rect": [
+        320,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "cart"
+    },
+    "storage.sledge.empty": {
+      "rect": [
+        352,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sledge"
+    },
+    "storage.sledge.low": {
+      "rect": [
+        384,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sledge"
+    },
+    "storage.sledge.medium": {
+      "rect": [
+        416,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sledge"
+    },
+    "storage.sledge.full": {
+      "rect": [
+        448,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "sledge"
+    },
+    "storage.ore_pile.empty": {
+      "rect": [
+        480,
+        704,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "ore_pile"
+    },
+    "storage.ore_pile.low": {
+      "rect": [
+        0,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "ore_pile"
+    },
+    "storage.ore_pile.medium": {
+      "rect": [
+        32,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "ore_pile"
+    },
+    "storage.ore_pile.full": {
+      "rect": [
+        64,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "ore_pile"
+    },
+    "storage.log_pile.empty": {
+      "rect": [
+        96,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "log_pile"
+    },
+    "storage.log_pile.low": {
+      "rect": [
+        128,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "log_pile"
+    },
+    "storage.log_pile.medium": {
+      "rect": [
+        160,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "log_pile"
+    },
+    "storage.log_pile.full": {
+      "rect": [
+        192,
+        736,
+        32,
+        32
+      ],
+      "category": "storage",
+      "kind": "log_pile"
+    },
+    "item.cooked_fish": {
+      "rect": [
+        224,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "cooked_fish"
+    },
+    "item.cooked_meat": {
+      "rect": [
+        256,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "cooked_meat"
+    },
+    "item.bread": {
+      "rect": [
+        288,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "bread"
+    },
+    "item.berry_stew": {
+      "rect": [
+        320,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "berry_stew"
+    },
+    "item.mushroom_soup": {
+      "rect": [
+        352,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "mushroom_soup"
+    },
+    "item.dried_meat": {
+      "rect": [
+        384,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "dried_meat"
+    },
+    "item.porridge": {
+      "rect": [
+        416,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "porridge"
+    },
+    "item.grain_ration": {
+      "rect": [
+        448,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "grain_ration"
+    },
+    "item.herbal_broth": {
+      "rect": [
+        480,
+        736,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "herbal_broth"
+    },
+    "item.roasted_grain": {
+      "rect": [
+        0,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "roasted_grain"
+    },
+    "item.bandage": {
+      "rect": [
+        32,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "bandage"
+    },
+    "item.herbal_poultice": {
+      "rect": [
+        64,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "herbal_poultice"
+    },
+    "item.splint": {
+      "rect": [
+        96,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "splint"
+    },
+    "item.boiled_water": {
+      "rect": [
+        128,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "boiled_water"
+    },
+    "item.medicinal_tea": {
+      "rect": [
+        160,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "medicinal_tea"
+    },
+    "item.clay_pot": {
+      "rect": [
+        192,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "clay_pot"
+    },
+    "item.woven_basket": {
+      "rect": [
+        224,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "woven_basket"
+    },
+    "item.wooden_bowl": {
+      "rect": [
+        256,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "wooden_bowl"
+    },
+    "item.clay_cup": {
+      "rect": [
+        288,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "clay_cup"
+    },
+    "item.bedroll": {
+      "rect": [
+        320,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "bedroll"
+    },
+    "item.wooden_stool": {
+      "rect": [
+        352,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "wooden_stool"
+    },
+    "item.torch": {
+      "rect": [
+        384,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "torch"
+    },
+    "item.carved_talisman": {
+      "rect": [
+        416,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "carved_talisman"
+    },
+    "item.pigment_pot": {
+      "rect": [
+        448,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "pigment_pot"
+    },
+    "item.clay_tablet": {
+      "rect": [
+        480,
+        768,
+        32,
+        32
+      ],
+      "category": "household",
+      "kind": "clay_tablet"
+    },
+    "item.hide_cloak": {
+      "rect": [
+        0,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "hide_cloak"
+    },
+    "item.hide_tunic": {
+      "rect": [
+        32,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "hide_tunic"
+    },
+    "item.linen_tunic": {
+      "rect": [
+        64,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "linen_tunic"
+    },
+    "item.leather_sandals": {
+      "rect": [
+        96,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "leather_sandals"
+    },
+    "item.leather_boots": {
+      "rect": [
+        128,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "leather_boots"
+    },
+    "item.leather_belt": {
+      "rect": [
+        160,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "leather_belt"
+    },
+    "item.woven_hat": {
+      "rect": [
+        192,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "woven_hat"
+    },
+    "item.bronze_helmet": {
+      "rect": [
+        224,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "bronze_helmet"
+    },
+    "item.tally_stones": {
+      "rect": [
+        256,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "tally_stones"
+    },
+    "item.observation_tablet": {
+      "rect": [
+        288,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "observation_tablet"
+    },
+    "effect.wood_chips.0": {
+      "rect": [
+        320,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "wood_chips"
+    },
+    "effect.wood_chips.1": {
+      "rect": [
+        352,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "wood_chips"
+    },
+    "effect.stone_sparks.0": {
+      "rect": [
+        384,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "stone_sparks"
+    },
+    "effect.stone_sparks.1": {
+      "rect": [
+        416,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "stone_sparks"
+    },
+    "effect.dust.0": {
+      "rect": [
+        448,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "dust"
+    },
+    "effect.dust.1": {
+      "rect": [
+        480,
+        800,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "dust"
+    },
+    "effect.soil.0": {
+      "rect": [
+        0,
+        832,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "soil"
+    },
+    "effect.soil.1": {
+      "rect": [
+        32,
+        832,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "soil"
+    },
+    "effect.rubble.0": {
+      "rect": [
+        64,
+        832,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "rubble"
+    },
+    "effect.rubble.1": {
+      "rect": [
+        96,
+        832,
+        32,
+        32
+      ],
+      "category": "effects",
+      "kind": "rubble"
+    }
+  }
+}

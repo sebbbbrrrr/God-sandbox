@@ -1,4 +1,5 @@
 extends RefCounted
+const PhysicalSprites = preload("res://scripts/visuals/physical_sprite_atlas.gd")
 # Phase A2: reusable work choreography. ALL jobs, movement, materials and stages
 # come from the authoritative world. This module modifies no simulation data.
 # Drawing is culled to visible citizens, without nodes or animated textures.
@@ -111,6 +112,19 @@ static func _build_action(world: RefCounted, site: Dictionary, clock: float) -> 
     return "hammer"
 
 static func _bundle(canvas: Node2D, at: Vector2, scale: float, cargo: Dictionary) -> void:
+    # Draw actual named cargo, not a generic symbolic bundle. The task's
+    # authoritative cargo dictionary decides what is visible.
+    var keys: Array = cargo.keys()
+    keys.sort()
+    for item in keys:
+        if int(cargo[item]) <= 0:
+            continue
+        var key := "resource.%s.stack_small" % str(item)
+        var place := at + Vector2(5, 0) * scale
+        if PhysicalSprites.draw(canvas, key, place, 16.0 * scale):
+            return
+        if PhysicalSprites.draw_item(canvas, str(item), place, 16.0 * scale):
+            return
     var wood: int = int(cargo.get("wood", 0))
     var stone: int = int(cargo.get("stone", 0))
     var fibre: int = int(cargo.get("plant_fibre", 0))
@@ -124,6 +138,13 @@ static func _bundle(canvas: Node2D, at: Vector2, scale: float, cargo: Dictionary
         canvas.draw_colored_polygon(PackedVector2Array([q, q + Vector2(5, -4) * scale, q + Vector2(11, 0) * scale, q + Vector2(8, 7) * scale, q + Vector2(1, 6) * scale]), STONE)
 
 static func _action(canvas: Node2D, p: Vector2, s: float, t: float, action: String) -> void:
+    # Authored atlas frames replace generic procedural gestures when available.
+    # Frame playback is presentation-only; no work event is created here.
+    var visual_frame := posmod(int(floor(t * 5.0)), 6)
+    if PhysicalSprites.draw(canvas,
+            "citizen.%s.%d" % [action, visual_frame],
+            p + Vector2(0.0, -2.0) * s, 24.0 * s):
+        return
     # Three key motions in one cycle: wind-up, strike/contact, recovery.
     var pulse := sin(t * 4.5)
     var beat := fposmod(t * 4.5, TAU)
