@@ -164,6 +164,9 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     # responses remain active during hazards.
     if not urgent and world.lifecycle.dependent_step(world, person, state):
         return
+    # Guardians perform actual travel and childcare before ordinary labour.
+    if not urgent and world.households.care_step(world, person, state):
+        return
     # Work is a physical commitment, interrupted by immediate danger.
     if not urgent and world.construction.work_step(world, person, state):
         return
