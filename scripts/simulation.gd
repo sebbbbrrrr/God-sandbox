@@ -4,6 +4,7 @@ class_name SandboxSimulation
 const SaveStore = preload("res://scripts/ai/save_store.gd")
 const SaveCodec = preload("res://scripts/ai/save_codec.gd")
 const AI = preload("res://scripts/ai/citizen_ai.gd")
+const Construction = preload("res://scripts/ai/construction_economy.gd")
 
 # Small deterministic simulation: all authoritative decisions happen at a fixed step.
 # Rendering never modifies state. The next phase moves the hotspots into native C++.
@@ -25,6 +26,7 @@ var terrain := PackedByteArray()
 var citizens: Array[Dictionary] = []
 var citizen_ai_by_id: Dictionary = {}
 var ai_context := AI.Perception.new()
+var construction := Construction.new()
 var next_id := 1
 var rng: RandomNumberGenerator
 var capitals := [Vector2i(-1, -1), Vector2i(-1, -1)]
@@ -85,6 +87,7 @@ func set_terrain_cell(x: int, y: int, type: int) -> bool:
     if idx < 0 or type < OCEAN or type > TOWN or terrain[idx] == type:
         return false
     terrain[idx] = type
+    construction.on_terrain_changed(self, x, y)
     ai_context.terrain_dirty = true
     ai_context.local_views.clear()
     return true
@@ -121,26 +124,14 @@ func spawn_initial_population() -> void:
 func step() -> void:
     tick += 1
     ai_context.begin_tick(self)
+    construction.prune(self)
+    construction.plan(self)
     for id in ai_context.update_slots[posmod(-tick, 3)]:
         var citizen: Dictionary = ai_context.people[id]
         if citizen["hp"] <= 0:
             continue
         AI.step(self, citizen, ai_context.minds[id], true)
         citizen["age"] += 1
-    if tick % 150 == 0:
-        grow_settlements()
-
-func grow_settlements() -> void:
-    for nation in range(2):
-        var center: Vector2i = capitals[nation]
-        if center.x < 0:
-            continue
-        var bx := clampi(center.x + rng.randi_range(-5, 5), 0, WIDTH - 1)
-        var by := clampi(center.y + rng.randi_range(-5, 5), 0, HEIGHT - 1)
-        if is_walkable(bx, by) and at(bx, by) != BEACH:
-            set_terrain_cell(bx, by, TOWN)
-        if citizens.size() < MAX_PEOPLE:
-            add_citizen(center.x, center.y, nation)
 
 # 0 raise land, 1 fire, 2 forest, 3 bless, 4 spawn, 5 ocean
 func apply_power(power: int, x: int, y: int) -> bool:
@@ -187,7 +178,8 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "ai_version": 2 if legacy else 3, "citizen_ai_by_id": citizen_ai_by_id.duplicate(true) if legacy else SaveCodec.encode(citizen_ai_by_id),
         "terrain": Marshalls.raw_to_base64(terrain), "citizens": citizens.duplicate(true),
         "capitals": [[capitals[0].x, capitals[0].y], [capitals[1].x, capitals[1].y]],
-        "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget
+        "rng_state": str(rng.state), "routine_budget": ai_context.routine_budget,
+        "construction": construction.snapshot()
     }
 
 static func from_snapshot(data: Dictionary) -> SandboxSimulation:
@@ -249,6 +241,7 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
                 result.capitals[i] = Vector2i(int(saved_capitals[i][0]), int(saved_capitals[i][1]))
     result.rng.state = int(data.get("rng_state", result.rng.state))
     result.ai_context.routine_budget = clampi(int(data.get("routine_budget", 96)), 1, MAX_PEOPLE)
+    result.construction.load_state(data.get("construction", {}))
     result.ai_context.begin_tick(result)
     return result
 
