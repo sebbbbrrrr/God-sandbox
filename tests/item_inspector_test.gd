@@ -100,7 +100,7 @@ func _initialize() -> void:
     ok = check(not ui.apply_action(w, "equip") and
         not w.toolmaking.equipped.has(str(pid)),
         "broken item may be inspected but cannot be equipped") and ok
-    var original := w.snapshot()
+    var original: Dictionary = w.snapshot()
     var restored = World.from_snapshot(original)
     ok = check(restored != null and restored.snapshot() == original,
         "D4 inspection actions preserve JSON and exact serial persistence") and ok
@@ -108,7 +108,7 @@ func _initialize() -> void:
     var loaded = World.from_snapshot(binary) if binary is Dictionary else null
     ok = check(loaded != null and loaded.snapshot() == original,
         "D4 actions remain compatible with compressed world saves") and ok
-    var stored_before := w.inventory.snapshot()
+    var stored_before: Dictionary = w.inventory.snapshot()
     var outsider = World.new(777, false)
     ok = check(not outsider.inventory.transfer(outsider, "settlement:0",
         "citizen:1", {"wood": 1}, pid),
