@@ -17,7 +17,7 @@ func _initialize() -> void:
     game.selected_power = -1
     var cell := Vector2i(20, 20)
     var center := game.world_origin() + (Vector2(cell) + Vector2(0.5, 0.5)) * game.tile_size()
-    print("D4_VIEWPORT_DEBUG size=", game.get_viewport_rect().size,
+    print("D4_VIEWPORT_DEBUG size=", game.ui_size(),
         " center=", center, " hit=", game.screen_to_tile(center), " inside=", game.inside_world(center))
     ok = check(game.inside_world(center) and game.screen_to_tile(center) == cell,
         "tap-to-inspect maps pixel coordinates to actual citizen tile") and ok
@@ -27,8 +27,8 @@ func _initialize() -> void:
         game.inspector.focus_citizen_id == 1,
         "one-finger hand tap opens living citizen's actual inventory panel") and ok
     var bounds: Rect2 = game.inspector.geometry(
-        game.get_viewport_rect().size, game.toolbar_height())["panel"]
-    ok = check(bounds.end.y < game.get_viewport_rect().size.y - game.toolbar_height(),
+        game.ui_size(), game.toolbar_height())["panel"]
+    ok = check(bounds.end.y < game.ui_size().y - game.toolbar_height(),
         "inventory modal does not hide god powers or bottom toolbar") and ok
     var previous_terrain: PackedByteArray = game.world.terrain.duplicate()
     var outside: InputEventMouseButton = InputEventMouseButton.new()
@@ -39,8 +39,8 @@ func _initialize() -> void:
     ok = check(not game.inspector.visible and game.world.terrain == previous_terrain,
         "outside modal tap dismisses and never paints over the world") and ok
     game.selected_power = 0
-    game.tapped(Vector2(game.get_viewport_rect().size.x - 65,
-        game.get_viewport_rect().size.y - game.toolbar_height() + 15))
+    game.tapped(Vector2(game.ui_size().x - 65,
+        game.ui_size().y - game.toolbar_height() + 15))
     ok = check(game.selected_power == -1 and game.inspector.visible and
         game.inspector.holder_id == "citizen:1",
         "ITEMS shortcut unequips terrain brush and reopens acting citizen's pack") and ok
