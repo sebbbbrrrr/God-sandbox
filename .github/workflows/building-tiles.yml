@@ -29,7 +29,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/media/god_sandbox_buildings_23.png docs/media/god_sandbox_construction_tiles_60.png
+          git add docs/media/god_sandbox_buildings_24.png docs/media/god_sandbox_construction_tiles_60.png
           git diff --cached --quiet && exit 0
           git commit -m "docs: publish actual building sprite sheets [skip ci]"
           git push origin HEAD:"${GITHUB_REF_NAME}"

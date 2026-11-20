@@ -15,7 +15,7 @@ for kind in kinds:
     for key in ([kind] if kind in original else [])+[kind+"_a",kind+"_b"]:
         r=atlas[key]
         buildings.append((key,r["packed_rect"],tex[r.get("page",0)]))
-assert len(buildings)==23
+assert len(buildings)==24
 m=json.loads((root/"data/visuals/physical_sprite_manifest.json").read_text())
 physical=Image.open(root/"assets/pixel/physical_atlas.png").convert("RGBA")
 stages=[(k,v["rect"],physical) for k,v in m["sprites"].items() if v["category"]=="construction"]
@@ -51,5 +51,5 @@ def sheet(entries,name,title,columns,cellwidth,cellheight):
     path=out/name
     im.save(path,optimize=True)
     print(f"CREATED {path} {W}x{H}")
-sheet(buildings,"god_sandbox_buildings_23.png","GOD SANDBOX | FINISHED BUILDINGS",4,244,216)
+sheet(buildings,"god_sandbox_buildings_24.png","GOD SANDBOX | FINISHED BUILDINGS",4,244,216)
 sheet(stages,"god_sandbox_construction_tiles_60.png","GOD SANDBOX | CONSTRUCTION TILES",6,180,164)
