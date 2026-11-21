@@ -13,6 +13,7 @@ static func digest(bytes: PackedByteArray) -> PackedByteArray:
     return hash.finish()
 
 static func prepare(world: RefCounted) -> PackedByteArray:
+    world.settlements.ensure_legacy(world)
     var minds := {}
     for id in world.citizen_ai_by_id:
         # Native shallow copies remove derived diagnostics, without copying every nested episode.
@@ -31,7 +32,9 @@ static func prepare(world: RefCounted) -> PackedByteArray:
         "food":world.food.snapshot(), "demography":world.demography.snapshot(),
         "occupations":world.occupations.snapshot(), "inventory":world.inventory.snapshot(),
         "toolmaking":world.toolmaking.snapshot(),
-        "regional_economy":world.regional_economy.snapshot()}
+        "regional_economy":world.regional_economy.snapshot(),
+        "local_logistics":world.local_logistics.snapshot(), "settlements":world.settlements.snapshot(), "founding":world.founding.snapshot(),
+        "settlement_planner_cursor":world.settlement_planner.cursor}
     # No yield, callbacks or threads between borrowing state and producing the immutable byte buffer.
     var payload := var_to_bytes(view)
     var header := PackedByteArray(MAGIC)

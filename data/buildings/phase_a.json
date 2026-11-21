@@ -230,6 +230,792 @@
         "construction_animation": "temporary_pixel_overlay",
         "destruction_state": "temporary_rubble"
       }
+    },
+    {
+      "id": "tool_area",
+      "display_name": "Stoneworking workshop",
+      "category": "workshop",
+      "function": "tool_area",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 2,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 1,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "workshop_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "local_storage",
+      "display_name": "Timber storehouse",
+      "category": "storage",
+      "function": "storage",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 3,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 64,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "storage_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "forest_camp",
+      "display_name": "Forestry lodge",
+      "category": "production",
+      "function": "forestry",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 2,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "workshop_b",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "quarry_camp",
+      "display_name": "Quarry shelter",
+      "category": "production",
+      "function": "quarry",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 2,
+        "stone": 3
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 1,
+            "stone": 3
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "stone_house_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "cultivation_field",
+      "display_name": "Cultivation enclosure",
+      "category": "agriculture",
+      "function": "farm",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 2,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 1,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "farmhouse_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "market_square",
+      "display_name": "Trading hall",
+      "category": "market",
+      "function": "market",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "stone_working"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 3,
+            "stone": 2
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "market_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
+    },
+    {
+      "id": "gathering_hall",
+      "display_name": "Communal hall",
+      "category": "civic",
+      "function": "civic",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 3,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "barn_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble"
+      }
     }
   ]
 }

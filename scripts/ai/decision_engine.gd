@@ -88,6 +88,12 @@ static func choose(world: RefCounted, person: Dictionary, state: Dictionary, nea
         options.append(candidate("investigate", 30 + int(traits["curiosity"]) / 2 + unfamiliar_score / 2 - int(emotions["fear"]), unfamiliar))
     if familiar.x >= 0:
         options.append(candidate("return_familiar", 10 + int(emotions["fear"]) + int(emotions["stress"]) / 2 + int(traits["caution"]) / 3, familiar))
+    for house in world.construction.houses:
+        var cell := Vector2i(int(house["x"]),int(house["y"]))
+        if world.settlements.sid(house)==world.settlements.sid(person) and str(house.get("function",""))=="civic" and not bool(house.get("abandoned",false)) and Nav.manhattan(pos,cell)<=4 and world.ai_context.visible(world,pos,cell):
+            settlement = cell
+            settlement_score = 0
+            break
     if settlement.x >= 0:
         options.append(candidate("seek_settlement", 25 + (100 - int(traits["curiosity"])) / 2 + int(needs["social"]) / 3 - maxi(0, settlement_score), settlement))
     var partner := 0

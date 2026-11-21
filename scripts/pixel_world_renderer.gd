@@ -342,7 +342,12 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
                 var actual: Dictionary = physical_buildings[cell]
                 var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
                 building = str(definition.get("visual", {}).get("sprite", building)) if str(actual.get("type", "")) != "tool_area" else "workshop_a"
-            prop(objects,building,p+Vector2(16,27))
+            var building_tint := Color.WHITE
+            if physical_buildings.has(cell):
+                var state: Dictionary = physical_buildings[cell]
+                if bool(state.get("abandoned",false)): building_tint = Color(0.52,0.55,0.50,0.8)
+                elif int(state.get("condition",100))<60: building_tint = Color(0.8,0.7,0.63)
+            prop(objects,building,p+Vector2(16,27),1.0,building_tint)
             if detail > 0:
                 prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
                 prop(decor,"garden" if v%2==0 else "crops",p+Vector2(7,31),0.58)

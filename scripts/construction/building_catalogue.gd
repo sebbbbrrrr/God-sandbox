@@ -51,14 +51,14 @@ func validate(items: Dictionary) -> Array[String]:
     return result
 
 func eligible(world: RefCounted, nation: int, row: Dictionary, context: Dictionary = {}) -> bool:
-    if row.is_empty() or nation not in [0, 1]:
+    if row.is_empty() or (nation not in [0, 1] and world.settlements.get_record(nation).is_empty()):
         return false
     if row.get("supported_ages", []).size() < 11 and local_age(world, nation) not in row.get("supported_ages", []):
         return false
     # No global age unlock: actual local techniques always remain mandatory.
     for key in ["technology_prerequisites", "knowledge_prerequisites"]:
         for tech in row.get(key, []):
-            if not world.occupations.has_capability(world, nation, str(tech)):
+            if not (world.occupations.has_capability(world, nation, str(tech)) if nation in [0, 1] else bool(world.settlements.get_record(nation)["knowledge"].get(str(tech), false))):
                 return false
     for dimension in ["regions", "climates", "cultures", "religions"]:
         var allowed: Array = row.get("variations", {}).get(dimension, [])
@@ -69,8 +69,8 @@ func eligible(world: RefCounted, nation: int, row: Dictionary, context: Dictiona
 func worker_eligible(world: RefCounted, person: Dictionary, row: Dictionary) -> bool:
     if int(person.get("hp", 0)) <= 0 or world.lifecycle.is_dependent(person):
         return false
-    if not eligible(world, int(person["nation"]), row,
-            world.construction.settlement_context.get(str(person["nation"]), {})):
+    if not eligible(world, world.settlements.sid(person), row,
+            world.construction.settlement_context.get(str(world.settlements.sid(person)), {})):
         return false
     for skill in row.get("skills", {}):
         if world.occupations.skill_tier(person, str(skill)) < int(row["skills"][skill]):

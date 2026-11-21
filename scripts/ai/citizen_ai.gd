@@ -174,10 +174,14 @@ static func step(world: RefCounted, person: Dictionary, state: Dictionary, sched
     if not urgent and world.households.care_step(world, person, state):
         return
     # Actual teaching consumes a mentor's time and requires local contact.
-    if not urgent and world.occupations.training_step(world, person, state):
+    if not urgent and not world.toolmaking.jobs.has(str(person["id"])) and not world.construction.jobs.has(str(person["id"])) and world.occupations.training_step(world, person, state):
         return
     # Food collection and survival take priority over optional construction.
     if not urgent and world.food.work_step(world, person, state):
+        return
+    if not urgent and world.founding.travel_step(world, person, state):
+        return
+    if not urgent and world.local_logistics.work_step(world,person,state):
         return
     # One dedicated toolmaking worker per settlement; physical labour only.
     if not urgent and world.toolmaking.work_step(world, person, state):

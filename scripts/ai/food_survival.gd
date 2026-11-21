@@ -5,7 +5,9 @@ const Nav = preload("res://scripts/ai/navigation.gd")
 const Calendar = preload("res://scripts/ai/sim_calendar.gd")
 const FOOD_TYPES := ["berries", "fish", "grain"]
 const MAX_GATHERERS := 12
-const MAX_FARMS := 8
+const MAX_TOTAL_GATHERERS := 24
+const MAX_JOBS := 48
+const MAX_FARMS := 96
 const FOOD_INTERVAL := 120
 const SEARCH_RADIUS := 14
 const CARRY_AMOUNT := 3
@@ -13,6 +15,16 @@ const CARRY_AMOUNT := 3
 var depots: Array[Dictionary] = [
     {"berries": 0, "fish": 0, "grain": 0},
     {"berries": 0, "fish": 0, "grain": 0}]
+var local_depots: Dictionary = {}
+var travel_cargo: Dictionary = {} # edible units physically carried by emigrants
+
+func store(id: int) -> Dictionary:
+    if id in [0, 1]:
+        return depots[id]
+    if not local_depots.has(str(id)):
+        local_depots[str(id)] = empty_food()
+    return local_depots[str(id)]
+
 var pantries: Dictionary = {}  # household ID -> food by type
 var customs: Dictionary = {}   # household ID -> chosen practices, never national traits
 var techniques: Array[Dictionary] = [{}, {}] # local capability hooks for future teaching
@@ -26,6 +38,8 @@ var produced := {"berries": 0, "fish": 0, "grain": 0}
 var consumed := {"berries": 0, "fish": 0, "grain": 0}
 var lost := {"berries": 0, "fish": 0, "grain": 0}
 var planted := {"berries": 0, "fish": 0, "grain": 0}
+var capacity_cache: Dictionary = {} # derived tick-local ecology map, no quantities owned here
+var capacity_tick := -1
 
 func empty_food() -> Dictionary:
     return {"berries": 0, "fish": 0, "grain": 0}
@@ -120,11 +134,16 @@ func seasonal_capacity(world: RefCounted, cell: Vector2i, kind: String) -> int:
     return 5 if season in [1, 2] else 3
 
 func resource_left(world: RefCounted, cell: Vector2i) -> int:
-    var kind := source_kind(world, cell)
-    if kind == "":
+    var index: int = world.index_of(cell.x, cell.y)
+    if index < 0:
         return 0
-    var capacity := seasonal_capacity(world, cell, kind)
-    return maxi(0, capacity - int(wild_taken.get(str(world.index_of(cell.x, cell.y)), 0)))
+    if capacity_tick != world.tick:
+        capacity_cache.clear()
+        capacity_tick = world.tick
+    if not capacity_cache.has(index):
+        var kind := source_kind(world, cell)
+        capacity_cache[index] = seasonal_capacity(world, cell, kind) if kind != "" else 0
+    return maxi(0, int(capacity_cache[index]) - int(wild_taken.get(str(index), 0)))
 
 func cell_access(world: RefCounted, from: Vector2i, source: Vector2i) -> Vector2i:
     var best := Vector2i(-1, -1)
@@ -140,7 +159,7 @@ func cell_access(world: RefCounted, from: Vector2i, source: Vector2i) -> Vector2
     return best
 
 func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
-    var depot: Vector2i = world.capitals[int(person["nation"])]
+    var depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
     var origin := Vector2i(int(person["x"]), int(person["y"]))
     var chosen: Dictionary = {}
     var best_score := 2147483647
@@ -168,7 +187,7 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
 func gatherers(nation: int) -> int:
     var n := 0
     for job in jobs.values():
-        if int(job["nation"]) == nation and str(job["kind"]) == "forage":
+        if (nation < 0 or int(job["nation"]) == nation) and str(job["kind"]) in ["forage", "farm"]:
             n += 1
     return n
 
@@ -202,6 +221,17 @@ func pick_food(household_id: int, person: Dictionary, stores: Dictionary, day: i
     return ""
 
 func take_ration(world: RefCounted, person: Dictionary) -> bool:
+    var carried: Dictionary = travel_cargo.get(str(person["id"]),{})
+    if total(carried)==0 and world.lifecycle.is_dependent(person):
+        var guardian: Dictionary = world.ai_context.people.get(int(person.get("guardian_id",0)),{})
+        if not guardian.is_empty() and int(guardian["household_id"])==int(person["household_id"]) and Nav.manhattan(Vector2i(int(person["x"]),int(person["y"])),Vector2i(int(guardian["x"]),int(guardian["y"])))<=2:
+            carried = travel_cargo.get(str(guardian["id"]),{})
+    for kind in FOOD_TYPES:
+        if int(carried.get(kind,0))>0:
+            carried[kind] -= 1
+            consumed[kind] += 1
+            person["hunger"] = maxi(0,int(person["hunger"])-35)
+            return true
     var family_id: int = int(person.get("household_id", 0))
     var family: Dictionary = world.households.family_for(family_id)
     if family.is_empty():
@@ -217,9 +247,9 @@ func take_ration(world: RefCounted, person: Dictionary) -> bool:
             consumed[food] = int(consumed[food]) + 1
             person["hunger"] = maxi(0, int(person["hunger"]) - 35)
             return true
-    var depot: Vector2i = world.capitals[int(person["nation"])]
+    var depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
     if depot.x >= 0 and Nav.manhattan(point, depot) <= 1:
-        var stores: Dictionary = depots[int(person["nation"])]
+        var stores: Dictionary = store(world.settlements.sid(person))
         var picked: String = pick_food(family_id, person, stores, int(date["day"]))
         if picked != "":
             stores[picked] = int(stores[picked]) - 1
@@ -254,12 +284,16 @@ func on_tick(world: RefCounted) -> void:
 
 func on_terrain_changed(world: RefCounted, x: int, y: int) -> void:
     wild_taken.erase(str(world.index_of(x, y)))
+    # A shoreline edit can change fishing access on adjacent beach cells.
+    for direction in [Vector2i.ZERO] + Nav.DIRS:
+        var cell: Vector2i = Vector2i(x, y) + direction
+        capacity_cache.erase(world.index_of(cell.x, cell.y))
     for i in range(farms.size() - 1, -1, -1):
         if int(farms[i]["x"]) == x and int(farms[i]["y"]) == y and world.at(x, y) != world.MEADOW:
             farms.remove_at(i)
 
 func find_plot(world: RefCounted, nation: int) -> Vector2i:
-    var center: Vector2i = world.capitals[nation]
+    var center: Vector2i = world.settlements.center(world,nation)
     for radius in range(2, 7):
         for dy in range(-radius, radius + 1):
             for dx in range(-radius, radius + 1):
@@ -273,6 +307,8 @@ func find_plot(world: RefCounted, nation: int) -> Vector2i:
                     if int(farm["x"]) == cell.x and int(farm["y"]) == cell.y:
                         occupied = true
                         break
+                for job in jobs.values():
+                    if str(job["kind"]) == "sow" and job.get("source",[]) == [cell.x,cell.y]: occupied = true
                 if occupied or world.construction.occupied(cell.x, cell.y):
                     continue
                 return cell
@@ -287,39 +323,54 @@ func water_near(world: RefCounted, cell: Vector2i) -> bool:
                 return true
     return false
 
-func create_farm(world: RefCounted, nation: int) -> bool:
-    if nation not in [0, 1] or not bool(techniques[nation].get("cultivation", false)):
+func has_tech(world: RefCounted, id: int, tech: String) -> bool:
+    return bool(techniques[id].get(tech,false)) if id in [0,1] else bool(world.settlements.get_record(id).get("knowledge",{}).get(tech,false))
+
+func create_farm(world: RefCounted, nation: int, actor_id: int = 0) -> bool:
+    var experimental: bool = actor_id > 0 and world.occupations.facility_present(world,nation,"farm")
+    if not has_tech(world,nation,"cultivation") and not experimental:
         return false
     # Settlement knowledge does not bypass local growing conditions.
     if int(world.calendar.date_at(world.tick)["season_index"]) == 3:
         return false
-    if int(depots[nation]["grain"]) < 1:
-        return false
+    var seed_job: Dictionary = jobs.get(str(actor_id),{})
+    if actor_id == 0 and int(store(nation)["grain"]) < 1: return false
+    if actor_id > 0 and (str(seed_job.get("kind",""))!="sow" or int(seed_job.get("amount",0))!=1): return false
     var reused: Dictionary = {}
     for existing in farms:
-        if int(existing["nation"]) == nation and bool(existing["harvested"]) and int(existing["fertility"]) > 0:
+        if world.settlements.sid(existing) == nation and bool(existing["harvested"]) and int(existing["fertility"]) > 0:
             reused = existing
             break
-    if reused.is_empty() and farms.size() >= MAX_FARMS:
-        return false
     var plot := Vector2i(-1, -1)
-    if reused.is_empty():
+    if actor_id > 0:
+        reused = {}
+        plot = Vector2i(int(seed_job["source"][0]),int(seed_job["source"][1]))
+        for old in farms:
+            if int(old["x"])==plot.x and int(old["y"])==plot.y:
+                if not bool(old["harvested"]) or int(old["fertility"])<=0: return false
+                reused = old
+                break
+        var actor: Dictionary = world.ai_context.people.get(actor_id,{})
+        if actor.is_empty() or world.settlements.sid(actor)!=nation or Vector2i(int(actor["x"]),int(actor["y"])) != plot or world.at(plot.x,plot.y)!=world.MEADOW or world.construction.occupied(plot.x,plot.y) or Nav.danger_near(world,plot): return false
+    elif reused.is_empty():
         plot = find_plot(world, nation)
         if plot.x < 0:
             return false
     else:
         plot = Vector2i(int(reused["x"]), int(reused["y"]))
-    depots[nation]["grain"] = int(depots[nation]["grain"]) - 1
+    if reused.is_empty() and farms.size()>=MAX_FARMS: return false
+    if actor_id == 0: store(nation)["grain"] = int(store(nation)["grain"]) - 1
+    else: seed_job["amount"] = 0
     planted["grain"] = int(planted["grain"]) + 1
     var coastal: bool = water_near(world, plot)
     var colder: bool = plot.y < 16 or plot.y > world.HEIGHT - 17
     var crop_yield: int = 4 + (1 if coastal else 0) - (2 if colder else 0)
     # Irrigation requires actual nearby water rather than creating it.
-    if bool(techniques[nation].get("irrigation", false)) and coastal:
+    if has_tech(world,nation,"irrigation") and coastal:
         crop_yield += 2
     crop_yield = maxi(2, crop_yield)
     if reused.is_empty():
-        farms.append({"id": next_farm_id, "nation": nation, "x": plot.x, "y": plot.y,
+        farms.append({"id": next_farm_id, "nation": world.settlements.nation(nation), "settlement_id": nation, "x": plot.x, "y": plot.y,
             "sown_tick": world.tick, "ready_tick": world.tick + 240,
             "fertility": 5, "yield": crop_yield, "collected": 0, "harvested": false})
         next_farm_id += 1
@@ -329,25 +380,35 @@ func create_farm(world: RefCounted, nation: int) -> bool:
         reused["yield"] = crop_yield
         reused["collected"] = 0
         reused["harvested"] = false
+    if experimental and not has_tech(world,nation,"cultivation"):
+        world.occupations.grant_capability(world,nation,"cultivation","experiment")
     return true
 
 func ready_farm(world: RefCounted, nation: int) -> Dictionary:
     var season: int = int(world.calendar.date_at(world.tick)["season_index"])
-    if season == 3 or not bool(techniques[nation].get("cultivation", false)):
+    if season == 3 or not has_tech(world,nation,"cultivation"):
         return {}
     for farm in farms:
-        if int(farm["nation"]) == nation and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
+        if world.settlements.sid(farm) == nation and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
             return farm
     return {}
 
 func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var id := str(person["id"])
-    var nation: int = int(person["nation"])
-    var home: Vector2i = world.capitals[nation]
+    var nation: int = world.settlements.sid(person)
+    var home: Vector2i = world.settlements.center(world, nation)
+    var carried: Dictionary = travel_cargo.get(id,{})
+    if not world.founding.assignments.has(id) and not world.regional_economy.trade_jobs.has(id) and Nav.manhattan(Vector2i(int(person["x"]),int(person["y"])),home)<=1 and total(carried)>0:
+        for kind in FOOD_TYPES:
+            store(nation)[kind] = int(store(nation)[kind])+int(carried.get(kind,0))
+        travel_cargo.erase(id)
+    if total(carried)>0 and int(person.get("hunger",0))>=24:
+        take_ration(world,person)
+        return true
     if home.x < 0 or not world.is_walkable(home.x, home.y):
         return false
     if int(person.get("hunger", 0)) >= 24 and not jobs.has(id) and (
-            total(depots[nation]) > 0 or total(pantry_for(int(person["household_id"]))) > 0):
+            total(store(nation)) > 0 or total(pantry_for(int(person["household_id"]))) > 0):
         var family: Dictionary = world.households.family_for(int(person["household_id"]))
         var house: Dictionary = world.households.house_by_id(world, int(family.get("home_id", 0)))
         var target := home
@@ -356,15 +417,25 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         if move(world, person, mind, target):
             take_ration(world, person)
         return true
+    if not jobs.has(id) and world.founding.assignments.has(id):
+        return false
+    if not jobs.has(id) and (world.toolmaking.jobs.has(id) or world.construction.jobs.has(id) or world.regional_economy.trade_jobs.has(id) or world.regional_economy.road_jobs.has(id) or world.local_logistics.jobs.has(id)):
+        return false # personal meals above still interrupt work; optional hauling does not
+    if not jobs.has(id) and total(store(nation))>=maxi(8,world.settlements.population(nation)) and world.toolmaking.artisan_candidate(world,person):
+        return false # keep the existing designated artisan available when survival reserves suffice
     if not jobs.has(id):
+        if jobs.size() >= MAX_JOBS:
+            return false
         if int(world.tick) < int(next_job_scan.get(id, 0)):
             return false
         next_job_scan[id] = int(world.tick) + 18 + int(person["id"]) % 7
-        var reserves_low: bool = total(depots[nation]) < 8
+        if _choose_sowing(world,person,mind): return true
+        var reserves_low: bool = total(store(nation)) < maxi(8,world.settlements.population(nation)*3)
         var emergency: bool = reserves_low and int(person.get("hunger", 0)) >= 36
         var preferred: String = str(world.occupations.record_for(person).get("preference", ""))
         var vocation: bool = preferred in ["forager", "fisher", "crop_farmer"]
-        if (int(person["id"]) % 4 == 0 or emergency or vocation) and gatherers(nation) < MAX_GATHERERS:
+        var ripe: Dictionary = ready_farm(world,nation)
+        if (reserves_low or not ripe.is_empty()) and (int(person["id"]) % 4 == 0 or emergency or vocation) and gatherers(nation) < MAX_GATHERERS and gatherers(-1) < MAX_TOTAL_GATHERERS:
             var farm: Dictionary = ready_farm(world, nation)
             if not farm.is_empty():
                 jobs[id] = {"kind": "farm", "nation": nation, "phase": "source",
@@ -380,7 +451,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         else:
             var family_id: int = int(person["household_id"])
             var family: Dictionary = world.households.family_for(family_id)
-            if family.is_empty() or int(family["home_id"]) <= 0 or total(pantry_for(family_id)) >= reserve_target(world, family) or total(depots[nation]) < 2:
+            if family.is_empty() or int(family["home_id"]) <= 0 or total(pantry_for(family_id)) >= reserve_target(world, family) or total(store(nation)) < 2:
                 return false
             var house: Dictionary = world.households.house_by_id(world, int(family["home_id"]))
             if house.is_empty():
@@ -391,23 +462,49 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         mind["route"] = []
         mind["next_path_tick"] = int(world.tick)
     var job: Dictionary = jobs[id]
+    if str(job["kind"]) == "sow":
+        if str(job["phase"]) == "depot":
+            if not move(world,person,mind,home): return true
+            if int(store(nation)["grain"]) < 1:
+                jobs.erase(id)
+                return false
+            store(nation)["grain"] -= 1
+            job["amount"] = 1
+            job["phase"] = "source"
+            mind["route"] = []
+        var plot := Vector2i(int(job["source"][0]),int(job["source"][1]))
+        if not world.is_walkable(plot.x,plot.y) or world.construction.occupied(plot.x,plot.y) or Nav.danger_near(world,plot):
+            job["kind"] = "forage"
+            job["phase"] = "depot"
+            mind["route"] = []
+            return true
+        if not move(world,person,mind,plot): return true
+        job["work"] = int(job.get("work",0))+1
+        if int(job["work"])>=3:
+            if not create_farm(world,nation,int(person["id"])):
+                job["kind"] = "forage"
+                job["phase"] = "depot"
+                return true
+            world.occupations.on_real_work(world,person,"crop_farmer")
+            jobs.erase(id)
+        return true
     if str(job["phase"]) == "depot":
         if move(world, person, mind, home):
             if str(job["kind"]) == "deliver" and int(job["amount"]) == 0:
-                var food: String = pick_food(int(job["family_id"]), person, depots[nation], int(world.calendar.date_at(world.tick)["day"]))
+                var food: String = pick_food(int(job["family_id"]), person, store(nation), int(world.calendar.date_at(world.tick)["day"]))
                 if food == "":
                     jobs.erase(id)
                     return true
                 var trained: int = world.occupations.skill_tier(person, "food_courier")
-                var number: int = mini(2 + (1 if trained >= 2 else 0), int(depots[nation][food]))
-                depots[nation][food] = int(depots[nation][food]) - number
+                var number: int = mini(2 + (1 if trained >= 2 else 0), int(store(nation)[food]))
+                store(nation)[food] = int(store(nation)[food]) - number
                 job["type"] = food
                 job["amount"] = number
                 job["phase"] = "home"
                 mind["route"] = []
             else:
                 var carried_type: String = str(job["type"])
-                depots[nation][carried_type] = int(depots[nation][carried_type]) + int(job["amount"])
+                store(nation)[carried_type] = int(store(nation)[carried_type]) + int(job["amount"])
                 jobs.erase(id)
                 mind["route"] = []
         return true
@@ -429,7 +526,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         return true
     var source := Vector2i(int(job["source"][0]), int(job["source"][1]))
     var target := source
-    if str(job["kind"]) == "farm" and not bool(techniques[nation].get("cultivation", false)):
+    if str(job["kind"]) == "farm" and not has_tech(world,nation,"cultivation"):
         jobs.erase(id)
         return false
     if str(job["kind"]) == "forage":
@@ -476,20 +573,24 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
 func on_tick_households(world: RefCounted) -> void:
     if world.tick % 60 != 0:
         return
+    if int(world.calendar.date_at(world.tick)["season_index"])==3:
+        for farm in farms:
+            if not bool(farm["harvested"]) and world.tick>=int(farm["ready_tick"]):
+                farm["harvested"] = true
+                farm["failure"] = "winter_crop_loss"
+                farm["fertility"] = maxi(0,int(farm["fertility"])-1)
+                world.settlements.event(world,world.settlements.sid(farm),"crop_failure")
     # Recover a little fallow soil capacity once per game year; no crop
     # outputs are created until a new seed and harvesting work are supplied.
     if world.tick % Calendar.TICKS_PER_YEAR == 0:
         for farm in farms:
             if bool(farm["harvested"]):
                 farm["fertility"] = mini(5, int(farm["fertility"]) + 1)
-    for nation in range(2):
-        if bool(techniques[nation].get("cultivation", false)):
-            var count := 0
-            for farm in farms:
-                if int(farm["nation"]) == nation and not bool(farm["harvested"]):
-                    count += 1
-            if count < 2:
-                create_farm(world, nation)
+    for key in travel_cargo.keys():
+        var traveller: Dictionary = world.ai_context.people.get(int(key),{})
+        if traveller.is_empty() or int(traveller["hp"])<=0:
+            for kind in FOOD_TYPES: lost[kind] += int(travel_cargo[key].get(kind,0))
+            travel_cargo.erase(key)
     for id in jobs.keys():
         var person: Dictionary = world.ai_context.people.get(int(id), {})
         if not person.is_empty() and int(person["hp"]) > 0:
@@ -506,7 +607,7 @@ func on_tick_households(world: RefCounted) -> void:
             next_job_scan.erase(key)
 
 func snapshot() -> Dictionary:
-    return {"version": 1, "depots": depots.duplicate(true), "pantries": pantries.duplicate(true),
+    return {"version": 1, "depots": depots.duplicate(true), "local_depots": local_depots.duplicate(true), "travel_cargo": travel_cargo.duplicate(true), "pantries": pantries.duplicate(true),
         "customs": customs.duplicate(true), "techniques": techniques.duplicate(true),
         "wild_cycle": wild_cycle, "wild_taken": wild_taken.duplicate(true),
         "farms": farms.duplicate(true), "next_farm_id": next_farm_id,
@@ -531,6 +632,22 @@ func load_state(raw: Variant) -> bool:
     for field in ["pantries", "customs", "wild_taken", "jobs"]:
         if not raw.get(field) is Dictionary:
             return false
+    var incoming_local: Variant = raw.get("local_depots", {})
+    if not incoming_local is Dictionary or incoming_local.size() > 24:
+        return false
+    for key in incoming_local:
+        if not str(key).is_valid_int() or int(key) < 2 or not incoming_local[key] is Dictionary:
+            return false
+        for kind in FOOD_TYPES:
+            if int(incoming_local[key].get(kind, -1)) < 0:
+                return false
+    if not raw.get("travel_cargo",{}) is Dictionary: return false
+    travel_cargo = raw.get("travel_cargo",{}).duplicate(true)
+    for key in travel_cargo:
+        if not travel_cargo[key] is Dictionary or total(travel_cargo[key])>3: return false
+        for kind in FOOD_TYPES:
+            if int(travel_cargo[key].get(kind,0))<0: return false
+    local_depots = incoming_local.duplicate(true)
     pantries = raw["pantries"].duplicate(true)
     customs = raw["customs"].duplicate(true)
     wild_taken = raw["wild_taken"].duplicate(true)
@@ -572,6 +689,9 @@ func ledger_ok() -> bool:
         var held := 0
         for store in depots:
             held += int(store[kind])
+        for cargo in travel_cargo.values(): held += int(cargo.get(kind,0))
+        for local_store in local_depots.values():
+            held += int(local_store.get(kind, 0))
         for store in pantries.values():
             held += int(store.get(kind, 0))
         for job in jobs.values():
@@ -579,4 +699,57 @@ func ledger_ok() -> bool:
                 held += int(job.get("amount", 0))
         if int(produced[kind]) != held + int(consumed[kind]) + int(lost[kind]) + int(planted[kind]):
             return false
+    return true
+
+func _choose_sowing(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
+    if jobs.has(str(person["id"])): return false
+    if not ready_farm(world,world.settlements.sid(person)).is_empty(): return false
+    var id: int = world.settlements.sid(person)
+    if int(store(id)["grain"])<1 or int(world.calendar.date_at(world.tick)["season_index"])==3: return false
+    if not has_tech(world,id,"cultivation") and (not world.occupations.facility_present(world,id,"farm") or world.occupations.xp_for(person,"forager")<8): return false
+    var count := 0
+    for farm in farms:
+        if world.settlements.sid(farm)==id and not bool(farm["harvested"]): count += 1
+    for job in jobs.values():
+        if int(job["nation"])==id and str(job["kind"])=="sow": count += 1
+    if count>=2: return false
+    var plot := Vector2i(-1,-1)
+    for farm in farms:
+        if world.settlements.sid(farm)==id and bool(farm["harvested"]) and int(farm["fertility"])>0:
+            var claimed := false
+            for job in jobs.values():
+                if str(job["kind"])=="sow" and job["source"]==[int(farm["x"]),int(farm["y"])]: claimed = true
+            if not claimed:
+                plot = Vector2i(int(farm["x"]),int(farm["y"]))
+                break
+    if plot.x<0: plot = find_plot(world,id)
+    if plot.x<0: return false
+    jobs[str(person["id"])] = {"kind":"sow","nation":id,"phase":"depot","source":[plot.x,plot.y],"type":"grain","amount":0,"work":0}
+    mind["route"] = []
+    mind["next_path_tick"] = world.tick
+    return true
+
+func relief_transfer(world: RefCounted, actor_id: int, settlement_id: int, good: String, pickup: bool) -> bool:
+    if good not in FOOD_TYPES: return false
+    var job: Dictionary = world.regional_economy.trade_jobs.get(str(actor_id),{})
+    var actor: Dictionary = world.ai_context.people.get(actor_id,{})
+    if actor.is_empty() or int(actor["hp"])<=0 or str(job.get("kind",""))!="relief" or str(job.get("offer",""))!=good: return false
+    var origin := int(job.get("settlement_id",-1))
+    if world.settlements.sid(actor)!=origin or world.settlements.nation(origin)!=world.settlements.nation(settlement_id): return false
+    if settlement_id not in [origin,int(job.get("other",-1))]: return false
+    if pickup and (settlement_id!=origin or str(job["phase"])!="pickup"): return false
+    if not pickup and str(job["phase"]) not in ["exchange","return"]: return false
+    var center: Vector2i = world.settlements.center(world,settlement_id)
+    if Nav.manhattan(Vector2i(int(actor["x"]),int(actor["y"])),center)>1: return false
+    var cargo: Dictionary = travel_cargo.get(str(actor_id),empty_food())
+    var depot: Dictionary = store(settlement_id)
+    if pickup:
+        if int(depot[good])<1 or total(cargo)>=3: return false
+        depot[good] -= 1
+        cargo[good] += 1
+        travel_cargo[str(actor_id)] = cargo
+    else:
+        if int(cargo.get(good,0))<1: return false
+        cargo[good] -= 1
+        depot[good] += 1
     return true

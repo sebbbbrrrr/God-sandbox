@@ -32,7 +32,7 @@ func on_citizen_added(world: RefCounted, person: Dictionary) -> void:
     var id := next_id
     next_id += 1
     person["household_id"] = id
-    var family := {"id": id, "nation": int(person["nation"]),
+    var family := {"id": id, "nation": int(person["nation"]), "settlement_id": world.settlements.sid(person),
         "members": [int(person["id"])], "home_id": 0,
         "steward_id": int(person["id"]), "founded_tick": int(world.tick)}
     families.append(family)
@@ -68,11 +68,13 @@ func has_room(world: RefCounted, house_id: int, new_residents: int = 1) -> bool:
 func form_household(world: RefCounted, first_id: int, second_id: int) -> bool:
     if first_id == second_id:
         return false
+    if world.founding.assignments.has(str(first_id)) or world.founding.assignments.has(str(second_id)):
+        return false # keep whole travelling households stable until arrival
     var first := living_person(world, first_id)
     var second := living_person(world, second_id)
     if first.is_empty() or second.is_empty():
         return false
-    if int(first["nation"]) != int(second["nation"]):
+    if world.settlements.sid(first) != world.settlements.sid(second):
         return false
     if str(first["life_stage"]) not in ["adult", "elder"] or str(second["life_stage"]) not in ["adult", "elder"]:
         return false
@@ -147,6 +149,7 @@ func join_newborn(world: RefCounted, baby: Dictionary, parent_a: Dictionary, par
     var members: Array = family["members"]
     members.append(int(baby["id"]))
     baby["household_id"] = family_id
+    baby["settlement_id"] = world.settlements.sid(parent_a)
     baby["home_id"] = home_id
     baby["guardian_id"] = int(parent_a["id"])
     baby["carried_by"] = 0
@@ -168,7 +171,7 @@ func adopt_unprotected(world: RefCounted, child: Dictionary) -> void:
     var selected: Dictionary = {}
     var best_distance := 2147483647
     for family in families:
-        if int(family["id"]) == int(child["household_id"]) or int(family["nation"]) != int(child["nation"]):
+        if int(family["id"]) == int(child["household_id"]) or int(family.get("settlement_id",family["nation"])) != world.settlements.sid(child):
             continue
         var adult_id: int = pick_guardian(world, family)
         if adult_id <= 0:
@@ -191,6 +194,7 @@ func adopt_unprotected(world: RefCounted, child: Dictionary) -> void:
     var selected_members: Array = selected["members"]
     selected_members.append(int(child["id"]))
     child["household_id"] = int(selected["id"])
+    child["settlement_id"] = int(selected.get("settlement_id", selected["nation"]))
     child["home_id"] = int(selected["home_id"])
     child["guardian_id"] = pick_guardian(world, selected)
     child["carried_by"] = 0
@@ -210,7 +214,7 @@ func assign_homes(world: RefCounted) -> void:
             var selected: Dictionary = {}
             var best := 2147483647
             for family in families:
-                if int(family["nation"]) != int(house["nation"]) or int(family["home_id"]) > 0:
+                if int(family.get("settlement_id", family["nation"])) != world.settlements.sid(house) or int(family["home_id"]) > 0:
                     continue
                 var size: int = member_count(world, family)
                 if size <= 0 or size > remaining:
@@ -252,7 +256,7 @@ func reconcile(world: RefCounted) -> void:
             families.remove_at(i)
             continue
         var home := house_by_id(world, int(family["home_id"]))
-        if home.is_empty() or int(home["nation"]) != int(family["nation"]) or int(home.get("capacity", 0)) <= 0:
+        if home.is_empty() or world.settlements.sid(home) != int(family.get("settlement_id", family["nation"])) or int(home.get("capacity", 0)) <= 0:
             family["home_id"] = 0
         var old_steward: int = int(family["steward_id"])
         if living_person(world, old_steward).is_empty():
@@ -282,6 +286,8 @@ func reconcile(world: RefCounted) -> void:
         adopt_unprotected(world, child)
 
 func care_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
+    if world.founding.assignments.has(str(person["id"])):
+        return world.founding.care_travel(world,person,mind)
     if str(person["life_stage"]) not in ["adult", "elder"]:
         return false
     var family := family_for(int(person["household_id"]))
@@ -392,7 +398,7 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
             members.append(pid)
         if members.is_empty():
             return false
-        incoming.append({"id": id, "nation": nation, "members": members,
+        incoming.append({"id": id, "nation": nation, "settlement_id": int(entry.get("settlement_id", nation)), "members": members,
             "home_id": maxi(0, int(entry.get("home_id", 0))),
             "steward_id": maxi(0, int(entry.get("steward_id", 0))),
             "founded_tick": int(entry.get("founded_tick", 0))})

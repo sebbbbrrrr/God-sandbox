@@ -34,7 +34,7 @@ func approach(world: RefCounted, from: Vector2i, source: Vector2i) -> Vector2i:
     return best
 
 func source_for(world: RefCounted, person: Dictionary, material: String) -> Dictionary:
-    var depot: Vector2i = world.capitals[int(person["nation"])]
+    var depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
     var origin = Vector2i(int(person["x"]), int(person["y"]))
     var result: Dictionary = {}
     var shortest = 2147483647
@@ -57,7 +57,7 @@ func source_for(world: RefCounted, person: Dictionary, material: String) -> Dict
 func gatherer_count(nation: int) -> int:
     var result = 0
     for job in jobs.values():
-        if str(job["kind"]) == "gather" and int(job["nation"]) == nation:
+        if str(job["kind"]) == "gather" and int(job.get("settlement_id", job["nation"])) == nation:
             result += 1
     return result
 
@@ -75,10 +75,15 @@ func walk(world: RefCounted, person: Dictionary, mind: Dictionary, target: Vecto
 
 func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: String, task: Dictionary, depot: Vector2i) -> bool:
     if str(task["phase"]) == "depot":
-        if walk(world, person, mind, depot):
+        var holder := str(task.get("deposit_holder","settlement:"+str(task.get("settlement_id",task["nation"]))))
+        var info: Dictionary = world.inventory._holder(world,holder)
+        if info.is_empty():
+            holder = "settlement:"+str(task.get("settlement_id",task["nation"]))
+            info = world.inventory._holder(world,holder)
+        if walk(world, person, mind, info.get("cell",depot)):
             var material = str(task["material"])
             if world.inventory.transfer(world, "citizen:" + id,
-                    "settlement:" + str(task["nation"]), {material: maxi(1, int(task.get("amount", 1)))}, int(person["id"])):
+                    holder, {material: maxi(1, int(task.get("amount", 1)))}, int(person["id"])):
                 jobs.erase(id)
                 mind["route"] = []
         return true
@@ -91,7 +96,8 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
     if walk(world, person, mind, target) and Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), source) <= 1:
         var material = str(task["material"])
         var use_tool: bool = world.toolmaking.tool_for(world, person, material) != ""
-        var count: int = mini(2 if use_tool else 1, left_at(world, source.x, source.y, material))
+        var local_bonus := 1 if world.occupations.facility_present(world,world.settlements.sid(person),"forestry" if material=="wood" else "quarry") else 0
+        var count: int = mini((2 if use_tool else 1)+local_bonus, left_at(world, source.x, source.y, material))
         if world.inventory.extract(world, int(person["id"]), material, source, count):
             world.occupations.on_real_work(world, person,
                 "woodcutter" if material == "wood" else "quarry_worker", count)
@@ -99,6 +105,7 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
             task["amount"] = count
             if use_tool:
                 world.toolmaking.wear(world, person, material)
+            task["deposit_holder"] = world.local_logistics.deposit_holder(world,person,{material:count})
             task["phase"] = "depot"
             mind["route"] = []
     return true

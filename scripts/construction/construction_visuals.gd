@@ -7,6 +7,23 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
         return
     var origin: Vector2 = game.world_origin()
     var visible := Rect2(Vector2.ZERO, game.ui_size()).grow(ts * 2.0)
+    # A camp is an actual local staging store, not a pre-completed house.
+    # Reuse the original full-density crate artwork; draw only visible camps.
+    if game.world_renderer != null:
+        var atlas = game.world_renderer.atlas
+        for key in game.world.settlements.records:
+            var settlement: Dictionary = game.world.settlements.records[key]
+            if str(settlement["status"]) != "camp":
+                continue
+            var cell: Vector2i = game.world.settlements.center(game.world, int(key))
+            var p := origin + Vector2(cell) * ts
+            p.y -= float(game.world.height_at(cell.x, cell.y)) * (12.0 / 32.0) * ts
+            if not visible.has_point(p):
+                continue
+            var extent: Vector2 = atlas.size_of("crates") * ts / 32.0
+            canvas.draw_texture_rect_region(atlas.texture("crates"),
+                Rect2(p + Vector2(ts * 0.5, ts * 0.8) - extent * Vector2(0.5, 1.0), extent),
+                atlas.region("crates"))
     for site in game.world.construction.projects:
         var row: Dictionary = game.world.construction.catalogue.definition(str(site["definition_id"]))
         if row.is_empty():

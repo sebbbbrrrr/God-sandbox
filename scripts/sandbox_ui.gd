@@ -537,27 +537,30 @@ func _show_settings(show: bool) -> void:
         settings_panel.scale = Vector2.ONE
         settings_panel.modulate.a = 1.0
 
+func _citizen_details(person: Dictionary) -> String:
+    var game: Node = get_parent()
+    var world: Variant = game.get("world") if game!=null else null
+    var years := int(person.get("age",0))
+    var settlement := ""
+    if world!=null:
+        years = world.calendar.age_years(int(person.get("birth_tick",world.tick)),world.tick)
+        var id: int = world.settlements.sid(person)
+        var row: Dictionary = world.settlements.get_record(id)
+        if not row.is_empty():
+            settlement = "\n%s · %s\n%d residents · %s" % [str(row["name"]),str(row["status"]).capitalize(),world.settlements.population(id),str(row["specialisation"]).capitalize()]
+    return "Civilisation: %d\nHealth: %d / 100\nAge: %d\nPosition: %d, %d%s" % [int(person.get("nation",0))+1,int(person.get("hp",100)),years,int(person.get("x",0)),int(person.get("y",0)),settlement]
+
 func show_citizen(person: Dictionary) -> void:
     inspector_content = person.duplicate()
-    inspector_title.text = "CITIZEN #%d" % int(person.get("id", 0))
-    inspector_body.text = "Civilisation: %d\nHealth: %d / 100\nAge: %d\nPosition: %d, %d" % [
-        int(person.get("nation", 0)) + 1, int(person.get("hp", 100)),
-        int(person.get("age", 0)), int(person.get("x", 0)), int(person.get("y", 0))
-    ]
+    inspector_title.text = "CITIZEN #%d" % int(person.get("id",0))
+    inspector_body.text = _citizen_details(person)
     _reveal_inspector()
 
 func refresh_citizen(person: Dictionary) -> void:
-    if not inspector_panel.visible or inspector_content.is_empty():
-        return
-    if int(person.get("id", -1)) != int(inspector_content.get("id", -2)):
-        return
+    if not inspector_panel.visible or inspector_content.is_empty() or int(person.get("id",-1))!=int(inspector_content.get("id",-2)): return
     inspector_content = person.duplicate()
-    var new_details := "Civilisation: %d\\nHealth: %d / 100\\nAge: %d\\nPosition: %d, %d" % [
-        int(person.get("nation", 0)) + 1, int(person.get("hp", 100)),
-        int(person.get("age", 0)), int(person.get("x", 0)), int(person.get("y", 0))
-    ]
-    if inspector_body.text != new_details:
-        inspector_body.text = new_details
+    var details := _citizen_details(person)
+    if inspector_body.text!=details: inspector_body.text = details
 
 func show_terrain(cell: Vector2i, kind: String, elevation: int) -> void:
     inspector_content.clear()
