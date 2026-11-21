@@ -1,0 +1,53 @@
+name: Civilisation Architecture I-V QA
+
+on:
+  push:
+    branches:
+      - feature/civilisation-architecture-ages-i-v
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: civilisation-architecture-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  godot:
+    name: Godot import, architecture and simulation regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.5.2
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip -o godot.zip
+          unzip -q godot.zip
+          mv Godot_v4.5.2-stable_linux.x86_64 godot
+          chmod +x godot
+      - name: Import and compile project
+        run: |
+          set -o pipefail
+          ./godot --headless --editor --path . --import --quit 2>&1 | tee /tmp/era-import.log
+          ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/era-import.log
+      - name: Run actual architecture and core regression tests
+        run: |
+          set -euo pipefail
+          for test in architecture_eras_test universal_construction_test construction_animation_test physical_sprite_atlas_test era_occupations_test simulation_test; do
+            ./godot --headless --path . --script "res://tests/$test.gd" 2>&1 | tee "/tmp/era-$test.log"
+            ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script|FAILED:' "/tmp/era-$test.log"
+          done
+      - name: Main game smoke test
+        run: |
+          set -o pipefail
+          ./godot --headless --path . --quit-after 60 2>&1 | tee /tmp/era-scene.log
+          ! grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/era-scene.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-i-v-test-logs
+          path: /tmp/era-*.log
+          retention-days: 7

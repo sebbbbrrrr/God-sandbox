@@ -7,6 +7,7 @@ const Commands = preload("res://scripts/pixel_commands.gd")
 const Weather = preload("res://scripts/weather_cycle.gd")
 const RainOverlay = preload("res://scripts/weather_overlay.gd")
 const Walk = preload("res://scripts/citizen_walk.gd")
+const Architecture = preload("res://scripts/visuals/era_architecture.gd")
 const TILE := 32
 const CHUNK := 16
 const RISE := 12
@@ -24,6 +25,7 @@ var unit_rows: Array[PixelCommands] = []
 var walks: CitizenWalk
 var walk_draw_accum := 0.0
 var rendered_building_count := -1
+var architecture_ages := [-1, -1]
 var facility_cells: Dictionary = {}
 var physical_buildings: Dictionary = {}
 var physical_footprints: Dictionary = {}
@@ -168,7 +170,25 @@ func tile_at(pixel: Vector2) -> Vector2i:
             return Vector2i(base.x,y)
     return base
 
+func refresh_architecture_ages() -> void:
+    # Technology evolution or loss updates only cached town chunks.
+    # Physics, labour, inventory and old simulation saves are unchanged.
+    var change := false
+    for nation in range(2):
+        var age: int = Architecture.visual_age(world, nation)
+        if architecture_ages[nation] != age:
+            architecture_ages[nation] = age
+            change = true
+    if change and not town_cells.is_empty():
+        for cell in town_cells:
+            var coord := Vector2i(floori(float(cell.x) / CHUNK),
+                floori(float(cell.y) / CHUNK))
+            if chunks.has(coord):
+                chunks[coord].dirty = true
+        view_dirty = true
+
 func update_view(origin: Vector2, screen_tile: float, screen_rect: Rect2) -> void:
+    refresh_architecture_ages()
     if world.construction.houses.size() != rendered_building_count:
         paths_dirty = true
     if not view_dirty and not paths_dirty and position==origin.round() and previous_screen_tile==screen_tile and previous_screen_rect==screen_rect:
@@ -332,22 +352,56 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         decor.add("path_join_%d" % path,p)
     var salt := variation(x,y,world.seed+17,100)
     if type == world.TOWN or is_capital:
+        var nation: int = Architecture.nation_at(world, cell)
+        var age: int = int(architecture_ages[nation]) if nation >= 0 else 1
+        age = maxi(1, age)
         if is_capital or building_cells.has(cell) or facility_cells.has(cell):
             var facility: String = str(facility_cells.get(cell, ""))
-            var building: String = "workshop_a" if facility == "tool_area" else \
-                ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else \
-                BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
+            var role := "tool_area" if facility == "tool_area" else (
+                "capital" if is_capital else "ordinary")
+            var building: String = Architecture.sprite(age, role, x, y, world.seed)
             if physical_buildings.has(cell):
                 var actual: Dictionary = physical_buildings[cell]
-                var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
-                building = str(definition.get("visual", {}).get("sprite", building)) if str(actual.get("type", "")) != "tool_area" else "workshop_a"
-            prop(objects,building,p+Vector2(16,27))
+                var definition_id := str(actual.get("definition_id", ""))
+                # Keep actual house IDs, occupancy, material costs, age of
+                # construction and lifecycle state; change only the art.
+                if definition_id in ["primitive_shelter", "timber_hut"]:
+                    building = Architecture.sprite(age, definition_id, x, y, world.seed)
+                elif str(actual.get("type", "")) == "tool_area":
+                    building = Architecture.sprite(age, "tool_area", x, y, world.seed)
+                else:
+                    var definition: Dictionary = world.construction.catalogue.definition(definition_id)
+                    building = str(definition.get("visual", {}).get("sprite", building))
+            prop(objects, building, p + Vector2(16, 27))
             if detail > 0:
-                prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
-                prop(decor,"garden" if v%2==0 else "crops",p+Vector2(7,31),0.58)
-                if detail==2:prop(objects,["handcart","crates","hay","chopping_block"][v],p+Vector2(29,28),0.6)
+                if age == 1:
+                    prop(decor, "branches" if v % 2 == 0 else "rock_small",
+                        p + Vector2(17, 32), 0.6)
+                    prop(decor, "stump" if v % 2 == 0 else "woodpile",
+                        p + Vector2(7, 31), 0.5)
+                    if detail == 2:
+                        prop(objects, "log" if v % 2 == 0 else "rock_medium",
+                            p + Vector2(29, 28), 0.45)
+                else:
+                    var wall := "fence_gate" if age <= 2 else (
+                        "stone_wall_h" if age <= 4 else "fence_vertical")
+                    prop(decor, wall, p + Vector2(17, 32), 0.65)
+                    prop(decor, "garden" if v % 2 == 0 else "crops",
+                        p + Vector2(7, 31), 0.58)
+                    if detail == 2:
+                        var accessory := "hay" if age == 2 else (
+                            "crates" if age < 5 else "handcart")
+                        prop(objects, accessory, p + Vector2(29, 28), 0.55)
         elif detail > 0:
-            prop(decor,["garden","crops","well_open","well_roof"][v],p+Vector2(16,28),0.78)
+            var ambient_options: Array = ["branches", "stump", "rock_small", "woodpile"]
+            if age == 2:
+                ambient_options = ["garden", "crops", "well_open", "hay"]
+            elif age <= 4 and age >= 3:
+                ambient_options = ["garden", "well_open", "crates", "stone_wall_h"]
+            elif age == 5:
+                ambient_options = ["garden", "crops", "well_open", "well_roof"]
+            var ambient: String = str(ambient_options[v])
+            prop(decor, ambient, p + Vector2(16, 28), 0.68)
         return
     if type == world.FOREST:
         if (detail > 0 or salt < 40) and not path_cells.has(cell):
@@ -454,7 +508,7 @@ func rebuild_paths() -> void:
 
 func prop(layer: PixelCommands, key: String, foot: Vector2, factor: float = 1.0, tint: Color = Color.WHITE, sway: float = 0.0) -> void:
     var sz := atlas.size_of(key)*factor
-    if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall"):
+    if key in TREE_SPECIES or key in BUILDINGS or key.begins_with("town_hall") or key.begins_with("era"):
         layer.add("ground_shadow",(foot-Vector2(sz.x*0.43,9)).round(),Vector2(sz.x,14).round())
     layer.add(key,(foot-Vector2(sz.x*0.5,sz.y)).round(),sz.round(),tint,-1.0,sway)
 
