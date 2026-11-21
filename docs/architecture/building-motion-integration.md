@@ -1,3 +1,54 @@
+# Authored frame sheet milestone — November 21, 2026
+
+This revision adds 37 committed original-pixel construction PNG sheets in
+`assets/pixel/construction_frames/`, encoded as `.png.b64` files for explicit
+Android export. **32 cumulative frames per building, 1,184 frames total**.
+Every building has its own manually authored roof boundary, foundation
+boundary, post coordinates, brick/plank spacing and roof-course geometry in
+`data/architecture/hand_authored_piece_layouts.json`.
+
+The frames are rasterized from the original approved sprite atlas—not redrawn
+as low-resolution stand-ins. Frames progressively reveal individual
+brick/plank-sized source-pixel patches. The final (31st indexed) frame is
+pixel-identical to each building's original asset. These are artist-directed
+geometry masks and baked frame images, **not 1,184 independently repainted
+pictures**, nor literal one-for-one material-unit animation.
+
+### Actual game integration
+- `architectural_build_overlay.gd` now decodes each sheet lazily with
+  `Marshalls.base64_to_raw` + `Image.load_png_from_buffer`, caches the
+  `ImageTexture`, and draws the correct frame in world-space based on real
+  saved construction stage/labour.
+- The 32-step presentation only catches up to real paid labour, never advances
+  ahead of it. The overlay remains bounded and stops advancing while paused.
+- The older generic construction visuals and operation effects are suppressed
+  when the actual pixel-world renderer is active, preventing duplicate houses
+  and machinery.
+- Android export includes `assets/pixel/construction_frames/*.png.b64`.
+- The contract test validates the 37 files, PNG decoding, dimensions, initial
+  and completed frames, and **every final pixel** against the original atlas.
+- `tools/author_construction_frames.py --verify` is a separate reproducible
+  Pillow-based verification path. The corresponding authoring command (without
+  --verify) rebuilds the sheets using the manually authored construction
+  geometry.
+
+### Testing and release limitations
+The 37 sheets were successfully created and committed and three (branch
+shelter, adobe house, bronze forge) were visually inspected, but the runtime
+has **not** been built or executed inside Godot here. Headless tests, GL
+Compatibility screenshots, Android debug APK/signature verification and
+Huawei P30 tests remain **not run**. Keep PR #39 as a draft until those are
+completed. Any claim of proven device rendering or consistent 30/60 FPS would
+be premature.
+
+The existing catalogue has 37 definitions across Ages I–III, not Ages IV–XI.
+The tooling is extensible, but later-age assets/animations remain separate work.
+A future high-fidelity upgrade can isolate roof beams, rafters, each actual
+individual brick and door ornaments with bespoke painted intermediate pixels;
+the current frames are unique source-faithful section reveals.
+
+---
+
 # Architectural construction & operational motion — integrated pixel-world pass
 
 Base: PR #38 / `feature/architecture-batch-b-bronze`. Branch: `feature/building-assembly-and-operational-animation`, PR #39.
