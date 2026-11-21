@@ -399,29 +399,57 @@ func _switch_tab(tab: int) -> void:
 
 
 func _clear_content() -> void:
+    current_group = null
     for child in content.get_children():
         content.remove_child(child)
         child.queue_free()
 
 
+func _target() -> VBoxContainer:
+    return current_group if current_group != null else content
+
+
 func _section(title: String) -> void:
+    var card := PanelContainer.new()
+    card.add_theme_stylebox_override("panel", Motion.surface(false, 14))
+    card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    content.add_child(card)
+    var column := VBoxContainer.new()
+    column.add_theme_constant_override("separation", 9)
+    card.add_child(column)
+    current_group = column
+    var kicker := HBoxContainer.new()
+    kicker.add_theme_constant_override("separation", 6)
+    column.add_child(kicker)
     var label := _label(title.to_upper(), 11, GOLD)
-    content.add_child(label)
+    kicker.add_child(label)
+    var rule := ColorRect.new()
+    rule.color = Color(GOLD, 0.23)
+    rule.custom_minimum_size.y = 1
+    rule.custom_minimum_size.x = 24
+    rule.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    rule.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    rule.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    kicker.add_child(rule)
 
 
 func _text(value: String, color: Color = MUTED) -> void:
-    content.add_child(_label(value, 12, color, true))
+    var desc := _label(value, 12, color, true)
+    desc.add_theme_constant_override("line_spacing", 3)
+    _target().add_child(desc)
 
 
 func _stat(name: String, value: String) -> void:
     var line := HBoxContainer.new()
     line.add_theme_constant_override("separation", 8)
-    var left := _label(name, 12, MUTED)
-    var right := _label(value, 13, IVORY)
+    var left := _label(name, 12, MUTED, true)
+    left.size_flags_stretch_ratio = 1.2
+    var right := _label(value, 13, IVORY, true)
+    right.size_flags_stretch_ratio = 0.86
     right.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     line.add_child(left)
     line.add_child(right)
-    content.add_child(line)
+    _target().add_child(line)
 
 
 func _bar(name: String, value: int, description: String = "", inverse: bool = false) -> void:
@@ -430,13 +458,13 @@ func _bar(name: String, value: int, description: String = "", inverse: bool = fa
     var amount := _label("%d%%" % value if value >= 0 else "Not assessed", 12, GOLD)
     amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     top.add_child(amount)
-    content.add_child(top)
+    _target().add_child(top)
     var bar := ProgressBar.new()
     bar.min_value = 0
     bar.max_value = 100
     bar.value = clampi(value, 0, 100)
     bar.show_percentage = false
-    bar.custom_minimum_size.y = 12
+    bar.custom_minimum_size.y = 9
     var tint := MUTED
     if value >= 0:
         tint = DANGER if value >= 70 else (WARNING if value >= 40 else GOOD)
@@ -444,16 +472,23 @@ func _bar(name: String, value: int, description: String = "", inverse: bool = fa
             tint = GOOD if value >= 70 else (WARNING if value >= 40 else DANGER)
     bar.add_theme_stylebox_override("background", _style(DARK, 5))
     bar.add_theme_stylebox_override("fill", _style(tint, 5))
-    content.add_child(bar)
+    _target().add_child(bar)
+    if animate_content and not reduced_motion and value > 0:
+        bar.value = 0
+        var progress_tween := bar.create_tween()
+        progress_tween.tween_property(bar, "value", float(value), 0.56).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
     if description != "":
         _text(description)
 
 
 func _notice(text: String, color: Color = WARNING) -> void:
     var p := PanelContainer.new()
-    p.add_theme_stylebox_override("panel", _style(Color("#2c3b34"), 8, true))
+    var notice_style := _style(Color("#2a3932"), 9, true)
+    notice_style.border_color = Color(color, 0.42)
+    notice_style.border_width_left = 3
+    p.add_theme_stylebox_override("panel", notice_style)
     p.add_child(_label(text, 12, color, true))
-    content.add_child(p)
+    _target().add_child(p)
 
 
 func _goto_button(id: int, title: String) -> void:
@@ -465,7 +500,7 @@ func _goto_button(id: int, title: String) -> void:
         _render(false)
         scroller.scroll_vertical = 0
     )
-    content.add_child(button)
+    _target().add_child(button)
 
 
 func _render(keep_scroll: bool = true) -> void:
@@ -475,9 +510,11 @@ func _render(keep_scroll: bool = true) -> void:
     _clear_content()
     for i in range(tab_buttons.size()):
         var button := tab_buttons[i]
-        button.add_theme_stylebox_override("normal",
-            _style(GOLD if i == current_tab else RAISED, 9))
-        button.add_theme_color_override("font_color", DARK if i == current_tab else IVORY)
+        var selected := i == current_tab
+        button.add_theme_stylebox_override("normal", Motion.action(selected))
+        button.add_theme_stylebox_override("hover", Motion.action(selected, not selected))
+        button.add_theme_color_override("font_color", DARK if selected else IVORY)
+        button.add_theme_color_override("font_hover_color", DARK if selected else IVORY)
     var row := _selected()
     if row.is_empty():
         _text("No settlement records in this world.")
@@ -492,6 +529,13 @@ func _render(keep_scroll: bool = true) -> void:
         4: _history(row)
     if keep_scroll:
         scroller.set_deferred("scroll_vertical", retained)
+    if animate_content and not reduced_motion:
+        content.modulate.a = 0.0
+        var reveal := content.create_tween()
+        reveal.tween_property(content, "modulate:a", 1.0, 0.20).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+    else:
+        content.modulate.a = 1.0
+    animate_content = false
 
 
 func _overview(row: Dictionary) -> void:
