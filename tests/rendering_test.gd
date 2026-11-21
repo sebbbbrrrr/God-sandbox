@@ -20,12 +20,12 @@ func run() -> void:
     var renderer := Renderer.new()
     renderer.setup(world)
     root.add_child(renderer)
-    check(renderer.atlas.entries.size()==330,"all 330 atlas entries")
+    check(renderer.atlas.entries.size()==345,"all original and new atlas entries")
     for key in renderer.atlas.entries:
         var tex := renderer.atlas.texture(key)
         check(tex != null and Rect2(Vector2.ZERO,tex.get_size()).encloses(renderer.atlas.region(key)),"atlas bounds: "+key)
     check(ResourceLoader.exists(ProjectSettings.get_setting("application/config/icon","")),"Android export icon exists")
-    check(renderer.atlas.pages.size()==1,"expansion fits existing runtime texture page")
+    check(renderer.atlas.pages.size()==2,"original and architecture pages load")
     for key in Renderer.TREE_SPECIES+Renderer.SMALL_PLANTS+Renderer.BUILDINGS:
         check(renderer.atlas.entries.has(key),"integrated art exists: "+key)
     # A blocked footpath must disappear and return when the player restores land.
@@ -53,14 +53,14 @@ func run() -> void:
         anchors+=1
         for other in renderer.building_cells:
             check(cell==other or maxi(absi(cell.x-other.x),absi(cell.y-other.y))>1,"large buildings reserve separation")
-    check(anchors>0,"dense town retains building anchors")
+    check(anchors==0,"terrain paint cannot invent unbuilt functional architecture")
     var hall_chunk: PixelChunk=renderer.chunks[Vector2i(40/16,40/16)]
     renderer.build_chunk(hall_chunk)
     var intact_hall:=false
     for row in hall_chunk.rows:
         for key in row.keys:
-            if key.begins_with("town_hall"):intact_hall=true
-    check(intact_hall,"capital renders new town hall artwork")
+            if key=="arch_meeting_canopy":intact_hall=true
+    check(intact_hall,"capital renders age-appropriate communal depot artwork")
     var capital: Vector2i=world.capitals[0]
     world.apply_power(1,capital.x,capital.y)
     var capital_chunk: PixelChunk=renderer.chunks[Vector2i(capital.x/16,capital.y/16)]
@@ -68,7 +68,7 @@ func run() -> void:
     var hall_present:=false
     for row in capital_chunk.rows:
         for key in row.keys:
-            if key.begins_with("town_hall"): hall_present=true
+            if key=="arch_meeting_canopy": hall_present=true
     check(not hall_present,"burned capital loses intact town hall")
     # Exhaustive cardinal transition lookup including diagonal/chunk-border cases.
     var center := Vector2i(15,15)

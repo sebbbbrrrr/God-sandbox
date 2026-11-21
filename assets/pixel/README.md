@@ -334,3 +334,8 @@
 | `cliff_strata` | overlay | 0 | [0, 832, 32, 32] | `tools/expand_pixel_assets.py` |
 | `cliff_rim` | overlay | 0 | [32, 832, 32, 32] | `tools/expand_pixel_assets.py` |
 | `shore_scatter` | overlay | 0 | [64, 832, 32, 32] | `tools/expand_pixel_assets.py` |
+
+
+## Architecture extension
+
+15 new cutouts on a separate 1024x512 page; 345 total regions across two pages. Source sheets, reproducible packer and exact metadata: `tools/pack_architecture.py`, `data/architecture/asset_manifest.json`. One source cell is withheld for tool-design review and is absent from the runtime atlas. Original 330 regions remain unchanged.

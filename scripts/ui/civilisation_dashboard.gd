@@ -619,6 +619,9 @@ func _economy(row: Dictionary) -> void:
         _notice("%s  ·  #%d%s" % [str(project["definition"]).replace("_", " ").capitalize(),
             int(project["id"]), "  ·  PAUSED" if project["paused"] else ""],
             DANGER if project["paused"] else IVORY)
+        if not project.get("placement",{}).is_empty():
+            _text(str(project["placement"].get("reason","")))
+            _stat("Site suitability / target age", "%d / %d" % [int(project["placement"].get("score",0)),int(project.get("primary_age",1))])
         _stat("Labour completed / remaining", "%d / %d" % [
             int(project["progress"]), int(project["remaining_labour"])])
         if not project["pending"].is_empty():
@@ -626,6 +629,14 @@ func _economy(row: Dictionary) -> void:
                 _stat("%s still to deliver" % str(good).capitalize(), str(project["pending"][good]))
         if str(project["reason"]) != "":
             _text("Hold reason: %s" % str(project["reason"]))
+    for proposal in row.get("plan",{}).get("blocked_projects",[]):
+        _text("%s blocked: %s" % [str(proposal.get("function","Building")).capitalize(),str(proposal.get("reason","prerequisite")).replace("_"," ")])
+        for detail in proposal.get("details",[]).slice(0,2):
+            _text("%s: %s" % [str(detail.get("definition","design")).replace("_"," "),str(detail.get("reason","prerequisite")).replace("_"," ")])
+            var missing: Variant = detail.get("missing",{})
+            if missing is Dictionary:
+                for material in missing: _stat("%s unavailable" % str(material).replace("_"," "),str(missing[material]))
+            elif missing is Array and not missing.is_empty(): _text("Required knowledge: "+", ".join(missing))
     _section("Regional conditions")
     var plan: Dictionary = row["plan"]
     if plan.is_empty():

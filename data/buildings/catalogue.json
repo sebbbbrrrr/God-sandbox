@@ -1,0 +1,4046 @@
+{
+  "schema_version": 2,
+  "material_unit": "one existing inventory item, with mass from foundation_items.json",
+  "eras": [
+    {
+      "id": 1,
+      "name": "Early Stone Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 2,
+      "name": "Agricultural Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 3,
+      "name": "Bronze Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 4,
+      "name": "Iron / Classical Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 5,
+      "name": "Medieval / Engineering Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 6,
+      "name": "Early Scientific Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 7,
+      "name": "Industrial Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 8,
+      "name": "Electrical / Modern Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 9,
+      "name": "Information Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 10,
+      "name": "Advanced Technological Age",
+      "minimum_archetypes": 8
+    },
+    {
+      "id": 11,
+      "name": "Far Future",
+      "minimum_archetypes": 8
+    }
+  ],
+  "regions": {
+    "temperate_woodland": {
+      "roof": "steep bark or thatch",
+      "foundation": "stone pads",
+      "walls": "lashed timber",
+      "climate": "temperate"
+    },
+    "tropical_rainforest": {
+      "roof": "ventilated steep palm thatch",
+      "foundation": "raised stilts",
+      "walls": "open woven fibre",
+      "climate": "tropical"
+    },
+    "arid_desert": {
+      "roof": "flat packed earth",
+      "foundation": "stone plinth",
+      "walls": "thick adobe with shaded courts",
+      "climate": "arid"
+    },
+    "coastal_island": {
+      "roof": "wind-braced thatch",
+      "foundation": "raised moisture-resistant supports",
+      "walls": "lashed timber",
+      "climate": "coastal"
+    },
+    "alpine_mountain": {
+      "roof": "steep heavy roof",
+      "foundation": "rock terraces",
+      "walls": "stone windbreaks and timber",
+      "climate": "alpine"
+    },
+    "cold_snowy": {
+      "roof": "low insulated bark and earth",
+      "foundation": "stone windbreak",
+      "walls": "compact insulated branch lattice",
+      "climate": "cold"
+    },
+    "grassland_steppe": {
+      "roof": "low wind-resistant fibre cover",
+      "foundation": "pegged ground anchors",
+      "walls": "portable frame",
+      "climate": "steppe"
+    },
+    "river_wetland": {
+      "roof": "reed thatch",
+      "foundation": "raised flood-clear supports",
+      "walls": "ventilated woven panels",
+      "climate": "wetland"
+    }
+  },
+  "buildings": [
+    {
+      "id": "primitive_shelter",
+      "display_name": "Timber and stone shelter",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 6,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 1,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 3,
+          "materials": {
+            "wood": 2,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 6,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [
+        "timber_hut"
+      ],
+      "conversions": [
+        "timber_hut"
+      ],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "hut_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 1,
+      "archetype_id": "housing",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Finite household shelter",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 10,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "timber_hut",
+      "display_name": "Worked timber dwelling",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "stone_working"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 6,
+        "stone": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 10,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 1,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 6,
+          "materials": {
+            "wood": 5,
+            "stone": 2
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 3,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 8,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "cottage_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 2,
+      "archetype_id": "housing",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Finite household shelter",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 18,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "tool_area",
+      "display_name": "Stoneworking workshop",
+      "category": "workshop",
+      "function": "tool_area",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 2,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 1,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "workshop_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 1,
+      "archetype_id": "toolmaking",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Physical stone toolmaking station",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 11,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "local_storage",
+      "display_name": "Timber storehouse",
+      "category": "storage",
+      "function": "storage",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 3,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 64,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "storage_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 1,
+      "archetype_id": "material_storage",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Finite local material custody",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 13,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "forest_camp",
+      "display_name": "Forestry lodge",
+      "category": "production",
+      "function": "forestry",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 2,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "workshop_b",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 1,
+      "archetype_id": "forestry",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Local logging specialisation",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 12,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "quarry_camp",
+      "display_name": "Quarry shelter",
+      "category": "production",
+      "function": "quarry",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 2,
+        "stone": 3
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 1,
+            "stone": 3
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "stone_house_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 1,
+      "archetype_id": "quarry",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Local quarry specialisation",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 13,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "cultivation_field",
+      "display_name": "Cultivation enclosure",
+      "category": "agriculture",
+      "function": "farm",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 2,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 1,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "farmhouse_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 2,
+      "archetype_id": "crop_farming",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Physical cultivation plots",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 11,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "market_square",
+      "display_name": "Trading hall",
+      "category": "market",
+      "function": "market",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "stone_working"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 3,
+            "stone": 2
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "market_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 3,
+      "archetype_id": "market",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Actual inter-settlement material barter",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 14,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "gathering_hall",
+      "display_name": "Communal hall",
+      "category": "civic",
+      "function": "civic",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        1,
+        1
+      ],
+      "orientations": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 8,
+      "stages": [
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "stakes"
+        },
+        {
+          "id": "structural_assembly",
+          "labour": 4,
+          "materials": {
+            "wood": 3,
+            "stone": 1
+          },
+          "visual": "frame"
+        },
+        {
+          "id": "finishing",
+          "labour": 2,
+          "materials": {
+            "wood": 1
+          },
+          "visual": "roof"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1
+        },
+        "labour": 2,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "barn_a",
+        "construction_animation": "temporary_pixel_overlay",
+        "destruction_state": "temporary_rubble",
+        "quality_status": "original_reference",
+        "ground_anchor": "bottom_center"
+      },
+      "primary_age": 1,
+      "archetype_id": "civic",
+      "legacy": true,
+      "autonomous_priority": 0,
+      "purpose": "Settlement founding and organisation",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          0
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "legacy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 13,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      }
+    },
+    {
+      "id": "branch_shelter",
+      "display_name": "Bark and branch shelter",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 1,
+        "plant_fibre": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 12,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 2,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 2,
+          "materials": {
+            "stone": 1
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 2,
+          "materials": {
+            "wood": 4
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 2,
+          "materials": {
+            "plant_fibre": 2
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 2,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 6,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_branch_shelter",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "housing",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Provides finite shelter and household capacity",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 19,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "knapping_canopy",
+      "display_name": "Knapping canopy",
+      "category": "workshop",
+      "function": "tool_area",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 2,
+        "plant_fibre": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 12,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 2,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 2,
+          "materials": {
+            "stone": 2
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 2,
+          "materials": {
+            "wood": 3
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 2,
+          "materials": {
+            "plant_fibre": 2
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 2,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_knapping_canopy",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "toolmaking",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Enables local stone-tool experiments and manufacture",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 19,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": [
+        "tool_area"
+      ]
+    },
+    {
+      "id": "logging_canopy",
+      "display_name": "Bark-roof logging camp",
+      "category": "production",
+      "function": "forestry",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 4,
+        "stone": 1,
+        "plant_fibre": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 12,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 2,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 2,
+          "materials": {
+            "stone": 1
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 2,
+          "materials": {
+            "wood": 4
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 2,
+          "materials": {
+            "plant_fibre": 2
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 2,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_logging_canopy",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "forestry",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Supports finite local timber gathering",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 19,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "quarry_shade",
+      "display_name": "Quarry shade",
+      "category": "production",
+      "function": "quarry",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 3,
+        "plant_fibre": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 12,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 2,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 2,
+          "materials": {
+            "stone": 3
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 2,
+          "materials": {
+            "wood": 3
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 2,
+          "materials": {
+            "plant_fibre": 2
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 2,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_quarry_shade",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "quarry",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Supports finite local stone gathering",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 20,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "basket_store",
+      "display_name": "Raised basket store",
+      "category": "storage",
+      "function": "storage",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 5,
+        "stone": 2,
+        "plant_fibre": 4
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 18,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 3,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 3,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 3,
+          "materials": {
+            "stone": 2
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 3,
+          "materials": {
+            "wood": 5
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 3,
+          "materials": {
+            "plant_fibre": 4
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 3,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 64,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_basket_store",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "material_storage",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Stores physical inventory in a finite local warehouse",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 29,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "meeting_canopy",
+      "display_name": "Communal branch canopy",
+      "category": "civic",
+      "function": "civic",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 6,
+        "stone": 2,
+        "plant_fibre": 3
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 18,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 3,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 3,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 3,
+          "materials": {
+            "stone": 2
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 3,
+          "materials": {
+            "wood": 6
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 3,
+          "materials": {
+            "plant_fibre": 3
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 3,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_meeting_canopy",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "civic",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Supports settlement organisation",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 29,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "charcoal_clamp",
+      "display_name": "Earth-covered charcoal clamp",
+      "category": "production",
+      "function": "production",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "stone_working"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 3,
+        "stone": 2,
+        "plant_fibre": 1
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 12,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 2,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 2,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "stacking",
+          "labour": 2,
+          "materials": {
+            "stone": 2
+          },
+          "visual": "stacking"
+        },
+        {
+          "id": "earth_cover",
+          "labour": 2,
+          "materials": {
+            "wood": 3
+          },
+          "visual": "earth_cover"
+        },
+        {
+          "id": "vent_finishing",
+          "labour": 2,
+          "materials": {
+            "plant_fibre": 1
+          },
+          "visual": "vent_finishing"
+        },
+        {
+          "id": "inspection",
+          "labour": 2,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_charcoal_clamp",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "charcoal_clamp",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Workers transform carried inputs into physical goods",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [
+        {
+          "item": "charcoal",
+          "work": 12,
+          "target_stock": 8
+        }
+      ],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 18,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": [
+        "tool_area"
+      ]
+    },
+    {
+      "id": "earth_shelter",
+      "display_name": "Cold-climate insulated shelter",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [
+          "cold"
+        ],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 5,
+        "stone": 4,
+        "plant_fibre": 3
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 18,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 3,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 3,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 3,
+          "materials": {
+            "stone": 4
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 3,
+          "materials": {
+            "wood": 5
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 3,
+          "materials": {
+            "plant_fibre": 3
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 3,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 6,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_earth_shelter",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 1,
+      "archetype_id": "housing",
+      "legacy": false,
+      "autonomous_priority": 20,
+      "purpose": "Provides finite shelter and household capacity",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "cold_snowy",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 30,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "wattle_house",
+      "display_name": "Wattle-and-daub family house",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "cultivation"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 6,
+        "clay": 4,
+        "stone": 2,
+        "plant_fibre": 4,
+        "reeds": 4
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 24,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 4,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 4,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 4,
+          "materials": {
+            "clay": 4,
+            "stone": 2
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 4,
+          "materials": {
+            "wood": 6
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 4,
+          "materials": {
+            "plant_fibre": 4,
+            "reeds": 4
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 4,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 8,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_wattle_house",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "housing",
+      "legacy": false,
+      "autonomous_priority": 20,
+      "purpose": "Provides finite shelter and household capacity",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 44,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "communal_longhouse",
+      "display_name": "Communal timber longhouse",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "cultivation"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 12,
+        "stone": 4,
+        "plant_fibre": 6,
+        "reeds": 8
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 36,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 6,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 6,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 6,
+          "materials": {
+            "stone": 4
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 6,
+          "materials": {
+            "wood": 12
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 6,
+          "materials": {
+            "plant_fibre": 6,
+            "reeds": 8
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 6,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 16,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_longhouse",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "housing",
+      "legacy": false,
+      "autonomous_priority": 15,
+      "purpose": "Provides finite shelter and household capacity",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 66,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "raised_granary",
+      "display_name": "Raised village granary",
+      "category": "storage",
+      "function": "granary",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "cultivation"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 7,
+        "stone": 4,
+        "plant_fibre": 4,
+        "reeds": 4
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 24,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 4,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 4,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 4,
+          "materials": {
+            "stone": 4
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 4,
+          "materials": {
+            "wood": 7
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 4,
+          "materials": {
+            "plant_fibre": 4,
+            "reeds": 4
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 4,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_raised_granary",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "granary",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Reduces spoilage of a finite quantity of stored food",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 43,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": [
+        "granary"
+      ],
+      "food_capacity": 120
+    },
+    {
+      "id": "pottery_kiln",
+      "display_name": "Clay firing workshop",
+      "category": "workshop",
+      "function": "production",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "pottery"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 5,
+        "stone": 3,
+        "clay": 12,
+        "sand": 4,
+        "plant_fibre": 2,
+        "reeds": 3
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 30,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 5,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 5,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 5,
+          "materials": {
+            "stone": 3,
+            "clay": 12,
+            "sand": 4
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 5,
+          "materials": {
+            "wood": 5
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 5,
+          "materials": {
+            "plant_fibre": 2,
+            "reeds": 3
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 5,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_pottery_kiln",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "pottery_kiln",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Workers transform carried inputs into physical goods",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [
+        {
+          "item": "clay_brick",
+          "work": 16,
+          "target_stock": 16
+        }
+      ],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 59,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": [
+        "kiln"
+      ]
+    },
+    {
+      "id": "weaving_house",
+      "display_name": "Fibre weaving workshop",
+      "category": "workshop",
+      "function": "production",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "weaving"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 6,
+        "stone": 2,
+        "plant_fibre": 8,
+        "reeds": 4
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 24,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 4,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 4,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 4,
+          "materials": {
+            "stone": 2
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 4,
+          "materials": {
+            "wood": 6
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 4,
+          "materials": {
+            "plant_fibre": 8,
+            "reeds": 4
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 4,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 0,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_weaving_house",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "weaving_house",
+      "legacy": false,
+      "autonomous_priority": 10,
+      "purpose": "Workers transform carried inputs into physical goods",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "temperate_woodland",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [
+        {
+          "item": "woven_cloth",
+          "work": 12,
+          "target_stock": 8
+        }
+      ],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 44,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": [
+        "workshop"
+      ]
+    },
+    {
+      "id": "adobe_house",
+      "display_name": "Desert courtyard house",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "cultivation"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [
+          "arid"
+        ],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 3,
+        "clay": 14,
+        "sand": 5,
+        "stone": 3,
+        "plant_fibre": 3
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 30,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 5,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 5,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 5,
+          "materials": {
+            "clay": 14,
+            "sand": 5,
+            "stone": 3
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 5,
+          "materials": {
+            "wood": 3
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 5,
+          "materials": {
+            "plant_fibre": 3
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 5,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 8,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_adobe_house",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "housing",
+      "legacy": false,
+      "autonomous_priority": 30,
+      "purpose": "Provides finite shelter and household capacity",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "arid_desert",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 58,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    },
+    {
+      "id": "stilt_house",
+      "display_name": "Tropical stilt house",
+      "category": "dwelling",
+      "function": "shelter",
+      "supported_ages": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "technology_prerequisites": [
+        "cultivation"
+      ],
+      "knowledge_prerequisites": [],
+      "variations": {
+        "regions": [],
+        "climates": [
+          "tropical"
+        ],
+        "cultures": [],
+        "religions": []
+      },
+      "placement": {
+        "terrain": [
+          "meadow",
+          "town"
+        ],
+        "shoreline": "any",
+        "max_elevation_difference": 0,
+        "min_spacing": 0
+      },
+      "footprint": [
+        2,
+        2
+      ],
+      "orientations": [
+        0
+      ],
+      "materials": {
+        "wood": 10,
+        "plant_fibre": 8,
+        "reeds": 8,
+        "stone": 2
+      },
+      "tools": [],
+      "skills": {
+        "shelter_builder": 0
+      },
+      "labour": 30,
+      "stages": [
+        {
+          "id": "survey",
+          "labour": 5,
+          "materials": {},
+          "visual": "survey"
+        },
+        {
+          "id": "site_preparation",
+          "labour": 5,
+          "materials": {},
+          "visual": "site_preparation"
+        },
+        {
+          "id": "foundations",
+          "labour": 5,
+          "materials": {
+            "stone": 2
+          },
+          "visual": "foundations"
+        },
+        {
+          "id": "framework",
+          "labour": 5,
+          "materials": {
+            "wood": 10
+          },
+          "visual": "framework"
+        },
+        {
+          "id": "roofing",
+          "labour": 5,
+          "materials": {
+            "plant_fibre": 8,
+            "reeds": 8
+          },
+          "visual": "roofing"
+        },
+        {
+          "id": "inspection",
+          "labour": 5,
+          "materials": {},
+          "visual": "inspection"
+        }
+      ],
+      "storage_capacity": 0,
+      "occupancy_capacity": 8,
+      "structural": {
+        "max_health": 100,
+        "deterioration_interval": 3600,
+        "deterioration": 1
+      },
+      "maintenance": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "repair": {
+        "materials": {
+          "wood": 1,
+          "plant_fibre": 1
+        },
+        "labour": 4,
+        "restore_health": 25
+      },
+      "upgrades": [],
+      "conversions": [],
+      "demolition": {
+        "labour": 2,
+        "salvage_ratio": 0.5
+      },
+      "visual": {
+        "sprite": "arch_stilt_house",
+        "ground_anchor": "bottom_center",
+        "quality_status": "reviewed_logical_scale",
+        "construction_animation": "shared_stage_overlay",
+        "destruction_state": "shared_rubble"
+      },
+      "primary_age": 2,
+      "archetype_id": "housing",
+      "legacy": false,
+      "autonomous_priority": 30,
+      "purpose": "Provides finite shelter and household capacity",
+      "material_unit": "catalogue_item",
+      "entrances": [
+        [
+          0,
+          1
+        ]
+      ],
+      "max_workers": 1,
+      "regional_family": "tropical_rainforest",
+      "culture_tags": [],
+      "infrastructure": [],
+      "operating": {
+        "power": 0,
+        "water": 0,
+        "currency": 0
+      },
+      "production": [],
+      "lifecycle_visuals": {
+        "mode": "existing_shared_overlays",
+        "authored_states": false
+      },
+      "economic_value": 58,
+      "placement_weights": {
+        "distance": -8,
+        "roads": 6,
+        "population": 5,
+        "resources": 4,
+        "water": 4
+      },
+      "facility_tags": []
+    }
+  ]
+}

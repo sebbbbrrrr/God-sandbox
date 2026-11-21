@@ -5,6 +5,7 @@ const Site = preload("res://scripts/construction/site_state.gd")
 const Placement = preload("res://scripts/construction/placement.gd")
 const StrategicPlanner = preload("res://scripts/civilisation/strategic_planner.gd")
 const Tasks = preload("res://scripts/construction/construction_tasks.gd")
+const Operations = preload("res://scripts/construction/building_operations.gd")
 const Lifecycle = preload("res://scripts/construction/building_lifecycle.gd")
 const HOUSE_WOOD := 3
 const HOUSE_STONE := 1
@@ -17,6 +18,7 @@ var catalogue = Catalogue.new()
 var placement = Placement.new()
 var tasks = Tasks.new()
 var lifecycle = Lifecycle.new()
+var operations = Operations.new()
 var settlement_context: Dictionary = {}
 var archived: Array[Dictionary] = []
 var sites_by_id: Dictionary = {}
@@ -26,6 +28,10 @@ var plan_cursor := 0
 var site_cursor = 0
 var revision = 0
 var indexed_houses = 0
+var building_revision := 0
+# Derived tick-local workforce pressure cache (never persisted).
+var labour_cache_tick := -1
+var labour_pressure_cache: Dictionary = {}
 
 func site_by_id(id: int) -> Dictionary:
     return sites_by_id.get(id, {})
@@ -43,6 +49,7 @@ func occupied(x: int, y: int) -> bool:
     return placement.tiles.has(Vector2i(x, y))
 
 func rebuild_indexes() -> void:
+    building_revision += 1
     placement.tiles.clear()
     sites_by_id.clear()
     buildings_by_id.clear()
@@ -70,27 +77,64 @@ func evaluate_request(world: RefCounted, request: Dictionary) -> Dictionary:
         local_stockpiles[str(nation)] = world.inventory.stockpile(nation)
     if world.settlements.center(world, nation).x < 0 or (nation > 1 and world.settlements.get_record(nation).is_empty()):
         return {"ok": false, "reason": "settlement"}
-    var candidates: Array = request.get("candidates", catalogue.definitions.keys())
+    var candidates: Array = request.get("candidates", catalogue.candidate_ids(str(request.get("function", "shelter"))))
     if request.has("definition_id"):
         candidates = [request["definition_id"]]
+    var failures: Array = []
     for id in candidates:
         var row: Dictionary = catalogue.definition(str(id))
-        if str(row.get("function", "")) != str(request.get("function", "shelter")) or not catalogue.eligible(world, nation, row, settlement_context.get(str(nation), {})):
+        if str(row.get("function", "")) != str(request.get("function", "shelter")): continue
+        if not catalogue.eligible(world,nation,row,settlement_context.get(str(nation),{})):
+            var knowledge: Array = catalogue.knowledge_blockers(world,nation,row)
+            failures.append({"definition":str(id),"reason":"knowledge" if not knowledge.is_empty() else "region_or_climate","missing":knowledge})
             continue
-        if eligible_workers(world, nation, row, request.get("available_workforce", [])) == 0:
+        if eligible_workers(world,nation,row,request.get("available_workforce",[])) == 0:
+            failures.append({"definition":str(id),"reason":"labour_skill_or_tool"})
             continue
-        var missing = {}
-        var within_limits = true
+        var missing: Dictionary = {}
+        var within_limits := true
         for material in row["materials"]:
-            if request.get("resource_constraints", {}).has(material) and int(row["materials"][material]) > int(request["resource_constraints"][material]):
-                within_limits = false
-            var shortage = int(row["materials"][material]) - world.inventory.available("settlement:" + str(nation), str(material))
-            if shortage > 0:
-                missing[material] = shortage
-        if not within_limits or (bool(request.get("require_stock", false)) and not missing.is_empty()):
+            if request.get("resource_constraints",{}).has(material) and int(row["materials"][material]) > int(request["resource_constraints"][material]): within_limits = false
+            var shortage: int = int(row["materials"][material])-world.inventory.available("settlement:"+str(nation),str(material))
+            if shortage>0: missing[material] = shortage
+        if not within_limits or (bool(request.get("require_stock",false)) and not missing.is_empty()):
+            failures.append({"definition":str(id),"reason":"materials","missing":missing})
             continue
-        return {"ok": true, "definition_id": str(id), "materials": row["materials"].duplicate(true), "labour": int(row["labour"]), "missing": missing}
-    return {"ok": false, "reason": "knowledge_workforce_or_resources"}
+        var supply: Dictionary = resource_plan(world,nation,missing)
+        if not bool(row.get("legacy",true)) and not supply["viable"]:
+            failures.append({"definition":str(id),"reason":"materials_or_transport","missing":supply["unavailable"]})
+            continue
+        return {"ok":true,"definition_id":str(id),"materials":row["materials"].duplicate(true),"labour":int(row["labour"]),"missing":missing,"resource_plan":supply}
+    return {"ok":false,"reason":str(failures[0]["reason"]) if not failures.is_empty() else "definition_or_function","blocked":failures}
+
+# Bounded finite-source allocation. Shared depletion means wood+fibre cannot
+# both spend the same forest units, nor clay+reeds the same shore units.
+func resource_plan(world: RefCounted, sid: int, missing: Dictionary) -> Dictionary:
+    var left: Dictionary = {}
+    var unavailable: Dictionary = {}
+    var sources: Dictionary = {}
+    var center: Vector2i = world.settlements.center(world,sid)
+    var materials: Array = missing.keys()
+    materials.sort()
+    for material in materials:
+        var need := int(missing[material])
+        for dy in range(-RESOURCE_RADIUS,RESOURCE_RADIUS+1):
+            if need<=0: break
+            for dx in range(-RESOURCE_RADIUS,RESOURCE_RADIUS+1):
+                if need<=0: break
+                if absi(dx)+absi(dy)>RESOURCE_RADIUS: continue
+                var point := center+Vector2i(dx,dy)
+                var capacity := left_at(world,point.x,point.y,str(material))
+                if capacity<=0 or approach(world,center,point).x<0: continue
+                var index := str(world.index_of(point.x,point.y))
+                if not left.has(index): left[index] = capacity
+                var amount := mini(need,int(left[index]))
+                if amount<=0: continue
+                left[index] = int(left[index])-amount
+                need -= amount
+                sources[str(material)] = int(sources.get(str(material),0))+amount
+        if need>0: unavailable[str(material)] = need
+    return {"viable":unavailable.is_empty(),"gatherable":sources,"unavailable":unavailable}
 
 func find_location(world: RefCounted, row: Dictionary, center: Vector2i, orientation: int, nation: int) -> Vector2i:
     var choice := Vector2i(-1, -1)
@@ -142,6 +186,13 @@ func request_construction(world: RefCounted, request: Dictionary) -> Dictionary:
     while sites_by_id.has(next_building_id) or buildings_by_id.has(next_building_id):
         next_building_id += 1
     var site: Dictionary = Site.create(next_building_id, world.settlements.nation(nation), row, cell, orientation, world.tick)
+    site["resource_plan"] = assessment.get("resource_plan",{}).duplicate(true)
+    site["architecture"] = catalogue.architecture_for(row)
+    site["placement_reason"] = StrategicPlanner.explain(world,row,cell,world.settlements.center(world,nation),nation)
+    site["placement_reason"]["score"] = world.settlement_planner.rank(world,row,cell,world.settlements.center(world,nation),nation)
+    site["placement_reason"]["demand"] = request.get("demand", {"function":row["function"]}).duplicate(true)
+    site["placement_reason"]["projected_capacity"] = int(row.get("occupancy_capacity",0)) + int(row.get("storage_capacity",0))
+    site["placement_reason"]["projected_benefit"] = {"housing":int(row.get("occupancy_capacity",0)),"material_storage":int(row.get("storage_capacity",0)),"protected_grain":int(row.get("food_capacity",0)),"processes":row.get("production",[]).duplicate(true)}
     site["settlement_id"] = nation
     next_building_id += 1
     site["priority"] = clampi(int(request.get("priority", 50)), 0, 100)
@@ -168,6 +219,7 @@ func plan(world: RefCounted) -> void:
     var population: int = world.settlements.population(id)
     var capacity: int = world.settlements.housing(world, id)
     var record: Dictionary = world.settlements.get_record(id)
+    record["plan"]["blocked_projects"] = []
     var carrying := int(record.get("plan", {}).get("carrying_capacity", 72))
     if str(record["status"]) in ["failed", "abandoned", "struggling"]:
         return
@@ -179,7 +231,9 @@ func plan(world: RefCounted) -> void:
         if int(local.get("wood",0))>=6: functions.append("forestry")
         if int(local.get("stone",0))>=3: functions.append("quarry")
         functions.append_array(["storage","farm","tool_area","civic","market"])
-        var scores := {"forestry":20+maxi(0,40-int(local.get("wood",0))),"quarry":20+maxi(0,40-int(local.get("stone",0))),"storage":15+houses.size()/2,"farm":40 if world.food.total(world.food.store(id))<population*2 else 10,"tool_area":25,"civic":population,"market":0}
+        if int(world.food.store(id).get("grain",0)) >= 24: functions.append("granary")
+        if world.occupations.has_capability(world,id,"stone_working") and int(local.get("wood",0))>=12: functions.append("production")
+        var scores := {"forestry":20+maxi(0,40-int(local.get("wood",0))),"quarry":20+maxi(0,40-int(local.get("stone",0))),"storage":15+houses.size()/2,"farm":40 if world.food.total(world.food.store(id))<population*2 else 10,"tool_area":25,"civic":population,"market":0,"granary":35,"production":12}
         for member in world.settlements.residents.get(str(id),[]):
             var expert: Dictionary = world.ai_context.people.get(int(member),{})
             if not expert.is_empty(): scores["tool_area"] += mini(10,world.occupations.xp_for(expert,"stone_toolmaker"))
@@ -195,8 +249,9 @@ func plan(world: RefCounted) -> void:
             if present: continue
             var can_supply: bool = int(local.get("wood",0))+world.inventory.available("settlement:"+str(id),"wood")>=4 and int(local.get("stone",0))+world.inventory.available("settlement:"+str(id),"stone")>=3
             if not can_supply: continue
-            var requested: Dictionary = request_construction(world,{"settlement_id":id,"function":function_name,"priority":40})
+            var requested: Dictionary = request_construction(world,{"settlement_id":id,"function":function_name,"priority":clampi(int(scores.get(function_name,40)),1,100),"demand":{"function":function_name,"population":population,"food_reserves":world.food.total(world.food.store(id)),"priority_score":int(scores.get(function_name,40))}})
             if bool(requested.get("ok",false)): return
+            if record["plan"]["blocked_projects"].size()<3: record["plan"]["blocked_projects"].append({"function":function_name,"reason":requested.get("reason",""),"details":requested.get("blocked",[])})
     if capacity >= population and project_for(id).is_empty() and catalogue.local_age(world,id)>=1 and world.occupations.has_capability(world,id,"stone_working"):
         for house in houses:
             if world.settlements.sid(house)==id and capacity-int(house.get("capacity",0))>=population and int(house.get("capacity",0))>0 and str(house.get("function","shelter"))=="shelter" and str(house.get("definition_id",""))=="primitive_shelter" and (population>=8 or int(record.get("plan",{}).get("resources",{}).get("land",100))<20):
@@ -230,7 +285,7 @@ func reserve_available(world: RefCounted, site: Dictionary) -> void:
 func _stock(id: int) -> Dictionary:
     return stockpiles[id] if id in [0, 1] else local_stockpiles.get(str(id), {})
 
-func missing_material(nation: int) -> String:
+func missing_material(nation: int, world: RefCounted = null) -> String:
     for site in projects:
         if int(site.get("settlement_id", site["nation"])) != nation or bool(site["paused"]):
             continue
@@ -260,6 +315,22 @@ func missing_material(nation: int) -> String:
                     carried += int(task.get("cargo", {}).get(item, 0))
             if int(_stock(nation).get(item, 0)) + carried < int(row["repair"]["materials"][item]):
                 return str(item)
+    if world != null:
+        for id in operations.ids_for(self,nation):
+            var house: Dictionary = building_by_id(int(id))
+            if house.is_empty(): continue
+            var row: Dictionary = catalogue.definition(str(house.get("definition_id","")))
+            for process in row.get("production",[]):
+                if _stock(nation).get(str(process["item"]),0)>=int(process["target_stock"]): continue
+                var trained := false
+                for person in world.citizens:
+                    if operations.can_run(world,person,house,process):
+                        trained = true
+                        break
+                if not trained: continue
+                var recipe: Dictionary = world.inventory.catalogue.item(str(process["item"]))["recipe"]
+                for item in recipe["inputs"]:
+                    if int(_stock(nation).get(item,0))<int(recipe["inputs"][item]): return str(item)
     return ""
 
 func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
@@ -454,6 +525,9 @@ func validate_restored(world: RefCounted) -> bool:
             var row: Dictionary = catalogue.definition(str(entity.get("definition_id", "primitive_shelter")))
             if row.is_empty():
                 return false
+            if entity.has("architecture"):
+                var architecture: Variant = entity["architecture"]
+                if not architecture is Dictionary or str(architecture.get("sprite","")) != str(row["visual"]["sprite"]) or int(architecture.get("primary_age",0)) != int(row["primary_age"]): return false
             for cell in placement.footprint(row,Vector2i(int(entity["x"]),int(entity["y"])),int(entity.get("orientation",0))):
                 if footprints.has(cell) or world.index_of(cell.x,cell.y) < 0:
                     return false
@@ -467,6 +541,15 @@ func validate_restored(world: RefCounted) -> bool:
                 return false
         if int(site["remaining_labour"]) < 0 or int(site["progress"]) + int(site["remaining_labour"]) != int(row["labour"]):
             return false
+    for key in jobs:
+        var task: Dictionary = jobs[key]
+        if str(task.get("kind","")) != "operate": continue
+        var house: Dictionary = building_by_id(int(task.get("building_id",0)))
+        if house.is_empty() or str(task.get("phase","")) not in ["depot","site","return"] or int(task.get("remaining",-1))<0: return false
+        var matched := false
+        for process in catalogue.definition(str(house["definition_id"])).get("production",[]):
+            if str(process["item"])==str(task.get("item","")) and int(task["remaining"])<=int(process["work"]): matched = true
+        if not matched: return false
     for key in world.inventory.reservations:
         var site: Dictionary = site_by_id(int(str(key).trim_prefix("site:")))
         if site.is_empty() or str(world.inventory.reservations[key]["holder"]) != "settlement:"+str(site.get("settlement_id", site["nation"])):

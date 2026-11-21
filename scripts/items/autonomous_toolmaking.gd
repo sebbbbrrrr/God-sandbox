@@ -320,6 +320,12 @@ func _need(world: RefCounted, nation: int, recipe_item: String, depth: int = 0) 
 func _select(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var nation: int = world.settlements.sid(person)
     var stores: Dictionary = world.inventory.stockpile(nation)
+    # First shelter has priority over an optional new workshop. Existing jobs
+    # and cargo still complete; recruitment cannot consume the last timber
+    # needed by a physically planned emergency shelter.
+    if world.settlements.housing(world,nation)==0:
+        for site in world.construction.projects:
+            if world.settlements.sid(site)==nation and str(world.construction.catalogue.definition(str(site["definition_id"])).get("function",""))=="shelter": return false
     if not _site(world, nation) and nation > 1:
         if world.construction.project_for(nation).is_empty():
             world.construction.request_construction(world,{"settlement_id":nation,"function":"tool_area"})

@@ -7,8 +7,8 @@ ROOT=Path(__file__).resolve().parents[1]
 folder=ROOT/'assets/pixel'
 meta=json.loads((folder/'atlas.json').read_text())
 pages=[Image.open(folder/name).convert('RGBA') for name in json.loads((folder/'pages.json').read_text())]
-assert len(meta)==330
-assert len(pages)==1, 'Phase 1B should still batch on one runtime page'
+assert len(meta)==345
+assert len(pages)==2, 'Architecture occupies its own bounded atlas page'
 rects=[];fingerprints=set()
 for name,entry in meta.items():
     page=entry['page'];x,y,w,h=entry['packed_rect']
@@ -29,6 +29,14 @@ for name,entry in meta.items():
         assert set(im.getchannel('A').tobytes())<={0,255},name
         assert (ROOT/entry['source']).is_file(),name
 assert len(fingerprints)==64
+for name,e in meta.items():
+    if e.get('category')!='architecture': continue
+    x,y,w,h=e['packed_rect']; im=pages[e['page']].crop((x,y,x+w,y+h))
+    assert set(im.getchannel('A').tobytes())<={0,255}
+    assert hashlib.sha256(im.tobytes()).hexdigest()==e['sha256']
+    assert (ROOT/e['source']).is_file()
+    assert w<=64 and h<=64
+
 # Exercise overflow page boundaries without manufacturing duplicate artwork.
 tree=ast.parse((ROOT/'tools/expand_pixel_assets.py').read_text())
 function=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='runtime_slot')
@@ -38,8 +46,9 @@ assert len(set(slots))==1024
 assert slots[63]==(0,960,960) and slots[64]==(1,0,0) and slots[320]==(2,0,0)
 assert all(0<=x<=960 and 0<=y<=960 for page,x,y in slots)
 # A second full build must produce byte-identical atlases and metadata.
-paths=[folder/name for name in ['sprite_atlas.png','terrain.png','objects.png','transitions.png','expansion.png','atlas.json','pages.json','README.md']]
+paths=[folder/name for name in ['sprite_atlas.png','terrain.png','objects.png','transitions.png','expansion.png','atlas.json','pages.json','README.md','architecture_early.png']]
 before=[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths]
 subprocess.run([sys.executable,str(ROOT/'tools/expand_pixel_assets.py')],check=True)
+subprocess.run([sys.executable,str(ROOT/'tools/pack_architecture.py')],check=True)
 assert before==[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths]
-print('ATLAS_INTEGRITY_PASSED: 330 nonoverlapping regions; 64 unique cutouts; deterministic rebuild')
+print('ATLAS_INTEGRITY_PASSED: 345 nonoverlapping regions; 64 original cutouts + 15 architectural sprites; deterministic rebuild')

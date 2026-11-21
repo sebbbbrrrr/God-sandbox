@@ -44,20 +44,64 @@ const ICONS := {
         ".c....c..", "..cccc...", "...kk....", "........."
     ],
     "hammerstone": [
-        ".........", ".llll....", ".lsssdd..", ".ssdddd..", "..kk.....",
-        ".........", ".........", ".........", "........."
+        ".............",
+        "....kkkkk....",
+        "..kkllllsdk..",
+        ".kllsssdddkk.",
+        ".klssssdddkk.",
+        ".klssssdddk..",
+        "..kssdddkk...",
+        "...kkkkk.....",
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "............."
     ],
     "stone_axe": [
-        "...lll...", "..lssdd..", ".llssddd.", "...skk...", "....ww...",
-        "....ww...", "....ww...", "....wk...", "........."
+        ".....kkk.....",
+        "...kkllssk...",
+        "..kllssssdk..",
+        ".kllssssdddk.",
+        "..kkssdddkk..",
+        "....ccww.....",
+        "....cwww.....",
+        ".....ww......",
+        ".....wh......",
+        ".....wh......",
+        ".....ww......",
+        ".....wk......",
+        "............."
     ],
     "stone_pick": [
-        ".........", "..lllll..", ".lssssddd", "....w....", "....w....",
-        "....w....", "....w....", "....k....", "........."
+        ".............",
+        "...kkkkkkk...",
+        ".kkllsssddkk.",
+        "kllsssssdddk.",
+        "..kkkwwkkk...",
+        ".....ww......",
+        ".....hw......",
+        ".....ww......",
+        ".....wh......",
+        ".....wh......",
+        ".....ww......",
+        ".....wk......",
+        "............."
     ],
     "flint_knife": [
-        ".....l...", "....ls...", "...lsd...", "..lsdd...", "..kww....",
-        "...ww....", "...ww....", "...kk....", "........."
+        ".......kk....",
+        "......kllk...",
+        ".....kllsdk..",
+        "....klssddk..",
+        "...klsssddk..",
+        "..kllsssddk..",
+        "...kdddk.....",
+        "....ckkw.....",
+        ".....cww.....",
+        "......wh.....",
+        "......wh.....",
+        "......wk.....",
+        "............."
     ],
     "fallback": [
         ".........", "..kkk....", ".kllllk..", ".klsdsl..", ".klssdl..",
@@ -96,8 +140,10 @@ static func draw_item(canvas: CanvasItem, item_id: String, center: Vector2, pixe
     if pixel < 0.6:
         return
     var rows: Array = sprite(item_id)
-    var x0 := floorf(center.x - 4.5 * pixel)
-    var y0 := floorf(center.y - 4.5 * pixel)
+    # Recent hand tools use 13x13 motifs; older materials remain 9x9.
+    # Centre each definition by its actual dimensions so none floats off-body.
+    var x0 := floorf(center.x - float(str(rows[0]).length()) * pixel * 0.5)
+    var y0 := floorf(center.y - float(rows.size()) * pixel * 0.5)
     for y in range(rows.size()):
         var row := str(rows[y])
         for x in range(row.length()):

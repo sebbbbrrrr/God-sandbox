@@ -96,6 +96,62 @@ static func plan(world: RefCounted, state: Dictionary, start: Vector2i, target: 
 static func manhattan(a: Vector2i, b: Vector2i) -> int:
     return absi(a.x - b.x) + absi(a.y - b.y)
 
+# Capped bucket sampling prevents O(population^2) scans at busy hubs.
+static func _occupants(world: RefCounted, cell: Vector2i, self_id: int) -> int:
+    var amount: int = int(world.ai_context.cell_counts.get(cell, 0))
+    var actor: Dictionary = world.ai_context.people.get(self_id, {})
+    if not actor.is_empty() and int(actor["x"]) == cell.x and int(actor["y"]) == cell.y:
+        amount -= 1
+    return maxi(0, amount)
+
+# Choose adjacent contact for physical inventory/food transfers. If all four
+# counters are packed, route new arrivals to nearby staging cells instead of
+# putting dozens of sprites on one tile. Waiting is real walking, not teleport.
+static func hub_access(world: RefCounted, person: Dictionary, hub: Vector2i) -> Vector2i:
+    var origin := Vector2i(int(person["x"]), int(person["y"]))
+    if manhattan(origin, hub) <= 1:
+        return origin
+    var self_id: int = int(person["id"])
+    var best := hub
+    var best_score := 2147483647
+    var minimum_occupied := 2147483647
+    var offset: int = posmod(self_id * 7, DIRS.size())
+    for i in range(DIRS.size()):
+        var candidate: Vector2i = hub + DIRS[(i + offset) % DIRS.size()]
+        if not world.is_walkable(candidate.x, candidate.y) or danger_near(world, candidate):
+            continue
+        var occupied: int = _occupants(world, candidate, self_id)
+        minimum_occupied = mini(minimum_occupied, occupied)
+        var score: int = manhattan(origin, candidate) * 3 + occupied * 12 + i
+        if score < best_score:
+            best_score = score
+            best = candidate
+    if minimum_occupied < 2:
+        return best
+    var staging := Vector2i(-1, -1)
+    var staging_score := 2147483647
+    for radius in range(2, 5):
+        for dy in range(-radius, radius + 1):
+            for dx in range(-radius, radius + 1):
+                if absi(dx) + absi(dy) != radius:
+                    continue
+                var candidate := hub + Vector2i(dx, dy)
+                if not world.is_walkable(candidate.x, candidate.y) or danger_near(world, candidate):
+                    continue
+                var occupied: int = _occupants(world, candidate, self_id)
+                var score: int = manhattan(origin, candidate) * 3 + occupied * 22
+                # Keep a citizen stable at their waiting point until a
+                # contact position becomes free instead of oscillating.
+                if candidate == origin:
+                    score -= 25
+                score += posmod(dx * 7 + dy * 11 + self_id, 7)
+                if score < staging_score:
+                    staging_score = score
+                    staging = candidate
+        if staging.x >= 0 and staging_score <= 25:
+            break
+    return staging if staging.x >= 0 else best
+
 static func next_step(world: RefCounted, person: Dictionary, state: Dictionary, target: Vector2i) -> Vector2i:
     var pos := Vector2i(person["x"], person["y"])
     if pos == target:

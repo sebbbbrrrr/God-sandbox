@@ -73,7 +73,7 @@ func placement_and_eligibility() -> void:
     var engine = w.construction
     var row: Dictionary = engine.catalogue.definition("primitive_shelter")
     check(engine.catalogue.validate(w.inventory.catalogue.items).is_empty(), "building schema, stage totals and D1 item references validate")
-    check(engine.catalogue.definitions.size() == 9 and row["supported_ages"].size() == 11, "nine functional early-age definitions share the eleven-era framework")
+    check(engine.catalogue.definitions.size() == 24 and row["supported_ages"].size() == 11, "legacy and authored early-age definitions share the eleven-era framework")
     check(engine.placement.validate(w,row,Vector2i(16,18),0) == "", "valid meadow footprint")
     check(engine.placement.validate(w,row,Vector2i(-1,18),0) != "", "out-of-map footprint rejected")
     check(engine.placement.validate(w,row,Vector2i(17,16),0) == "terrain", "mountain placement rejected")

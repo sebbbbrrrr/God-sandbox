@@ -182,7 +182,9 @@ func transfer(world: RefCounted, source: String, target: String,
     if str(to["kind"]) == "store":
         var units_total := 0
         for count in updated.values(): units_total += int(count)
-        if units_total>64: return false
+        var building: Dictionary = world.construction.building_by_id(int(to["owner_id"]))
+        var definition: Dictionary = world.construction.catalogue.definition(str(building.get("definition_id","")))
+        if units_total>int(definition.get("storage_capacity",64)): return false
     if str(to["kind"]) == "citizen" and _weight(updated) > MAX_CARRY_KG:
         return false
     if not world.toolmaking.can_move(source, units, exact_serial):
@@ -264,7 +266,7 @@ func exchange_at_market(world: RefCounted, citizen_id: int, foreign_nation: int,
 # D3: finite wood, stone, flint and plant-fibre sources; shared biome depletion.
 # Both the terrain precondition and the citizen's proximity are mandatory.
 func extract(world: RefCounted, citizen_id: int, item_id: String, source: Vector2i, quantity: int = 1) -> bool:
-    if item_id not in ["wood", "stone", "flint", "plant_fibre"] or quantity <= 0 or quantity > 4:
+    if item_id not in ["wood", "stone", "flint", "plant_fibre", "clay", "sand", "reeds"] or quantity <= 0 or quantity > 4:
         return false
     var person := _person(world, citizen_id)
     if person.is_empty() or int(person.get("hp", 0)) <= 0:
@@ -476,6 +478,43 @@ func craft_at(world: RefCounted, item_id: String, actor_id: int, from_cargo: boo
     _log(world, "craft:" + item_id, holder,
         holder, {item_id: qty})
     world.occupations.on_real_work(world, person, "stone_toolmaker")
+    return true
+
+# An atomic recipe transformation at one real completed building. The caller
+# supplies no inventory or capability flags. This never handles tool instances.
+func craft_in_building(world: RefCounted, actor_id: int, house: Dictionary, process: Dictionary) -> bool:
+    var person := _person(world,actor_id)
+    if person.is_empty() or world.construction.building_by_id(int(house.get("id",0))) != house:
+        return false
+    if not world.construction.operations.can_run(world,person,house,process): return false
+    var item := str(process.get("item",""))
+    var record: Dictionary = catalogue.item(item)
+    if str(record.get("category","")) == "tool": return false
+    var row: Dictionary = world.construction.catalogue.definition(str(house["definition_id"]))
+    var entry: Array = row.get("entrances",[[0,0]])[0]
+    var at := Vector2i(int(house["x"])+int(entry[0]),int(house["y"])+int(entry[1]))
+    if _distance(Vector2i(int(person["x"]),int(person["y"])),at)>1: return false
+    var holder := "citizen:"+str(actor_id)
+    var store: Dictionary = balances.get(holder,{})
+    var spendable := store.duplicate()
+    for ingredient in spendable: spendable[ingredient] = available(holder,str(ingredient))
+    if not catalogue.can_craft(item,spendable,catalogue.context_for_citizen(world,person,item)): return false
+    var recipe: Dictionary = record["recipe"]
+    var result := store.duplicate()
+    for ingredient in recipe["inputs"]: result[ingredient] = int(result[ingredient])-int(recipe["inputs"][ingredient])
+    result[item] = int(result.get(item,0))+int(recipe["output"])
+    if int(result[item]) > MAX_STACK or _weight(result)>MAX_CARRY_KG: return false
+    for ingredient in recipe["inputs"]:
+        var amount := int(recipe["inputs"][ingredient])
+        store[ingredient] = int(store[ingredient])-amount
+        if int(store[ingredient]) == 0: store.erase(ingredient)
+        consumed[ingredient] = int(consumed.get(ingredient,0))+amount
+    store[item] = int(store.get(item,0))+int(recipe["output"])
+    minted[item] = int(minted.get(item,0))+int(recipe["output"])
+    _log(world,"building_process",holder,holder,{item:int(recipe["output"])})
+    world.occupations.on_real_work(world,person,str(recipe["skill"]))
+    house["operating_cycles"] = int(house.get("operating_cycles",0))+1
+    house["last_operation_tick"] = world.tick
     return true
 
 func snapshot() -> Dictionary:
