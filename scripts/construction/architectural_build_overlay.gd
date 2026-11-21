@@ -10,6 +10,7 @@ var atlas: RefCounted
 var parent_renderer
 var seconds := 0.0
 var pending := 0.0
+var permit_next_frame := false
 var profiles: Dictionary = {}
 var frame_sheets: Dictionary = {}
 var playback_frames: Dictionary = {}
@@ -32,6 +33,7 @@ func advance(delta: float) -> void:
     if pending >= REDRAW_INTERVAL:
         seconds += pending
         pending = 0.0
+        permit_next_frame = true
         if world != null:
             queue_redraw()
 
@@ -98,7 +100,7 @@ func _draw() -> void:
             var target_frame: int = frame_for_phase(phase)
             var current_frame: int = int(playback_frames.get(project_id, target_frame))
             # Construction can lag behind paid labour but never lead it.
-            current_frame = mini(target_frame, current_frame + 1)
+            current_frame = mini(target_frame, current_frame + (1 if permit_next_frame else 0))
             playback_frames[project_id] = current_frame
             var rect := Rect2(Vector2(float(current_frame % FRAME_COLUMNS),
                 float(current_frame / FRAME_COLUMNS)) * size, size)
@@ -111,8 +113,10 @@ func _draw() -> void:
             _draw_low_detail(sprite, dest, phase)
     _draw_finishing_buildings(view)
     if parent_renderer.detail == 0:
+        permit_next_frame = false
         return
     _draw_operations(view)
+    permit_next_frame = false
 
 
 func is_finishing(building_id: int) -> bool:
@@ -148,7 +152,7 @@ func _draw_finishing_buildings(view: Rect2) -> void:
         if sheet == null:
             playback_frames.erase(id)
             continue
-        var index: int = mini(31, int(playback_frames[id]) + 1)
+        var index: int = mini(31, int(playback_frames[id]) + (1 if permit_next_frame else 0))
         playback_frames[id] = index
         var rect := Rect2(Vector2(float(index % FRAME_COLUMNS),
             float(index / FRAME_COLUMNS)) * size, size)
