@@ -98,16 +98,11 @@ static func manhattan(a: Vector2i, b: Vector2i) -> int:
 
 # Capped bucket sampling prevents O(population^2) scans at busy hubs.
 static func _occupants(world: RefCounted, cell: Vector2i, self_id: int) -> int:
-    var people: Array = world.ai_context.buckets.get(world.ai_context.bucket_of(cell), [])
-    var count: int = 0
-    for i in range(mini(40, people.size())):
-        var id: int = int(people[i])
-        if id == self_id:
-            continue
-        var person: Dictionary = world.ai_context.people.get(id, {})
-        if not person.is_empty() and int(person["x"]) == cell.x and int(person["y"]) == cell.y:
-            count += 1
-    return count
+    var amount: int = int(world.ai_context.cell_counts.get(cell, 0))
+    var self: Dictionary = world.ai_context.people.get(self_id, {})
+    if not self.is_empty() and int(self["x"]) == cell.x and int(self["y"]) == cell.y:
+        amount -= 1
+    return maxi(0, amount)
 
 # Choose adjacent contact for physical inventory/food transfers. If all four
 # counters are packed, route new arrivals to nearby staging cells instead of
