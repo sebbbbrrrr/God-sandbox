@@ -73,8 +73,14 @@ func _draw() -> void:
             p.y -= float(world.height_at(int(citizen["x"]), int(citizen["y"]))) * (12.0 / 32.0) * ts
             if p.x < -ts or p.x > size.x + ts or p.y < -ts or p.y > size.y + ts:
                 continue
-            Art.draw_item(self, str(item["item_id"]), p + Vector2(ts * 0.42, -ts * 0.05),
-                ts / 17.5)
+            # Work choreography draws an actively used physical tool in the hand.
+            # An idle/walking worker displays only a small, shaded carried item.
+            if world.construction.jobs.has(str(citizen["id"])) and \
+                    str(world.construction.jobs[str(citizen["id"])].get("phase", "")) == "site":
+                continue
+            Art.draw_item(self, str(item["item_id"]),
+                p + Vector2(minf(ts * 0.20, 10.0), -minf(ts * 0.08, 4.0)),
+                clampf(ts / 43.0, 0.75, 2.0))
             if int(item["condition"]) * 4 < maxi(1, int(item["max_condition"])):
                 draw_rect(Rect2(p + Vector2(ts * 0.31, ts * 0.23),
                     Vector2(maxf(2.0, ts * 0.16), 2)), Color("#d98a65"))
