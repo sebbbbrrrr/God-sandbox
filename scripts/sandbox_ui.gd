@@ -687,9 +687,10 @@ func _layout() -> void:
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
     modal_dim.size = size_view
-    var settings_height := maxf(330.0, settings_content.get_combined_minimum_size().y + 24.0)
-    settings_panel.size = Vector2(minf(size_view.x - 30, 380),
-        minf(size_view.y - 26, settings_height))
+    # A bounded 580px content sheet leaves the game recognisable behind it.
+    # The internal ScrollContainer handles smaller phones and landscape.
+    var settings_height := minf(size_view.y - 26.0, 580.0)
+    settings_panel.size = Vector2(minf(size_view.x - 30.0, 380.0), settings_height)
     settings_panel.position = (size_view - settings_panel.size) * 0.5
 
 func blocks_world_input(point: Vector2) -> bool:
