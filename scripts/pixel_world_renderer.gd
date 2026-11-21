@@ -350,6 +350,11 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
             var building_foot := p+Vector2(16,27)
             if physical_buildings.has(cell):
                 var actual: Dictionary = physical_buildings[cell]
+                # Preserve the last in-progress frames over the real built
+                # sprite. Simulation completion is never delayed; this skips
+                # only the cached static draw until presentation catches up.
+                if build_overlay != null and build_overlay.is_finishing(int(actual.get("id", -1))):
+                    return
                 var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
                 building = str(actual.get("architecture", {}).get("sprite", definition.get("visual", {}).get("sprite", building)))
                 building_foot.x = p.x+float(definition.get("footprint",[1,1])[0])*16.0
