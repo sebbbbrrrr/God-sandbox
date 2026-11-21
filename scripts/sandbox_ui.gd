@@ -540,19 +540,24 @@ func open_palette(show: bool) -> void:
     if panel_tween != null and panel_tween.is_running():
         panel_tween.kill()
     var target_y := _palette_y()
+    # Palette stays inside its allocated screen bounds throughout the tween.
+    palette_panel.position.y = target_y
+    palette_panel.pivot_offset = palette_panel.size * 0.5
     if reduced_motion:
         palette_panel.visible = show
-        palette_panel.position.y = target_y if show else dock_panel.position.y + 8
+        palette_panel.scale = Vector2.ONE
         palette_panel.modulate.a = 1.0 if show else 0.0
         return
     if show:
         palette_panel.visible = true
-        palette_panel.position.y = dock_panel.position.y + 6
+        palette_panel.scale = Vector2(0.975, 0.975)
         palette_panel.modulate.a = 0.0
     panel_tween = create_tween().set_parallel(true)
     panel_tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-    panel_tween.tween_property(palette_panel, "position:y", target_y if show else dock_panel.position.y + 8, 0.22)
-    panel_tween.tween_property(palette_panel, "modulate:a", 1.0 if show else 0.0, 0.18)
+    panel_tween.tween_property(palette_panel, "scale",
+        Vector2.ONE if show else Vector2(0.985, 0.985), 0.22)
+    panel_tween.tween_property(palette_panel, "modulate:a",
+        1.0 if show else 0.0, 0.18)
     if not show:
         panel_tween.chain().tween_callback(func() -> void:
             if not palette_open:
