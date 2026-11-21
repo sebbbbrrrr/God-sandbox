@@ -9,6 +9,7 @@ signal pause_pressed
 signal speed_pressed
 signal save_pressed
 signal items_pressed
+signal civilisation_pressed
 
 const INK := Color("#172825")
 const SURFACE := Color("#1b2d2b")
@@ -63,6 +64,7 @@ var speed_button: Button
 var palette_button: Button
 var hand_button: Button
 var items_button: Button
+var civilisation_button: Button
 var active_button: Button
 var dock_brush_button: Button
 var category_bar: HBoxContainer
@@ -189,12 +191,17 @@ func _make_interface() -> void:
     caption_line = _label("Year 1  ·  0 souls", 10, MUTED)
     status.add_child(status_line)
     status.add_child(caption_line)
+    civilisation_button = _button("Towns", "", 56)
     pause_button = _button("", "pause", 42)
     speed_button = _button("1×", "", 44)
     var settings_button := _button("", "settings", 42)
-    for b in [pause_button, speed_button, settings_button]:
+    for b in [civilisation_button, pause_button, speed_button, settings_button]:
         b.custom_minimum_size.y = 42
         top_row.add_child(b)
+    civilisation_button.pressed.connect(func() -> void:
+        _animate_press(civilisation_button)
+        civilisation_pressed.emit()
+    )
     pause_button.pressed.connect(func() -> void:
         _animate_press(pause_button)
         pause_pressed.emit()
@@ -470,6 +477,9 @@ func _refresh_selection() -> void:
         _set_selected(power_buttons[id], id == active_power)
     for i in range(brush_buttons.size()):
         _set_selected(brush_buttons[i], i == active_brush)
+
+func set_civilisation_active(active: bool) -> void:
+    _set_selected(civilisation_button, active)
 
 func update_stats(year: int, population: int, paused: bool, speed: int) -> void:
     var new_caption := "Year %d  ·  %d souls" % [year, population]

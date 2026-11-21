@@ -5,6 +5,8 @@ extends "res://scripts/game.gd"
 const Renderer = preload("res://scripts/pixel_world_renderer.gd")
 const HUD = preload("res://scripts/sandbox_ui.gd")
 const UnifiedOverlay = preload("res://scripts/ui/unified_world_overlay.gd")
+const CivilisationSheet = preload("res://scripts/ui/civilisation_dashboard.gd")
+const CivilisationRoutes = preload("res://scripts/ui/civilisation_map_overlay.gd")
 
 var world_renderer: PixelWorldRenderer
 var hud: GodSandboxHUD
@@ -13,6 +15,8 @@ var world_items: Node2D
 var item_layer: CanvasLayer
 var item_visual: Node2D
 var inspected_citizen_id := -1
+var civilisation_ui: CivilisationDashboard
+var civilisation_routes: CivilisationMapOverlay
 # Keep the simulation from monopolising the Android main thread at 2x/4x.
 # One expensive world.step() cannot be interrupted, but subsequent steps are
 # deferred once the CPU slice has been consumed. Rendering uses real time.
@@ -40,6 +44,10 @@ func _ready() -> void:
     world_renderer.setup(world)
     add_child(world_renderer)
     world_renderer.refresh_units()
+    civilisation_routes = CivilisationRoutes.new()
+    civilisation_routes.configure(self)
+    civilisation_routes.set_enabled(false)
+    add_child(civilisation_routes)
 
     world_layer = CanvasLayer.new()
     world_layer.layer = 5
@@ -59,6 +67,7 @@ func _ready() -> void:
     hud.speed_pressed.connect(_cycle_speed)
     hud.save_pressed.connect(save_world)
     hud.items_pressed.connect(_open_items)
+    hud.civilisation_pressed.connect(_toggle_civilisation)
     hud.set_active_power(selected_power)
     hud.set_brush(brush_index)
 
@@ -71,6 +80,12 @@ func _ready() -> void:
     item_visual.mode = "items"
     item_layer.add_child(item_visual)
 
+    civilisation_ui = CivilisationSheet.new()
+    civilisation_ui.setup(world)
+    add_child(civilisation_ui)
+    civilisation_ui.focus_requested.connect(_focus_civilisation)
+    civilisation_ui.route_visibility_changed.connect(_update_civilisation_routes)
+
     get_viewport().size_changed.connect(_on_resized)
     _on_resized()
 
@@ -80,6 +95,8 @@ func _on_resized() -> void:
         world_items.queue_redraw()
     if item_visual != null:
         item_visual.queue_redraw()
+    if civilisation_routes != null and civilisation_routes.enabled:
+        civilisation_routes.queue_redraw()
 
 # The latest mobile HUD owns safe-area controls; the terrain extends beneath
 # it, and physics/camera use identical full-viewport coordinate transforms.
@@ -91,6 +108,8 @@ func world_origin() -> Vector2:
     return (camera_view_center() - camera_center * tile_size()).round()
 
 func inside_world(position: Vector2) -> bool:
+    if civilisation_ui != null and civilisation_ui.is_open:
+        return false
     var size := ui_size()
     return position.x >= 0 and position.x < size.x and position.y >= 0 and \
         position.y < size.y and (hud == null or not hud.blocks_world_input(position))
@@ -158,6 +177,8 @@ func _process(delta: float) -> void:
         world_items.queue_redraw()
         if inspector.visible:
             item_visual.queue_redraw()
+        if civilisation_routes != null and civilisation_routes.enabled:
+            civilisation_routes.queue_redraw()
 
 func _set_power(power: int) -> void:
     selected_power = power
@@ -181,7 +202,36 @@ func _cycle_speed() -> void:
     simulation_speed = 2 if simulation_speed == 1 else (4 if simulation_speed == 2 else 1)
     hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused, simulation_speed)
 
+func _toggle_civilisation() -> void:
+    if civilisation_ui == null:
+        return
+    if not civilisation_ui.is_open:
+        selected_power = -1
+        hud.set_active_power(-1)
+        hud.open_palette(false)
+        hud.hide_inspector()
+        inspector.close()
+        inspected_citizen_id = -1
+    civilisation_ui.toggle()
+    hud.set_civilisation_active(civilisation_ui.is_open)
+
+func _focus_civilisation(cell: Vector2i) -> void:
+    camera_center = Vector2(cell) + Vector2(0.5, 0.5)
+    if hud != null:
+        hud.set_civilisation_active(false)
+    if civilisation_routes != null and civilisation_routes.enabled:
+        civilisation_routes.queue_redraw()
+
+func _update_civilisation_routes(enabled: bool) -> void:
+    if civilisation_routes == null or civilisation_ui == null:
+        return
+    civilisation_routes.set_snapshot(civilisation_ui.snapshot)
+    civilisation_routes.set_enabled(enabled)
+
 func _open_items() -> void:
+    if civilisation_ui != null:
+        civilisation_ui.close()
+        hud.set_civilisation_active(false)
     selected_power = -1
     hud.set_active_power(-1)
     hud.hide_inspector()
@@ -200,6 +250,9 @@ func _update_inspection() -> void:
         inspector.close()
 
 func _input(event: InputEvent) -> void:
+    if civilisation_ui != null and civilisation_ui.is_open:
+        # Native Control buttons receive GUI events; gestures must not paint or pan.
+        return
     # Android emulates mouse for native Godot buttons. Real touch is already
     # processed separately for the world so do not duplicate gestures.
     if event.device == InputEvent.DEVICE_ID_EMULATION and \
@@ -222,6 +275,34 @@ func tapped(position: Vector2) -> void:
     if world.index_of(cell.x, cell.y) < 0:
         return
     if selected_power == -1:
+        # Citizens and physical drops on the exact tile retain their original
+        # inspection priority even if the town centre is directly underneath.
+        for citizen in world.citizens:
+            if int(citizen.get("hp", 0)) > 0 and int(citizen["x"]) == cell.x and int(citizen["y"]) == cell.y:
+                hud.hide_inspector()
+                if inspect_cell(cell):
+                    inspected_citizen_id = inspector.focus_citizen_id
+                    item_visual.queue_redraw()
+                    return
+                break
+        # A settlement marker/centre opens its complete observatory, rather than
+        # the generic terrain or item inspector. Regular citizen taps still work.
+        var nearest := -1
+        var nearest_distance := 4
+        for key in world.settlements.records:
+            var sid := int(key)
+            var centre: Vector2i = world.settlements.center(world, sid)
+            var distance := absi(centre.x - cell.x) + absi(centre.y - cell.y)
+            if distance < nearest_distance:
+                nearest_distance = distance
+                nearest = sid
+        if nearest >= 0 and civilisation_ui != null:
+            hud.hide_inspector()
+            inspector.close()
+            inspected_citizen_id = -1
+            civilisation_ui.open_for(nearest)
+            hud.set_civilisation_active(true)
+            return
         hud.hide_inspector()
         if inspect_cell(cell):
             inspected_citizen_id = inspector.focus_citizen_id
