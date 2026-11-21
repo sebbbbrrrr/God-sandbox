@@ -96,6 +96,35 @@ static func plan(world: RefCounted, state: Dictionary, start: Vector2i, target: 
 static func manhattan(a: Vector2i, b: Vector2i) -> int:
     return absi(a.x - b.x) + absi(a.y - b.y)
 
+# Choose a deterministic, walkable contact tile adjacent to a depot/home.
+# Physical transfers still require adjacency; this prevents routing everyone onto
+# the identical centre cell. Crowd sampling is capped for mobile frame budgets.
+static func hub_access(world: RefCounted, person: Dictionary, hub: Vector2i) -> Vector2i:
+    var origin := Vector2i(int(person["x"]), int(person["y"]))
+    if manhattan(origin, hub) <= 1:
+        return origin
+    var best := hub
+    var best_score := 2147483647
+    var offset: int = posmod(int(person["id"]) * 7, DIRS.size())
+    for i in range(DIRS.size()):
+        var candidate: Vector2i = hub + DIRS[(i + offset) % DIRS.size()]
+        if not world.is_walkable(candidate.x, candidate.y) or danger_near(world, candidate):
+            continue
+        var occupied := 0
+        var others: Array = world.ai_context.buckets.get(world.ai_context.bucket_of(candidate), [])
+        for j in range(mini(32, others.size())):
+            var other_id: int = int(others[j])
+            if other_id == int(person["id"]):
+                continue
+            var other: Dictionary = world.ai_context.people.get(other_id, {})
+            if not other.is_empty() and int(other["x"]) == candidate.x and int(other["y"]) == candidate.y:
+                occupied += 1
+        var score: int = manhattan(origin, candidate) * 3 + occupied * 12 + i
+        if score < best_score:
+            best_score = score
+            best = candidate
+    return best
+
 static func next_step(world: RefCounted, person: Dictionary, state: Dictionary, target: Vector2i) -> Vector2i:
     var pos := Vector2i(person["x"], person["y"])
     if pos == target:
