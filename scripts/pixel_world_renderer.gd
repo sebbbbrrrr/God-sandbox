@@ -516,9 +516,9 @@ func render_units() -> void:
             row.queue_redraw()
 
 func animate(delta: float, simulated_delta: float = -1.0) -> void:
-    if build_overlay != null:
-        build_overlay.advance(delta)
     var motion_delta: float = delta if simulated_delta < 0.0 else simulated_delta
+    if build_overlay != null:
+        build_overlay.advance(motion_delta)
     if walks.advance(motion_delta):
         walk_draw_accum += delta
         if walk_draw_accum >= 1.0 / 30.0 or not walks.has_active_motion():
