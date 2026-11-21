@@ -275,6 +275,16 @@ func tapped(position: Vector2) -> void:
     if world.index_of(cell.x, cell.y) < 0:
         return
     if selected_power == -1:
+        # Citizens and physical drops on the exact tile retain their original
+        # inspection priority even if the town centre is directly underneath.
+        for citizen in world.citizens:
+            if int(citizen.get("hp", 0)) > 0 and int(citizen["x"]) == cell.x and int(citizen["y"]) == cell.y:
+                hud.hide_inspector()
+                if inspect_cell(cell):
+                    inspected_citizen_id = inspector.focus_citizen_id
+                    item_visual.queue_redraw()
+                    return
+                break
         # A settlement marker/centre opens its complete observatory, rather than
         # the generic terrain or item inspector. Regular citizen taps still work.
         var nearest := -1
