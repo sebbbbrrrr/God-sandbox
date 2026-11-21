@@ -5,6 +5,7 @@ on:
     branches:
       - feature/phase-f-autonomous-settlements
       - feature/civilisation-observatory-ui
+      - feature/civilisation-aaa-menu-polish
   workflow_dispatch:
 
 permissions:
