@@ -7,7 +7,7 @@ const MAX_OPERATING := 48
 const REDRAW_INTERVAL := 1.0 / 12.0
 var world: RefCounted
 var atlas: RefCounted
-var parent_renderer: Node2D
+var parent_renderer
 var seconds := 0.0
 var pending := 0.0
 
@@ -132,10 +132,10 @@ func _draw_band(sprite: String, at: Vector2, src: Rect2, top: int, bottom: int,
         if (row_index + seed) % 2 == 1:
             col_index = cols - 1 - col_index
         var px: int = col_index * cell_width
-        var py: int = bottom - (row_index + 1) * cell_height
-        py = maxi(top, py)
+        var piece_bottom: int = bottom - row_index * cell_height
+        var py: int = maxi(top, piece_bottom - cell_height)
         var w: int = mini(cell_width, int(src.size.x) - px)
-        var h: int = mini(cell_height, bottom - py)
+        var h: int = piece_bottom - py
         if w <= 0 or h <= 0:
             continue
         draw_texture_rect_region(atlas.texture(sprite),
