@@ -2,6 +2,7 @@ extends RefCounted
 # Phase A2: reusable work choreography. ALL jobs, movement, materials and stages
 # come from the authoritative world. This module modifies no simulation data.
 # Drawing is culled to visible citizens, without nodes or animated textures.
+const Art = preload("res://scripts/ui/item_pixel_art.gd")
 const DUST := Color("#c4ad87")
 const WOOD := Color("#93613c")
 const WOOD_LIGHT := Color("#d2aa6a")
@@ -54,7 +55,8 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
         p.y -= float(world.height_at(int(person["x"]), int(person["y"]))) * (12.0 / 32.0) * ts
         if not viewport.has_point(p):
             continue
-        var size := ts / 32.0
+        # Cap zoom scaling so tools cannot turn into enormous wooden poles.
+        var size := clampf(ts / 42.0, 0.72, 1.75)
         var cargo: Dictionary = task.get("cargo", {})
         if kind == "gather" and phase == "depot" and int(task.get("amount", 0)) > 0:
             cargo = {str(task.get("material", "wood")): int(task.get("amount", 0))}
@@ -64,15 +66,39 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                 if int(world.food.travel_cargo[str(id)][good])>0: cargo[good] = int(world.food.travel_cargo[str(id)][good])
         var carrying := not cargo.is_empty()
         var t := clock + float(posmod(id * 37, 97)) * 0.23
+        var equipment: String = _equipped_tool(world, person)
+        var facing: int = -1 if posmod(id, 2) == 0 else 1
+        var work_target: Array = task.get("target", task.get("source", []))
+        if work_target.size() == 2 and int(work_target[0]) != int(person["x"]):
+            facing = 1 if int(work_target[0]) > int(person["x"]) else -1
         if carrying:
-            _bundle(canvas, p + Vector2(-8, -14 + (sin(t * 4.0) if moving else 0.0)) * size, size, cargo)
+            _bundle(canvas, p + Vector2(-8 * facing, -14 + (sin(t * 4.0) if moving else 0.0)) * size, size, cargo)
         if moving:
             # Stride dust and a swinging carrying posture. No new animation actors.
             if ts >= 19.0 and sin(t * 8.0) > 0.84:
                 _specks(canvas, p + Vector2(0, 9) * size, size, t, DUST, 2)
             continue
         if kind == "food":
-            _action(canvas,p,size,t,"dig" if str(task.get("food_action",""))=="sow" else "sweep")
+            # Only animate real labour at its actual location. The old fallback
+            # made every stationary food worker sweep at depots and queues.
+            var food_kind := str(task.get("food_action", ""))
+            var here := Vector2i(int(person["x"]), int(person["y"]))
+            if phase == "source":
+                var source: Array = task.get("source", [])
+                if food_kind == "forage":
+                    source = task.get("target", [])
+                if source.size() == 2 and here == Vector2i(int(source[0]), int(source[1])):
+                    var motion_kind := "dig" if food_kind == "sow" else \
+                        "pickup" if str(task.get("type", "")) == "berries" else "sweep"
+                    _action(canvas, p, size, t, motion_kind, equipment, facing)
+            elif phase == "depot":
+                var food_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
+                if absi(here.x - food_depot.x) + absi(here.y - food_depot.y) <= 1:
+                    _action(canvas, p, size, t, "pickup" if food_kind in ["sow", "deliver"] else "unload", equipment, facing)
+            elif phase == "home":
+                var home_target: Array = task.get("target", [])
+                if home_target.size() == 2 and absi(here.x - int(home_target[0])) + absi(here.y - int(home_target[1])) <= 1:
+                    _action(canvas, p, size, t, "unload", equipment, facing)
             continue
         if kind == "road":
             var road_key: String = str(world.regional_economy.road_jobs.get(str(id), ""))
@@ -82,30 +108,30 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                 var target: Array = site.get("cell", [])
                 if target.size() == 2 and int(person["x"]) == int(target[0]) and int(person["y"]) == int(target[1]):
                     var stage: int = int(site.get("work", 0))
-                    _action(canvas, p, size, t, ["clear", "dig", "level"][posmod(stage + int(t / 2.5), 3)])
+                    _action(canvas, p, size, t, ["clear", "dig", "level"][posmod(stage + int(t / 2.5), 3)], equipment, facing)
                 break
             continue
         if kind == "merchant":
             var market: Vector2i = world.settlements.center(world, int(task.get("other", 1 - int(person["nation"]))))
             var homeland: Vector2i = world.settlements.center(world, world.settlements.sid(person))
             var here := Vector2i(int(person["x"]), int(person["y"]))
-            if phase == "pickup" and here == homeland:
-                _action(canvas, p, size, t, "pickup")
-            elif phase == "exchange" and here == market:
-                _action(canvas, p, size, t, "unload")
-            elif phase == "return" and here == homeland:
-                _action(canvas, p, size, t, "unload")
+            if phase == "pickup" and absi(here.x - homeland.x) + absi(here.y - homeland.y) <= 1:
+                _action(canvas, p, size, t, "pickup", equipment, facing)
+            elif phase == "exchange" and absi(here.x - market.x) + absi(here.y - market.y) <= 1:
+                _action(canvas, p, size, t, "unload", equipment, facing)
+            elif phase == "return" and absi(here.x - homeland.x) + absi(here.y - homeland.y) <= 1:
+                _action(canvas, p, size, t, "unload", equipment, facing)
             continue
         if kind == "gather":
             if phase == "source":
                 var gather_target: Array = task.get("target", [])
                 if gather_target.size() == 2 and int(person["x"]) == int(gather_target[0]) and int(person["y"]) == int(gather_target[1]):
                     var material := str(task.get("material", "wood"))
-                    _action(canvas, p, size, t, "chop" if material in ["wood", "plant_fibre"] else "mine")
+                    _action(canvas, p, size, t, "chop" if material in ["wood", "plant_fibre"] else "mine", equipment, facing)
             elif phase == "depot":
                 var gather_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
-                if int(person["x"]) == gather_depot.x and int(person["y"]) == gather_depot.y:
-                    _action(canvas, p, size, t, "unload")
+                if absi(int(person["x"]) - gather_depot.x) + absi(int(person["y"]) - gather_depot.y) <= 1:
+                    _action(canvas, p, size, t, "unload", equipment, facing)
             continue
         var destination := Vector2i(-999, -999)
         var site: Dictionary = {}
@@ -120,21 +146,21 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
         var nearby := absi(int(person["x"]) - destination.x) <= 1 and absi(int(person["y"]) - destination.y) <= 1
         if phase == "depot":
             var pickup_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
-            if int(person["x"]) == pickup_depot.x and int(person["y"]) == pickup_depot.y:
-                _action(canvas, p, size, t, "pickup")
+            if absi(int(person["x"]) - pickup_depot.x) + absi(int(person["y"]) - pickup_depot.y) <= 1:
+                _action(canvas, p, size, t, "pickup", equipment, facing)
         elif phase == "return" and carrying:
             var return_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
-            if int(person["x"]) == return_depot.x and int(person["y"]) == return_depot.y:
-                _action(canvas, p, size, t, "unload")
+            if absi(int(person["x"]) - return_depot.x) + absi(int(person["y"]) - return_depot.y) <= 1:
+                _action(canvas, p, size, t, "unload", equipment, facing)
         elif phase == "site" and nearby:
             if carrying and kind != "repair":
-                _action(canvas, p, size, t, "unload")
+                _action(canvas, p, size, t, "unload", equipment, facing)
             elif kind == "repair":
-                _action(canvas, p, size, t, "repair")
+                _action(canvas, p, size, t, "repair", equipment, facing)
             elif kind == "demolish":
-                _action(canvas, p, size, t, "demolish")
+                _action(canvas, p, size, t, "demolish", equipment, facing)
             elif not site.is_empty() and not bool(site.get("paused", false)):
-                _action(canvas, p, size, t, _build_action(world, site, t))
+                _action(canvas, p, size, t, _build_action(world, site, t), equipment, facing)
 
 # A visible sub-action is selected from the real construction stage and work
 # counter. Nothing here adds labour, speeds progress or consumes resources.
@@ -168,72 +194,62 @@ static func _bundle(canvas: Node2D, at: Vector2, scale: float, cargo: Dictionary
         var q := at + Vector2(5, 1) * scale
         canvas.draw_colored_polygon(PackedVector2Array([q, q + Vector2(5, -4) * scale, q + Vector2(11, 0) * scale, q + Vector2(8, 7) * scale, q + Vector2(1, 6) * scale]), STONE)
 
-static func _action(canvas: Node2D, p: Vector2, s: float, t: float, action: String) -> void:
-    # Three key motions in one cycle: wind-up, strike/contact, recovery.
-    var pulse := sin(t * 4.5)
-    var beat := fposmod(t * 4.5, TAU)
-    var strike := beat > 2.1 and beat < 3.1
-    var tip := p + Vector2(8, -7 + pulse * 5.0) * s
-    var contact := p + Vector2(11, 4) * s
-    var colour := WOOD
-    var head := IRON
-    match action:
-        "clear", "sweep":
-            tip = p + Vector2(8 + pulse * 5.0, 7) * s
-            head = FIBRE
-        "dig", "level":
-            tip = p + Vector2(9, 1 + pulse * 7.0) * s
-            head = EARTH
-        "stake":
-            tip = p + Vector2(9, -6 + pulse * 8.0) * s
-        "saw":
-            tip = p + Vector2(6 + pulse * 6.0, 2) * s
-        "mason", "mine":
-            tip = p + Vector2(8, -9 + pulse * 9.0) * s
-        "lift", "brace", "join":
-            tip = p + Vector2(5, -15 + pulse * 3.0) * s
-            colour = WOOD_LIGHT
-        "roof", "thatch":
-            tip = p + Vector2(6, -16 + pulse * 5.0) * s
-            head = FIBRE
-        "plaster", "paint":
-            tip = p + Vector2(10, -13 + pulse * 4.0) * s
-            head = Color("#ddd0ad")
-        "door", "repair", "hammer":
-            tip = p + Vector2(9, -11 + pulse * 10.0) * s
-        "demolish":
-            tip = p + Vector2(11, -15 + pulse * 14.0) * s
-        "chop":
-            tip = p + Vector2(9, -13 + pulse * 12.0) * s
-        "pickup", "unload":
-            tip = p + Vector2(7, 1 + pulse * 6.0) * s
-            head = WOOD_LIGHT
-        _:
-            tip = p + Vector2(8, -7 + pulse * 5.0) * s
-    # Arm and hand always attach to the same actor location.
-    canvas.draw_line(p + Vector2(2, -1) * s, tip, Color("#d3aa86"), maxf(1.0, 2.0 * s))
+# Never fabricate an equipped tool. A worker with no physical, intact tool
+# animates bare hands and material contact; stones/axes/picks come from D3 custody.
+static func _equipped_tool(world: RefCounted, person: Dictionary) -> String:
+    var id := str(person["id"])
+    var serial := str(world.toolmaking.equipped.get(id, ""))
+    if serial == "" or not world.toolmaking.instances.has(serial):
+        return ""
+    var item: Dictionary = world.toolmaking.instances[serial]
+    if str(item.get("holder", "")) != "citizen:" + id or int(item.get("condition", 0)) <= 0:
+        return ""
+    return str(item.get("item_id", ""))
+
+# Compact articulated hand pose, three beats (reach/contact/recover), with
+# material-specific 1-2px touches. Icons use the same shaded pixel art as D4.
+static func _action(canvas: Node2D, p: Vector2, s: float, t: float,
+        action: String, tool_id: String = "", facing: int = 1) -> void:
+    var beat := fposmod(t * 3.6, TAU)
+    var motion := sin(beat)
+    var contact: bool = beat > 1.8 and beat < 2.8
+    var hand := p + Vector2((5.0 + motion * 1.4) * float(facing), -3.0 + motion * 3.0) * s
+    var forearm := p + Vector2(2 * facing, -1) * s
+    var active_tool := (action == "chop" and tool_id == "stone_axe") or \
+        (action in ["mine", "mason"] and tool_id == "stone_pick") or \
+        (action in ["hammer", "repair", "join"] and tool_id == "hammerstone")
     if action in ["lift", "brace", "join"]:
-        canvas.draw_line(tip + Vector2(-7, -1) * s, tip + Vector2(11, -1) * s, colour, maxf(2.0, 3.0 * s))
-        canvas.draw_line(p + Vector2(-2, -2) * s, tip + Vector2(-5, -1) * s, Color("#d3aa86"), maxf(1.0, 2.0 * s))
-    elif action in ["pickup", "unload", "paint", "plaster", "thatch", "clear", "sweep"]:
-        canvas.draw_rect(Rect2(tip.round(), Vector2(6, 3) * s), head)
-    elif action == "saw":
-        canvas.draw_line(tip, tip + Vector2(12, 1) * s, IRON, maxf(1.0, 2.0 * s))
-        for i in range(3):
-            canvas.draw_line(tip + Vector2(i * 4, 1) * s, tip + Vector2(i * 4 + 2, 3) * s, IRON, maxf(1.0, s))
-    else:
-        canvas.draw_line(tip, tip + Vector2(7, -7) * s, colour, maxf(1.0, 2.0 * s))
-        canvas.draw_rect(Rect2((tip + Vector2(4, -9) * s).round(), Vector2(7, 3) * s), head)
-    if strike:
-        var debris := DUST
-        if action in ["saw", "chop", "join", "brace"]:
-            debris = WOOD_LIGHT
-        elif action in ["mine", "mason", "demolish"]:
-            debris = STONE
-        elif action in ["roof", "thatch"]:
-            debris = FIBRE
-        if action not in ["pickup", "unload", "lift", "paint"]:
-            _specks(canvas, contact, s, t, debris, 3)
+        hand += Vector2(-facing, -3) * s
+    elif action in ["roof", "thatch"]:
+        hand += Vector2(0, -4) * s
+    elif action in ["dig", "level", "clear", "sweep"]:
+        hand += Vector2(facing, 2) * s
+    canvas.draw_line(forearm.round(), hand.round(), Color("#b78361"), maxf(1.0, s))
+    canvas.draw_rect(Rect2(hand.round(), Vector2.ONE * maxf(1.0, s * 1.5)), Color("#e6b993"))
+    if active_tool:
+        Art.draw_item(canvas, tool_id, hand + Vector2(2.2 * facing, -2.2) * s,
+            maxf(0.7, s * 0.84))
+    elif action in ["lift", "brace", "join", "saw"]:
+        # A genuinely carried timber section, not a giant off-body beam.
+        canvas.draw_line(hand, hand + Vector2(6 * facing, -1) * s, Color("#422f29"), maxf(1.0, 2.8 * s))
+        canvas.draw_line(hand + Vector2(facing, -1) * s, hand + Vector2(5 * facing, -2) * s,
+            WOOD_LIGHT, maxf(1.0, s))
+    elif action in ["roof", "thatch", "sweep", "clear"]:
+        canvas.draw_rect(Rect2(hand + Vector2(0, -2) * s, Vector2(4, 2) * s), FIBRE)
+    elif action in ["dig", "level", "mason", "mine", "demolish", "stake"]:
+        canvas.draw_rect(Rect2(hand + Vector2(facing, -1) * s, Vector2(3, 3) * s),
+            STONE if action in ["mason", "mine", "demolish"] else EARTH)
+    elif action in ["plaster", "paint"]:
+        canvas.draw_rect(Rect2(hand + Vector2(facing, -2) * s, Vector2(3, 2) * s),
+            Color("#ddd0ad"))
+    elif action in ["pickup", "unload"]:
+        canvas.draw_rect(Rect2(hand + Vector2(facing, 1) * s, Vector2(3, 2) * s), WOOD_LIGHT)
+    elif action in ["hammer", "repair", "door"]:
+        canvas.draw_rect(Rect2(hand + Vector2(facing, -2) * s, Vector2(3, 2) * s), WOOD)
+    if contact and action not in ["pickup", "unload", "paint", "lift"]:
+        var debris := STONE if action in ["mine", "mason", "demolish"] else \
+            FIBRE if action in ["thatch", "roof", "sweep"] else WOOD_LIGHT
+        _specks(canvas, p + Vector2(8 * facing, 5) * s, s * 0.65, t, debris, 2)
 
 static func _specks(canvas: Node2D, p: Vector2, s: float, t: float, colour: Color, count: int) -> void:
     for i in range(count):

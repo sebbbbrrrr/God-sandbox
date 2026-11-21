@@ -10,6 +10,7 @@ const MAX_PATH_REQUESTS := 12
 const RAYS := [Vector2i(4, 0), Vector2i(3, 3), Vector2i(0, 4), Vector2i(-3, 3), Vector2i(-4, 0), Vector2i(-3, -3), Vector2i(0, -4), Vector2i(3, -3)]
 
 var buckets: Dictionary = {}
+var cell_counts: Dictionary = {} # tick-local occupancy; maintained on every real move
 var people: Dictionary = {}
 var risk_maps: Dictionary = {}
 var risk_revisions: Dictionary = {}
@@ -30,6 +31,7 @@ var metrics := {"decisions": 0, "social_candidates": 0, "path_requests": 0, "pat
 
 func begin_tick(world: RefCounted) -> void:
     buckets.clear()
+    cell_counts.clear()
     # Derived risk maps survive until the corresponding knowledge revision changes.
     refresh_terrain(world)
     var rebuild: bool = registry_count != world.citizens.size() or registry_next_id != world.next_id
@@ -64,6 +66,8 @@ func begin_tick(world: RefCounted) -> void:
         if not buckets.has(key):
             buckets[key] = []
         buckets[key].append(id)
+        var cell := Vector2i(int(person["x"]), int(person["y"]))
+        cell_counts[cell] = int(cell_counts.get(cell, 0)) + 1
 
     # Earliest deadline first, ID ties: count-based budget, no wall-clock branching and no starvation.
     due.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return a.x < b.x or (a.x == b.x and a.y < b.y))
@@ -81,12 +85,18 @@ func added(person: Dictionary, mind: Dictionary = {}) -> void:
     if not buckets.has(key):
         buckets[key] = []
     buckets[key].append(int(person["id"]))
+    var cell := Vector2i(int(person["x"]), int(person["y"]))
+    cell_counts[cell] = int(cell_counts.get(cell, 0)) + 1
 
 static func bucket_of(cell: Vector2i) -> int:
     return cell.x / BUCKET_SIZE + (cell.y / BUCKET_SIZE) * 24
 
 func moved(person: Dictionary, old_cell: Vector2i) -> void:
     var current := Vector2i(person["x"], person["y"])
+    if current == old_cell:
+        return
+    cell_counts[old_cell] = maxi(0, int(cell_counts.get(old_cell, 0)) - 1)
+    cell_counts[current] = int(cell_counts.get(current, 0)) + 1
     var old_key := bucket_of(old_cell)
     var new_key := bucket_of(current)
     if old_key == new_key:

@@ -80,23 +80,39 @@ func request_action(engine: RefCounted, world: RefCounted, id: int, kind: String
     return true
 
 func assign(engine: RefCounted, world: RefCounted, person: Dictionary) -> bool:
+    var chosen: Dictionary = {}
+    var highest := -2147483647
+    var sid: int = world.settlements.sid(person)
+    var origin := Vector2i(int(person["x"]), int(person["y"]))
     for key in pending:
         var house: Dictionary = engine.building_by_id(int(key))
-        if house.is_empty():
+        if house.is_empty() or world.settlements.sid(house) != sid or \
+                not house.has("pending_action") or int(house.get("worker", 0)) > 0:
             continue
-        if world.settlements.sid(house) != world.settlements.sid(person) or not house.has("pending_action") or int(house.get("worker", 0)) > 0:
-            continue
-        var row: Dictionary = engine.catalogue.definition(str(house.get("definition_id", "primitive_shelter")))
+        var row: Dictionary = engine.catalogue.definition(
+            str(house.get("definition_id", "primitive_shelter")))
         if not engine.catalogue.worker_eligible(world, person, row):
             continue
-        var kind = str(house["pending_action"])
-        house["worker"] = int(person["id"])
-        pending.erase(int(house["id"]))
-        engine.jobs[str(person["id"])] = {"kind": kind, "nation": int(person["nation"]), "settlement_id": world.settlements.sid(person), "building_id": int(house["id"]),
-            "phase": "depot" if kind == "repair" else "site", "cargo": {}, "wood": 0, "stone": 0,
-            "remaining": int(row[kind if kind == "repair" else "demolition"]["labour"]), "last_active_tick": int(world.tick)}
-        return true
-    return false
+        var kind := str(house["pending_action"])
+        var condition: int = int(house.get("condition", 100))
+        var urgency: int = (1400 + (100 - condition) * 18) if kind == "repair" else 150
+        urgency -= absi(origin.x - int(house["x"])) + absi(origin.y - int(house["y"]))
+        if urgency > highest:
+            highest = urgency
+            chosen = house
+    if chosen.is_empty():
+        return false
+    var row: Dictionary = engine.catalogue.definition(str(
+        chosen.get("definition_id", "primitive_shelter")))
+    var kind := str(chosen["pending_action"])
+    chosen["worker"] = int(person["id"])
+    pending.erase(int(chosen["id"]))
+    engine.jobs[str(person["id"])] = {"kind": kind, "nation": int(person["nation"]),
+        "settlement_id": sid, "building_id": int(chosen["id"]),
+        "phase": "depot" if kind == "repair" else "site", "cargo": {}, "wood": 0, "stone": 0,
+        "remaining": int(row[kind if kind == "repair" else "demolition"]["labour"]),
+        "last_active_tick": int(world.tick)}
+    return true
 
 func work(engine: RefCounted, world: RefCounted, person: Dictionary, mind: Dictionary, task: Dictionary) -> bool:
     var house: Dictionary = engine.building_by_id(int(task["building_id"]))
@@ -107,7 +123,7 @@ func work(engine: RefCounted, world: RefCounted, person: Dictionary, mind: Dicti
         return true
     var row: Dictionary = engine.catalogue.definition(str(house["definition_id"]))
     if str(task["phase"]) == "depot":
-        if engine.walk(world, person, mind, world.settlements.center(world, world.settlements.sid(person))):
+        if engine.walk(world, person, mind, world.settlements.center(world, world.settlements.sid(person)), 1):
             var materials: Dictionary = row["repair"]["materials"]
             if world.inventory.transfer(world, "settlement:" + str(world.settlements.sid(person)), "citizen:" + id, materials, int(person["id"])):
                 task["cargo"] = materials.duplicate(true)
