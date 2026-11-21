@@ -65,6 +65,8 @@ godot --path . --script res://tests/capture_architecture.gd
 
 The benchmark measures Linux CPU simulation cost, not Android FPS. The 1,500-citizen p95 exceeds 100 ms/tick, so accelerated simulation and phone frame pacing remain outstanding. Source sheets and documents are excluded from Android export; runtime atlas data stays included.
 
+Source artwork: [Stone Age sheet](../../tools/source/architecture_stone.png), [Agricultural sheet](../../tools/source/architecture_agricultural.png), [runtime atlas](../../assets/pixel/architecture_early.png). [Exact generation prompts and mode](source-prompts.json) are retained alongside the deterministic packing instructions.
+
 ## Visual review
 
 - [Original/new reference comparison](reference-comparison.png).
