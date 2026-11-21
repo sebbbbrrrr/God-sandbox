@@ -67,6 +67,15 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
         var timber_light := Color("#c5a076")
         var stone := Color("#989991")
         var roof := Color("#ba895d")
+        var material_ids: Dictionary = row.get("materials", {})
+        var build_inputs: Dictionary = {}
+        for step in stages:
+            for material in step.get("materials", {}):
+                build_inputs[material] = int(build_inputs.get(material, 0)) + int(step["materials"][material])
+        var masonry: bool = build_inputs.has("clay_brick") or build_inputs.has("stone") or build_inputs.has("foundation_stones") or build_inputs.has("brick_wall_block")
+        var timber_build: bool = build_inputs.has("wood") or build_inputs.has("wood_plank") or build_inputs.has("timber_beam")
+        if not masonry and not timber_build:
+            timber_build = true
         var paused: bool = bool(site.get("paused", false))
         # Ground / trenches / foundation, controlled by actual stage work.
         canvas.draw_rect(Rect2(p + Vector2(2, 8) * s, Vector2(width - 4 * s, height - 10 * s)), Color("#473d30", 0.4))
@@ -80,26 +89,26 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
             Color("#c5b185"), maxf(1.0, s))
         # Stone foundation only appears when the structural stage begins.
         if stage >= 1:
-            var stones: int = 4 if stage > 1 else maxi(1, int(floor(current * 4.0)))
+            var stones: int = 12 if stage > 1 else int(floor(current * 12.0))
             for i in range(stones):
-                var fx := 5.0 + float(i) * (w - 10.0) / 4.0
+                var fx := 5.0 + float(i) * (w - 10.0) / 12.0
                 canvas.draw_rect(Rect2((p + Vector2(fx, h - 11) * s).round(),
-                    Vector2((w - 11.0) / 4.0, 5) * s), stone)
+                    Vector2(maxf(1.0, (w - 11.0) / 12.0 - 0.4), 4) * s), stone if masonry else timber_light)
             # Uprights, walls, bracing and horizontal beams are earned by labour.
-            var posts: int = 4 if stage > 1 else int(floor(current * 4.0))
+            var posts: int = 6 if stage > 1 else int(floor(current * 6.0))
             for i in range(posts):
-                var px := 5.0 + float(i) * (w - 10.0) / 3.0
-                canvas.draw_rect(Rect2((p + Vector2(px, 10) * s).round(), Vector2(3, h - 19) * s), timber)
+                var px := 5.0 + float(i) * (w - 10.0) / 5.0
+                canvas.draw_rect(Rect2((p + Vector2(px, 10) * s).round(), Vector2(2, h - 19) * s), timber if timber_build else stone)
             if stage > 1 or current >= 0.55:
                 canvas.draw_line(p + Vector2(5, 12) * s, p + Vector2(w - 5, 12) * s, timber_light, maxf(1.0, 3.0 * s))
             if stage > 1 or current >= 0.75:
                 canvas.draw_line(p + Vector2(6, h - 11) * s, p + Vector2(w - 7, 12) * s, timber, maxf(1.0, 2.0 * s))
             # Finite plank rows: no pre-completion instant full house.
-            var rows: int = 3 if stage > 1 else int(floor(current * 3.0))
+            var rows: int = 7 if stage > 1 else int(floor(current * 7.0))
             for i in range(rows):
-                var py := h - 15.0 - float(i) * 5.0
+                var py := h - 15.0 - float(i) * 2.7
                 canvas.draw_rect(Rect2((p + Vector2(7, py) * s).round(),
-                    Vector2(w - 14.0, 3) * s), Color("#ad8258", 0.8))
+                    Vector2(w - 14.0, 2) * s), Color("#ad8258", 0.8) if timber_build else stone)
         # Roofing, thatch/tile rows, ridge and door are progressive finishing art.
         if stage >= 2:
             var roof_width := (w - 4.0) * current
@@ -108,9 +117,9 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
             var c := p + Vector2(2.0 + roof_width, 12) * s
             if current > 0.0:
                 canvas.draw_colored_polygon(PackedVector2Array([a, b, c]), roof)
-                var rows: int = int(floor(current * 4.0))
+                var rows: int = int(floor(current * 9.0))
                 for i in range(rows):
-                    var ry := 7.0 + float(i) * 2.0
+                    var ry := 4.0 + float(i) * 0.85
                     canvas.draw_line(p + Vector2(5, ry) * s,
                         p + Vector2(2.0 + roof_width - 3.0, ry) * s,
                         Color("#d7b078", 0.7), maxf(1.0, s))
