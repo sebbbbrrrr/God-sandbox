@@ -96,8 +96,9 @@ static func _routes(world: RefCounted) -> Array[Dictionary]:
             "built": built, "required": maxi(0, path.size() - 2),
             "path": path, "attempt": int(link.get("attempt", 0))})
     result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
-        return int(a["a"]) < int(b["a"]) or
-            (int(a["a"]) == int(b["a"]) and int(a["b"]) < int(b["b"])))
+        var aa := int(a["a"])
+        var ba := int(b["a"])
+        return aa < ba or (aa == ba and int(a["b"]) < int(b["b"])))
     return result
 
 
