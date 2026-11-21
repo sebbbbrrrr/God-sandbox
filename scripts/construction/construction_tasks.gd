@@ -52,8 +52,11 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
         var best = -2147483647
         var pressure: Dictionary = Labour.pressures(world, nation)
         var critical_repairs := false
-        for house in engine.houses:
-            if world.settlements.sid(house) == nation and str(house.get("pending_action", "")) == "repair" and int(house.get("condition", 100)) < 45:
+        for pending_id in engine.lifecycle.pending:
+            var house: Dictionary = engine.building_by_id(int(pending_id))
+            if not house.is_empty() and world.settlements.sid(house) == nation and \
+                    str(house.get("pending_action", "")) == "repair" and \
+                    int(house.get("condition", 100)) < 45:
                 critical_repairs = true
                 break
         # Protect collapsing housing before assigning optional projects.
