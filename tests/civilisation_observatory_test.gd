@@ -99,8 +99,8 @@ func run() -> void:
     game.hud.civilisation_pressed.emit()
     check(game.civilisation_ui.is_open and game.selected_power == -1,
         "opening inspector switches to Hand and blocks world powers")
-    var camera := game.camera_center
-    var terrain := game.world.terrain.duplicate()
+    var camera: Vector2 = game.camera_center
+    var terrain: PackedByteArray = game.world.terrain.duplicate()
     var touch := InputEventScreenTouch.new()
     touch.index = 0
     touch.pressed = true
