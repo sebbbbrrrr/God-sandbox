@@ -33,6 +33,25 @@ func _screen(x: float, y: float) -> Vector2:
     return game.world_origin() + Vector2(x + 0.5, y + 0.5) * game.tile_size()
 
 
+func _centre(id: int) -> Vector2:
+    for town in snapshot.get("settlements", []):
+        if int(town["id"]) == id:
+            return _screen(float(town["x"]), float(town["y"]))
+    return Vector2(-10000, -10000)
+
+
+func _dotted(from: Vector2, to: Vector2, ink: Color) -> void:
+    var distance := from.distance_to(to)
+    if distance < 1.0:
+        return
+    # A broken or still-planned connection is a diagram, NEVER a built road.
+    var segments := clampi(ceili(distance / 9.0), 1, 160)
+    for i in range(0, segments, 2):
+        var a := from.lerp(to, float(i) / float(segments))
+        var b := from.lerp(to, float(mini(segments, i + 1)) / float(segments))
+        draw_line(a, b, Color(ink, 0.75), 2.2, true)
+
+
 func _draw() -> void:
     if not enabled or game == null or snapshot.is_empty():
         return
@@ -46,6 +65,8 @@ func _draw() -> void:
             BLOCKED if str(link["status"]) == "blocked" else BUILDING)
         var path: Array = link.get("path", [])
         if path.size() < 2:
+            if str(link["status"]) == "blocked":
+                _dotted(_centre(int(link["a"])), _centre(int(link["b"])), BLOCKED)
             continue
         var points := PackedVector2Array()
         var jump := maxi(1, ceili(float(path.size()) / float(MAX_POINTS_PER_ROUTE)))
@@ -57,7 +78,18 @@ func _draw() -> void:
         if last.size() >= 2:
             points.append(_screen(float(last[0]), float(last[1])))
         if points.size() >= 2:
-            draw_polyline(points, Color(color, 0.8), 2.4, true)
+            if str(link["status"]) == "connected":
+                draw_polyline(points, Color(GOOD, 0.82), 2.4, true)
+            else:
+                for i in range(points.size() - 1):
+                    _dotted(points[i], points[i + 1], color)
+                if str(link["status"]) == "building":
+                    # Tiny green highlights show physical work along an amber plan.
+                    for index in link.get("built_indices", []):
+                        var i := int(index)
+                        if i >= 0 and i < path.size():
+                            var tile: Array = path[i]
+                            draw_circle(_screen(float(tile[0]), float(tile[1])), 2.9, GOOD)
     var font := ThemeDB.fallback_font
     for row in snapshot.get("settlements", []):
         var point := _screen(float(row["x"]), float(row["y"]))
