@@ -20,7 +20,11 @@ pictures**, nor literal one-for-one material-unit animation.
   `ImageTexture`, and draws the correct frame in world-space based on real
   saved construction stage/labour.
 - The 32-step presentation only catches up to real paid labour, never advances
-  ahead of it. The overlay remains bounded and stops advancing while paused.
+  ahead of it. When a visible project finishes, the last queued frames finish
+  playing while the static completed-building draw is temporarily suppressed.
+  The underlying gameplay building completes immediately; its simulation logic
+  never waits for presentation. The overlay remains bounded and freezes when
+  the simulation is paused. Anchors match the permanent sprite depth cell.
 - The older generic construction visuals and operation effects are suppressed
   when the actual pixel-world renderer is active, preventing duplicate houses
   and machinery.
