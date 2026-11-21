@@ -192,7 +192,7 @@ func request_construction(world: RefCounted, request: Dictionary) -> Dictionary:
     site["placement_reason"]["score"] = world.settlement_planner.rank(world,row,cell,world.settlements.center(world,nation),nation)
     site["placement_reason"]["demand"] = request.get("demand", {"function":row["function"]}).duplicate(true)
     site["placement_reason"]["projected_capacity"] = int(row.get("occupancy_capacity",0)) + int(row.get("storage_capacity",0))
-    site["placement_reason"]["projected_benefit"] = {"housing":int(row.get("occupancy_capacity",0)),"material_storage":int(row.get("storage_capacity",0)),"protected_grain":int(row.get("food_capacity",0)),"processes":row.get("production",[]).duplicate(true)}
+    site["placement_reason"]["projected_benefit"] = {"housing":int(row.get("occupancy_capacity",0)),"material_storage":int(row.get("storage_capacity",0)),"protected_grain":int(row.get("food_capacity",0)),"processes":row.get("production",[]).duplicate(true),"services":row.get("services",[]).duplicate(true)}
     site["settlement_id"] = nation
     next_building_id += 1
     site["priority"] = clampi(int(request.get("priority", 50)), 0, 100)
@@ -206,6 +206,36 @@ func request_construction(world: RefCounted, request: Dictionary) -> Dictionary:
     reserve_available(world, site)
     revision += 1
     return {"ok": true, "site_id": site["id"]}
+
+# Data-driven, needs-led support projects are independent archetypes. A charcoal
+# clamp does not suppress a kiln/forge simply because both are production sites.
+func support_project(world: RefCounted, sid: int) -> bool:
+    var population: int = world.settlements.population(sid)
+    if not project_for(sid).is_empty() or world.settlements.housing(world,sid)<population or world.food.total(world.food.store(sid))<population*2: return false
+    var rows: Array = catalogue.definitions.values()
+    rows.sort_custom(func(a: Variant,b: Variant)->bool: return int(a["primary_age"])<int(b["primary_age"]) or (int(a["primary_age"])==int(b["primary_age"]) and str(a["id"])<str(b["id"])))
+    for row in rows:
+        var goal: Dictionary = row.get("autonomous_goal",{})
+        if goal.is_empty() or population<int(goal.get("minimum_population",4)) or not catalogue.eligible(world,sid,row,settlement_context.get(str(sid),{})): continue
+        var present := false
+        for house in houses:
+            var current: Dictionary = catalogue.definition(str(house.get("definition_id","")))
+            if world.settlements.sid(house)==sid and not bool(house.get("abandoned",false)) and str(current.get("archetype_id",""))==str(row["archetype_id"]): present = true
+        if present: continue
+        var product := str(goal.get("product",""))
+        if product!="" and world.inventory.held("settlement:"+str(sid),product)>=4: continue
+        if goal.has("food_grain") and int(world.food.store(sid).get("grain",0))<int(goal["food_grain"]): continue
+        if goal.has("farms"):
+            var farms := 0
+            for farm in world.food.farms:
+                if world.settlements.sid(farm)==sid: farms += 1
+            if farms<int(goal["farms"]): continue
+        if bool(goal.get("ore",false)):
+            var ore: Dictionary = resource_plan(world,sid,{"copper_ore":1,"tin_ore":1})
+            if not ore["viable"]: continue
+        var request: Dictionary = request_construction(world,{"settlement_id":sid,"definition_id":row["id"],"function":row["function"],"priority":35,"demand":{"function":row["function"],"product":product,"population":population,"reason":"Low physical supply for local specialist work"}})
+        if bool(request.get("ok",false)): return true
+    return false
 
 func plan(world: RefCounted) -> void:
     if world.tick % 15 != 1:
@@ -225,6 +255,7 @@ func plan(world: RefCounted) -> void:
         return
     if id > 1 and capacity > 0 and world.food.total(world.food.store(id)) < population:
         return
+    if support_project(world,id): return
     if capacity >= mini(carrying,population) and population >= 4 and project_for(id).is_empty() and world.food.total(world.food.store(id)) >= population:
         var functions: Array = []
         var local: Dictionary = record.get("plan",{}).get("resources",{})
@@ -320,16 +351,17 @@ func missing_material(nation: int, world: RefCounted = null) -> String:
             var house: Dictionary = building_by_id(int(id))
             if house.is_empty(): continue
             var row: Dictionary = catalogue.definition(str(house.get("definition_id","")))
-            for process in row.get("production",[]):
-                if _stock(nation).get(str(process["item"]),0)>=int(process["target_stock"]): continue
+            for process in operations.processes(row):
+                if not operations.wanted(world,nation,house,process): continue
                 var trained := false
                 for person in world.citizens:
                     if operations.can_run(world,person,house,process):
                         trained = true
                         break
                 if not trained: continue
-                var recipe: Dictionary = world.inventory.catalogue.item(str(process["item"]))["recipe"]
+                var recipe: Dictionary = operations.recipe(world,process)
                 for item in recipe["inputs"]:
+                    if str(item)=="grain" and int(world.food.store(nation).get("grain",0))>0: continue
                     if int(_stock(nation).get(item,0))<int(recipe["inputs"][item]): return str(item)
     return ""
 
@@ -528,6 +560,9 @@ func validate_restored(world: RefCounted) -> bool:
             if entity.has("architecture"):
                 var architecture: Variant = entity["architecture"]
                 if not architecture is Dictionary or str(architecture.get("sprite","")) != str(row["visual"]["sprite"]) or int(architecture.get("primary_age",0)) != int(row["primary_age"]): return false
+            if entity.has("irrigation_slots") or entity.has("irrigation_until"):
+                var services: Array = row.get("services",[])
+                if services.is_empty() or int(entity.get("irrigation_slots",-1))<0 or int(entity.get("irrigation_slots",999))>int(services[0]["capacity"]) or int(entity.get("irrigation_until",-1))<0 or int(entity.get("irrigation_until",0))>world.tick+int(services[0]["duration"]): return false
             for cell in placement.footprint(row,Vector2i(int(entity["x"]),int(entity["y"])),int(entity.get("orientation",0))):
                 if footprints.has(cell) or world.index_of(cell.x,cell.y) < 0:
                     return false
@@ -547,8 +582,8 @@ func validate_restored(world: RefCounted) -> bool:
         var house: Dictionary = building_by_id(int(task.get("building_id",0)))
         if house.is_empty() or str(task.get("phase","")) not in ["depot","site","return"] or int(task.get("remaining",-1))<0: return false
         var matched := false
-        for process in catalogue.definition(str(house["definition_id"])).get("production",[]):
-            if str(process["item"])==str(task.get("item","")) and int(task["remaining"])<=int(process["work"]): matched = true
+        for process in operations.processes(catalogue.definition(str(house["definition_id"]))):
+            if operations.key(process)==str(task.get("item","")) and int(task["remaining"])<=int(process["work"]): matched = true
         if not matched: return false
     for key in world.inventory.reservations:
         var site: Dictionary = site_by_id(int(str(key).trim_prefix("site:")))

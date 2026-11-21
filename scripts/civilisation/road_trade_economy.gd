@@ -439,6 +439,10 @@ func _trading_work(world: RefCounted, person: Dictionary, mind: Dictionary) -> b
         return true
     if bool(job.get("success", false)):
         completed_trades += 1
+        # Returned cargo proves a completed exchange; imported equipment alone
+        # never teaches a manufacturing capability.
+        world.occupations.grant_capability(world,nation,"caravan_trade","trade")
+        world.occupations.grant_capability(world,int(job["other"]),"caravan_trade","trade")
         recent_trades.append({"tick": world.tick, "from": nation, "to": int(job["other"]),
             "export": str(job["offer"]), "import": str(job["payment"]), "units": 1,
             "source_quote": int(quote(nation).get(str(job["offer"]), 100)),

@@ -19,7 +19,7 @@ func _initialize() -> void:
     check(c.eras.size()==11 and c.regions.size()==8,"eleven exact ages and eight regional grammar slots")
     var ids: Array = []
     for row in c.definitions.values():
-        if not bool(row.get("legacy",true)): ids.append(str(row["id"]))
+        if not bool(row.get("legacy",true)) and str(row.get("asset_batch",""))!="B": ids.append(str(row["id"]))
     var built: Array = []
     for i in range(ids.size()):
         var house: Dictionary = Fixture.build(w,str(ids[i]),Vector2i(28+i%4*5,12+i/4*6))

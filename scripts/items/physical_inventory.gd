@@ -266,11 +266,12 @@ func exchange_at_market(world: RefCounted, citizen_id: int, foreign_nation: int,
 # D3: finite wood, stone, flint and plant-fibre sources; shared biome depletion.
 # Both the terrain precondition and the citizen's proximity are mandatory.
 func extract(world: RefCounted, citizen_id: int, item_id: String, source: Vector2i, quantity: int = 1) -> bool:
-    if item_id not in ["wood", "stone", "flint", "plant_fibre", "clay", "sand", "reeds"] or quantity <= 0 or quantity > 4:
+    if item_id not in ["wood", "stone", "flint", "plant_fibre", "clay", "sand", "reeds", "copper_ore", "tin_ore"] or quantity <= 0 or quantity > 4:
         return false
     var person := _person(world, citizen_id)
     if person.is_empty() or int(person.get("hp", 0)) <= 0:
         return false
+    if item_id in ["copper_ore","tin_ore"] and not world.construction.mining_access(world,person,source): return false
     var holder_id := "citizen:" + str(citizen_id)
     var actor := _holder(world, holder_id)
     if actor.is_empty() or _distance(actor["cell"], source) > 1:
@@ -292,6 +293,9 @@ func extract(world: RefCounted, citizen_id: int, item_id: String, source: Vector
     world.settlement_planner.invalidate(source)
     world.construction.depleted[cell_key] = int(world.construction.depleted.get(cell_key, 0)) + quantity
     minted[item_id] = int(minted.get(item_id, 0)) + quantity
+    if item_id in ["copper_ore","tin_ore"]:
+        world.occupations.grant_capability(world,world.settlements.sid(person),"copper_mining","experiment")
+        world.occupations.on_real_work(world,person,"copper_miner",quantity)
     _log(world, "extract", "terrain:" + cell_key, holder_id, {item_id: quantity})
     return true
 
@@ -489,7 +493,7 @@ func craft_in_building(world: RefCounted, actor_id: int, house: Dictionary, proc
     if not world.construction.operations.can_run(world,person,house,process): return false
     var item := str(process.get("item",""))
     var record: Dictionary = catalogue.item(item)
-    if str(record.get("category","")) == "tool": return false
+    if str(record.get("category","")) == "tool" and not world.toolmaking.can_register(item,int(record["recipe"]["output"])): return false
     var row: Dictionary = world.construction.catalogue.definition(str(house["definition_id"]))
     var entry: Array = row.get("entrances",[[0,0]])[0]
     var at := Vector2i(int(house["x"])+int(entry[0]),int(house["y"])+int(entry[1]))
@@ -498,7 +502,9 @@ func craft_in_building(world: RefCounted, actor_id: int, house: Dictionary, proc
     var store: Dictionary = balances.get(holder,{})
     var spendable := store.duplicate()
     for ingredient in spendable: spendable[ingredient] = available(holder,str(ingredient))
-    if not catalogue.can_craft(item,spendable,catalogue.context_for_citizen(world,person,item)): return false
+    var qualified := catalogue.can_craft(item,spendable,catalogue.context_for_citizen(world,person,item))
+    if not qualified and not world.construction.operations.prototype_allowed(world,person,process): return false
+    if not catalogue._has_materials(spendable,record["recipe"]["inputs"]): return false
     var recipe: Dictionary = record["recipe"]
     var result := store.duplicate()
     for ingredient in recipe["inputs"]: result[ingredient] = int(result[ingredient])-int(recipe["inputs"][ingredient])
@@ -511,10 +517,37 @@ func craft_in_building(world: RefCounted, actor_id: int, house: Dictionary, proc
         consumed[ingredient] = int(consumed.get(ingredient,0))+amount
     store[item] = int(store.get(item,0))+int(recipe["output"])
     minted[item] = int(minted.get(item,0))+int(recipe["output"])
+    world.toolmaking.on_crafted(world,holder,item,int(recipe["output"]),actor_id)
+    var discovery := str(process.get("prototype",{}).get("discover",process.get("discover_on_completion","")))
+    if discovery!="" and not world.occupations.has_capability(world,world.settlements.sid(person),discovery):
+        world.occupations.grant_capability(world,world.settlements.sid(person),discovery,"experiment")
+        world.occupations.append_event(world,person,"facility_discovery",{"technology":discovery,"building_id":int(house["id"]),"inputs":recipe["inputs"].duplicate(true)})
     _log(world,"building_process",holder,holder,{item:int(recipe["output"])})
     world.occupations.on_real_work(world,person,str(recipe["skill"]))
     house["operating_cycles"] = int(house.get("operating_cycles",0))+1
     house["last_operation_tick"] = world.tick
+    return true
+
+# Explicit one-way transfer between the existing edible and material ledgers.
+# Food grain is spent as an ingredient; it cannot remain edible or become seed
+# twice. Allocation requires a present operator, never a renderer/clock.
+func allocate_food_grain(world: RefCounted, actor_id: int, requested: int) -> bool:
+    var person := _person(world,actor_id)
+    if person.is_empty() or int(person["hp"])<=0 or requested<=0 or requested>20: return false
+    var sid: int = world.settlements.sid(person)
+    if _distance(Vector2i(int(person["x"]),int(person["y"])),world.settlements.center(world,sid))>1: return false
+    var holder := "settlement:"+str(sid)
+    var need := maxi(0,requested-available(holder,"grain"))
+    if need==0: return true
+    var food: Dictionary = world.food.store(sid)
+    if int(food.get("grain",0))<need: return false
+    var store: Dictionary = balances.get(holder,{})
+    if int(store.get("grain",0))>MAX_STACK-need: return false
+    food["grain"] -= need
+    world.food.consumed["grain"] += need
+    store["grain"] = int(store.get("grain",0))+need
+    minted["grain"] = int(minted.get("grain",0))+need
+    _log(world,"food_grain_allocation",holder,holder,{"grain":need})
     return true
 
 func snapshot() -> Dictionary:

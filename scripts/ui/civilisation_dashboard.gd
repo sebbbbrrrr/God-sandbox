@@ -603,6 +603,18 @@ func _economy(row: Dictionary) -> void:
             _stat(str(good).capitalize(), str(row["materials"][good]))
     _stat("Active farms", str(row["farms"]))
     _stat("Standing buildings", str(row["buildings"]))
+    if not row.get("facilities",[]).is_empty():
+        _section("Working facilities")
+        for facility in row["facilities"]:
+            _notice("%s · Age %d · %s" % [facility["name"],facility["age"],str(facility["state"]).replace("_"," ")],IVORY)
+            _text(str(facility["purpose"]))
+            _stat("Completed work cycles",str(facility["cycles"]))
+            for process in facility["processes"]:
+                if process.has("kind"):
+                    _text("Irrigation: %d allocations · %d ticks remaining" % [facility["irrigation_slots"],facility["irrigation_ticks"]])
+                else: _text("Makes "+str(process["item"]).replace("_"," "))
+            for ingredient in facility["inputs_available"]:
+                _stat(str(ingredient).replace("_"," ")+" available",str(facility["inputs_available"][ingredient]))
     _section("Current jobs")
     _stat("Unique assigned workers", str(row["active_workers"]))
     var jobs: Dictionary = row["jobs"]

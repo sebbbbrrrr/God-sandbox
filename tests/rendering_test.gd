@@ -20,7 +20,7 @@ func run() -> void:
     var renderer := Renderer.new()
     renderer.setup(world)
     root.add_child(renderer)
-    check(renderer.atlas.entries.size()==345,"all original and new atlas entries")
+    check(renderer.atlas.entries.size()==358,"all original and new atlas entries")
     for key in renderer.atlas.entries:
         var tex := renderer.atlas.texture(key)
         check(tex != null and Rect2(Vector2.ZERO,tex.get_size()).encloses(renderer.atlas.region(key)),"atlas bounds: "+key)

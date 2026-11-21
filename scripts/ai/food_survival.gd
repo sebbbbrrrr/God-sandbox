@@ -254,6 +254,10 @@ func take_ration(world: RefCounted, person: Dictionary) -> bool:
             return true
     var depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
     if depot.x >= 0 and Nav.manhattan(point, depot) <= 1:
+        var physical_holder := "settlement:"+str(world.settlements.sid(person))
+        if world.inventory.available(physical_holder,"grain_ration")>0 and world.inventory.consume(world,physical_holder,{"grain_ration":1},int(person["id"]),"processed_meal"):
+            person["hunger"] = maxi(0,int(person["hunger"])-35)
+            return true
         var stores: Dictionary = store(world.settlements.sid(person))
         var picked: String = pick_food(family_id, person, stores, int(date["day"]))
         if picked != "":
@@ -373,6 +377,7 @@ func create_farm(world: RefCounted, nation: int, actor_id: int = 0) -> bool:
     # Irrigation requires actual nearby water rather than creating it.
     if has_tech(world,nation,"irrigation") and coastal:
         crop_yield += 2
+    if not coastal and world.construction.operations.irrigate_sowing(world,nation,plot): crop_yield += 2
     crop_yield = maxi(2, crop_yield)
     if reused.is_empty():
         farms.append({"id": next_farm_id, "nation": world.settlements.nation(nation), "settlement_id": nation, "x": plot.x, "y": plot.y,
@@ -501,6 +506,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         return true
     if str(job["phase"]) == "depot":
         if move(world, person, mind, home, 1):
+            if str(job["kind"]) == "farm": world.toolmaking.try_equip(world,person,"grain")
             if str(job["kind"]) == "deliver" and int(job["amount"]) == 0:
                 var food: String = pick_food(int(job["family_id"]), person, store(nation), int(world.calendar.date_at(world.tick)["day"]))
                 if food == "":
@@ -558,6 +564,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
                 var farm_tier: int = world.occupations.skill_tier(person, "crop_farmer")
                 amount = mini(CARRY_AMOUNT + (1 if farm_tier >= 2 else 0), available)
                 farm["collected"] = int(farm.get("collected", 0)) + amount
+                if amount>0: world.toolmaking.wear(world,person,"grain")
                 if int(farm["collected"]) >= int(farm["yield"]):
                     farm["harvested"] = true
                     farm["fertility"] = maxi(0, int(farm["fertility"]) - 1)

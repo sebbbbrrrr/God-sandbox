@@ -86,6 +86,8 @@ func _initialize() -> void:
         if system.completed_trades > 0:
             break
     check(system.completed_trades > 0, "merchants physically deliver goods, barter and return home")
+    check(world.occupations.has_capability(world,0,"caravan_trade") and world.occupations.has_capability(world,1,"caravan_trade"), "completed physical barter teaches trade practice locally")
+    check(not world.occupations.has_capability(world,0,"bronze_working"), "imported goods never grant bronze manufacturing knowledge")
     check(world.inventory.held("settlement:0", "stone") > 0 and
         world.inventory.held("settlement:1", "wood") > 0,
         "different capital markets exchange real reciprocal commodities")

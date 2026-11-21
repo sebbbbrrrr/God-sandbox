@@ -16,6 +16,11 @@ func left_at(world: RefCounted, x: int, y: int, material: String) -> int:
         return 0
     if material in ["stone", "flint"] and biome != world.MOUNTAIN:
         return 0
+    if material in ["copper_ore","tin_ore"]:
+        if biome!=world.MOUNTAIN: return 0
+        var ore := "tin_ore" if posmod(world.seed+x*17+y*31,5)==0 else "copper_ore"
+        if ore!=material: return 0
+        return maxi(0,10-int(depleted.get(str(world.index_of(x,y)),0)))
     if material in ["clay", "sand", "reeds"]:
         if biome != world.BEACH: return 0
         if material in ["clay", "reeds"]:
@@ -29,6 +34,13 @@ func left_at(world: RefCounted, x: int, y: int, material: String) -> int:
     # Resources from the same cell share depletion; no independent
     # timber/fibre or stone/flint duplication from a single tile.
     return maxi(0, (6 if biome == world.FOREST else 10) - int(depleted.get(str(world.index_of(x, y)), 0)))
+
+func mining_access(world: RefCounted, person: Dictionary, source: Vector2i) -> bool:
+    var sid: int = world.settlements.sid(person)
+    if not world.occupations.has_capability(world,sid,"stone_working"): return false
+    for house in houses:
+        if world.settlements.sid(house)==sid and str(house.get("function",""))=="mine" and not bool(house.get("abandoned",false)) and int(house.get("condition",100))>=25 and Nav.manhattan(Vector2i(int(house["x"]),int(house["y"])),source)<=4: return true
+    return false
 
 func approach(world: RefCounted, from: Vector2i, source: Vector2i) -> Vector2i:
     var best = Vector2i(-1, -1)
@@ -54,6 +66,7 @@ func source_for(world: RefCounted, person: Dictionary, material: String) -> Dict
             var source = depot + Vector2i(dx, dy)
             if left_at(world, source.x, source.y, material) <= 0:
                 continue
+            if material in ["copper_ore","tin_ore"] and not mining_access(world,person,source): continue
             var target = approach(world, origin, source)
             if target.x < 0:
                 continue
@@ -109,16 +122,17 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         return false
     if walk(world, person, mind, target) and Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), source) <= 1:
         var material = str(task["material"])
-        var use_tool: bool = world.toolmaking.tool_for(world, person, material) != ""
+        var tool_material: String = "stone" if material in ["copper_ore","tin_ore"] else material
+        var use_tool: bool = world.toolmaking.tool_for(world, person, tool_material) != ""
         var local_bonus := 1 if world.occupations.facility_present(world,world.settlements.sid(person),"forestry" if material=="wood" else "quarry") else 0
         var count: int = mini((2 if use_tool else 1)+local_bonus, left_at(world, source.x, source.y, material))
         if world.inventory.extract(world, int(person["id"]), material, source, count):
             world.occupations.on_real_work(world, person,
-                "woodcutter" if material == "wood" else "quarry_worker", count)
+                "woodcutter" if material == "wood" else "copper_miner" if material in ["copper_ore","tin_ore"] else "quarry_worker", count)
             task[material] = count # old job inspection stays compatible
             task["amount"] = count
             if use_tool:
-                world.toolmaking.wear(world, person, material)
+                world.toolmaking.wear(world, person, tool_material)
             task["deposit_holder"] = world.local_logistics.deposit_holder(world,person,{material:count})
             task["phase"] = "depot"
             mind["route"] = []

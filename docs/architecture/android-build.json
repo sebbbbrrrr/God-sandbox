@@ -1,5 +1,8 @@
 {
-  "source_commit": "d479f23c548297f36953933a76ff9c522d53cbf8",
+  "source_commit": "fccad5b3d2ef9b871329d5887e3f2fb46a79bf7d",
+  "local_build_commit": "1e79ed7721a951f2bd8f0fdc4d0fa479436e07d2",
+  "source_tree": "fa0c5da7338ffeeaf1cff7b55e6f3be288ff16d0",
+  "publication_verification": "Published source Git tree is byte-identical to locally built/tested source tree.",
   "engine": "4.5.2.stable.official.6ce3de25a",
   "renderer": "gl_compatibility",
   "architectures": [
@@ -7,18 +10,17 @@
   ],
   "min_sdk": 24,
   "target_sdk": 35,
-  "artifact": "GodSandbox-Architecture-Early-debug.apk",
-  "bytes": 29648763,
-  "sha256": "9470cde5579f7f7f140511bbeb3e1d5bdf7775054876f8370ffec575f87e39de",
+  "artifact": "GodSandbox-Architecture-BatchB-debug.apk",
+  "bytes": 29792491,
+  "sha256": "654a169c2bd423b630b0a68470faf98558bdf6f24dc67bab2b6bb6c2d69733cd",
   "local_export_passed": true,
   "signature_v2": true,
   "signature_v3": true,
   "zip_crc_passed": true,
   "source_sheets_and_docs_excluded": true,
   "android_device_tested": false,
-  "debug_signing": "New local debug certificate; in-place update compatibility with the currently installed phone build is unverified. A matching signing identity is required for an Android update.",
-  "scope": "Batch A and partial early-age Batch B, not full eleven-age completion.",
-  "local_build_commit": "cd8a5c5046a863b6de7057c22ece6ceeeb9f0301",
-  "source_tree": "eb98756d885ba69ab5fb87f5240afebdbc0bb489",
-  "publication_verification": "Published Git tree is byte-identical to the locally built and tested code tree."
+  "debug_signing": "Same local debug certificate as GodSandbox-Architecture-Early-debug.apk (SHA256 46db2c8245687fa7494700c205e7f9d6cc6864d1fc5209b64ecc95e22639fd4c). Signing compatibility with other installed builds is unknown.",
+  "scope": "Batch B Ages I\u2013III content and integration; full eleven-age acceptance remains open.",
+  "library_file_id": "libfile_8ce9aeddbeb08191a8fa296a41978e1e",
+  "pull_request": "https://github.com/sebbbbrrrr/God-sandbox/pull/38"
 }

@@ -39,10 +39,10 @@ const ROLE_ROWS := [
     ["herder",2,"agriculture","domestication","pasture","grassland",false],
     ["potter",2,"materials","pottery","kiln","clay",true],
     ["basket_weaver",2,"manufacturing","weaving","workshop","",true],
-    ["irrigation_keeper",2,"agriculture","irrigation","canal","water",false],
+    ["irrigation_keeper",2,"agriculture","irrigation","canal","water",true],
     ["granary_keeper",2,"agriculture","storage","granary","",false],
-    ["bronze_smith",3,"materials","bronze_working","smelter","ore",false],
-    ["copper_miner",3,"materials","copper_mining","mine","ore",false],
+    ["bronze_smith",3,"materials","bronze_working","smelter","ore",true],
+    ["copper_miner",3,"materials","copper_mining","mine","ore",true],
     ["scribe",3,"communication","writing","archive","",false],
     ["caravan_trader",3,"transport","caravan_trade","market","",false],
     ["urban_mason",3,"construction","masonry","mason_yard","",false],
@@ -250,6 +250,8 @@ func context_exists(world: RefCounted, nation: int, context: String) -> bool:
                 "coast":
                     if world.food.source_kind(world, cell) == "fish":
                         return true
+                "ore":
+                    if world.construction.left_at(world,cell.x,cell.y,"copper_ore")>0 or world.construction.left_at(world,cell.x,cell.y,"tin_ore")>0: return true
                 "clay":
                     if world.construction.left_at(world, cell.x, cell.y, "clay") > 0:
                         return true

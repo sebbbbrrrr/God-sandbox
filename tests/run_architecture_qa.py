@@ -3,7 +3,7 @@
 import argparse,json,os,shutil,subprocess,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-SUITES=['architecture_integration','simulation','universal_construction','construction_animation','workforce_distribution','item_catalogue','physical_inventory','toolmaking','toolmaking_autonomy','era_occupations','food_survival','settlement_founding','settlement_planning','settlement_family_farm','settlement_network_lifecycle','regional_economy','rendering','civilisation_observatory','civilisation_premium_menu','unified_integration','game_item_ui','item_inspector','pinch_zoom_anchor','civilisation_calendar_lifecycle','household_care','autonomous_demography','construction']
+SUITES=['architecture_batch_b','architecture_integration','simulation','universal_construction','construction_animation','workforce_distribution','item_catalogue','physical_inventory','toolmaking','toolmaking_autonomy','era_occupations','food_survival','settlement_founding','settlement_planning','settlement_family_farm','settlement_network_lifecycle','regional_economy','rendering','civilisation_observatory','civilisation_premium_menu','unified_integration','game_item_ui','item_inspector','pinch_zoom_anchor','civilisation_calendar_lifecycle','household_care','autonomous_demography','construction']
 def main():
  parser=argparse.ArgumentParser(description=__doc__)
  parser.add_argument('--godot',default=os.environ.get('GODOT_BIN') or shutil.which('godot'))
