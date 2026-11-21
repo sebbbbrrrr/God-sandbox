@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/phase-f-autonomous-settlements
+      - feature/civilisation-observatory-ui
   workflow_dispatch:
 
 permissions:
