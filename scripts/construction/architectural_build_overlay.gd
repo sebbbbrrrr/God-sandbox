@@ -108,10 +108,52 @@ func _draw() -> void:
             _draw_pieces(sprite, dest.position, phase, int(site.get("id", 0)), profile)
         else:
             _draw_low_detail(sprite, dest, phase)
+    _draw_finishing_buildings(view)
     if parent_renderer.detail == 0:
         return
     _draw_operations(view)
 
+
+func is_finishing(building_id: int) -> bool:
+    return playback_frames.has(building_id) and int(playback_frames[building_id]) < 31
+
+func _draw_finishing_buildings(view: Rect2) -> void:
+    # Functional completion is immediate, but a project already seen being
+    # constructed finishes its 32-frame visual sequence before the static
+    # completed building takes over. Never delay gameplay, inventories or AI.
+    for building in world.construction.houses:
+        var id: int = int(building.get("id", -1))
+        if not is_finishing(id):
+            continue
+        var definition: Dictionary = world.construction.catalogue.definition(
+            str(building.get("definition_id", "")))
+        if definition.is_empty():
+            continue
+        var kind: String = str(building.get("definition_id", ""))
+        var sprite: String = str(building.get("architecture", {}).get("sprite",
+            definition.get("visual", {}).get("sprite", "")))
+        if not atlas.regions.has(sprite):
+            continue
+        var x: int = int(building["x"])
+        var y: int = int(building["y"])
+        var footprint: Array = definition.get("footprint", [1, 1])
+        var foot := parent_renderer.top_left(x, y) + Vector2(float(footprint[0]) * 16.0, 27.0)
+        var size: Vector2 = atlas.size_of(sprite)
+        var dest := Rect2((foot - Vector2(size.x * 0.5, size.y)).round(), size)
+        if not view.intersects(dest.grow(12.0)):
+            continue
+        var sheet: Texture2D = _frame_sheet(kind)
+        if sheet == null:
+            playback_frames.erase(id)
+            continue
+        var index: int = mini(31, int(playback_frames[id]) + 1)
+        playback_frames[id] = index
+        var rect := Rect2(Vector2(float(index % FRAME_COLUMNS),
+            float(index / FRAME_COLUMNS)) * size, size)
+        draw_texture_rect_region(sheet, dest, rect, Color.WHITE, false, true)
+        if index >= 31:
+            playback_frames.erase(id)
+            parent_renderer.invalidate_cell(Vector2i(x, y))
 
 static func frame_for_phase(phase: Dictionary) -> int:
     var base: float = clampf(float(phase.get("base", 0.0)), 0.0, 1.0)
