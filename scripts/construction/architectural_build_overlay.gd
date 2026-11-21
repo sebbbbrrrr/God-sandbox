@@ -11,6 +11,10 @@ var parent_renderer
 var seconds := 0.0
 var pending := 0.0
 var profiles: Dictionary = {}
+var frame_sheets: Dictionary = {}
+var playback_frames: Dictionary = {}
+const FRAME_COLUMNS := 8
+const FRAME_COUNT := 32
 
 func setup(renderer: Node2D, simulation: RefCounted, pixel_atlas: RefCounted) -> void:
     parent_renderer = renderer
@@ -86,15 +90,63 @@ func _draw() -> void:
         displayed += 1
         var phase: Dictionary = progress_by_phase(site, row)
         _draw_survey(dest, phase, site)
-        if parent_renderer.detail > 0:
-            var profile: Dictionary = profiles.get(str(site.get("definition_id", "")), {})
+        var building_id: String = str(site.get("definition_id", ""))
+        var sheet: Texture2D = _frame_sheet(building_id)
+        if sheet != null:
+            var project_id: int = int(site.get("id", 0))
+            var target_frame: int = frame_for_phase(phase)
+            var current_frame: int = int(playback_frames.get(project_id, target_frame))
+            # Construction can lag behind paid labour but never lead it.
+            current_frame = mini(target_frame, current_frame + 1)
+            playback_frames[project_id] = current_frame
+            var rect := Rect2(Vector2(float(current_frame % FRAME_COLUMNS),
+                float(current_frame / FRAME_COLUMNS)) * size, size)
+            draw_texture_rect_region(sheet, dest, rect, Color.WHITE, false, true)
+        elif parent_renderer.detail > 0:
+            # Unsupported modded buildings continue using the safe original.
+            var profile: Dictionary = profiles.get(building_id, {})
             _draw_pieces(sprite, dest.position, phase, int(site.get("id", 0)), profile)
         else:
-            # Distant-view budget: whole horizontal sections without per-brick calls.
             _draw_low_detail(sprite, dest, phase)
     if parent_renderer.detail == 0:
         return
     _draw_operations(view)
+
+
+static func frame_for_phase(phase: Dictionary) -> int:
+    var base: float = clampf(float(phase.get("base", 0.0)), 0.0, 1.0)
+    var walls: float = clampf(float(phase.get("walls", 0.0)), 0.0, 1.0)
+    var roof: float = clampf(float(phase.get("roof", 0.0)), 0.0, 1.0)
+    if base <= 0.0:
+        return 0
+    if base < 1.0:
+        return clampi(ceili(base * 6.0), 1, 5)
+    if walls <= 0.0:
+        return 6
+    if walls < 1.0:
+        return clampi(7 + floori(walls * 15.0), 7, 20)
+    if roof <= 0.0:
+        return 21
+    if roof < 1.0:
+        return clampi(22 + floori(roof * 9.0), 22, 30)
+    return 31
+
+func _frame_sheet(building_id: String) -> Texture2D:
+    if frame_sheets.has(building_id):
+        return frame_sheets[building_id]
+    var path := "res://assets/pixel/construction_frames/" + building_id + ".png.b64"
+    if not FileAccess.file_exists(path):
+        frame_sheets[building_id] = null
+        return null
+    var encoded: String = FileAccess.get_file_as_string(path)
+    var buffer: PackedByteArray = Marshalls.base64_to_raw(encoded.strip_edges())
+    var decoded := Image.new()
+    if decoded.load_png_from_buffer(buffer) != OK:
+        push_warning("Invalid authored construction sprite sheet: " + building_id)
+        frame_sheets[building_id] = null
+        return null
+    frame_sheets[building_id] = ImageTexture.create_from_image(decoded)
+    return frame_sheets[building_id]
 
 func _draw_survey(rect: Rect2, phase: Dictionary, site: Dictionary) -> void:
     var left := rect.position.x + 2.0
