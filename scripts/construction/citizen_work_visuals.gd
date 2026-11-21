@@ -75,7 +75,26 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                 _specks(canvas, p + Vector2(0, 9) * size, size, t, DUST, 2)
             continue
         if kind == "food":
-            _action(canvas,p,size,t,"dig" if str(task.get("food_action",""))=="sow" else "sweep")
+            # Only animate real labour at its actual location. The old fallback
+            # made every stationary food worker sweep at depots and queues.
+            var food_kind := str(task.get("food_action", ""))
+            var here := Vector2i(int(person["x"]), int(person["y"]))
+            if phase == "source":
+                var source: Array = task.get("source", [])
+                if food_kind == "forage":
+                    source = task.get("target", [])
+                if source.size() == 2 and here == Vector2i(int(source[0]), int(source[1])):
+                    var motion_kind := "dig" if food_kind == "sow" else \
+                        "pickup" if str(task.get("type", "")) == "berries" else "sweep"
+                    _action(canvas, p, size, t, motion_kind, equipment)
+            elif phase == "depot":
+                var food_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
+                if absi(here.x - food_depot.x) + absi(here.y - food_depot.y) <= 1:
+                    _action(canvas, p, size, t, "pickup" if food_kind in ["sow", "deliver"] else "unload", equipment)
+            elif phase == "home":
+                var home_target: Array = task.get("target", [])
+                if home_target.size() == 2 and absi(here.x - int(home_target[0])) + absi(here.y - int(home_target[1])) <= 1:
+                    _action(canvas, p, size, t, "unload", equipment)
             continue
         if kind == "road":
             var road_key: String = str(world.regional_economy.road_jobs.get(str(id), ""))
@@ -92,11 +111,11 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             var market: Vector2i = world.settlements.center(world, int(task.get("other", 1 - int(person["nation"]))))
             var homeland: Vector2i = world.settlements.center(world, world.settlements.sid(person))
             var here := Vector2i(int(person["x"]), int(person["y"]))
-            if phase == "pickup" and here == homeland:
+            if phase == "pickup" and absi(here.x - homeland.x) + absi(here.y - homeland.y) <= 1:
                 _action(canvas, p, size, t, "pickup", equipment)
-            elif phase == "exchange" and here == market:
+            elif phase == "exchange" and absi(here.x - market.x) + absi(here.y - market.y) <= 1:
                 _action(canvas, p, size, t, "unload", equipment)
-            elif phase == "return" and here == homeland:
+            elif phase == "return" and absi(here.x - homeland.x) + absi(here.y - homeland.y) <= 1:
                 _action(canvas, p, size, t, "unload")
             continue
         if kind == "gather":
@@ -107,7 +126,7 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                     _action(canvas, p, size, t, "chop" if material in ["wood", "plant_fibre"] else "mine", equipment)
             elif phase == "depot":
                 var gather_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
-                if int(person["x"]) == gather_depot.x and int(person["y"]) == gather_depot.y:
+                if absi(int(person["x"]) - gather_depot.x) + absi(int(person["y"]) - gather_depot.y) <= 1:
                     _action(canvas, p, size, t, "unload")
             continue
         var destination := Vector2i(-999, -999)
@@ -123,11 +142,11 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
         var nearby := absi(int(person["x"]) - destination.x) <= 1 and absi(int(person["y"]) - destination.y) <= 1
         if phase == "depot":
             var pickup_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
-            if int(person["x"]) == pickup_depot.x and int(person["y"]) == pickup_depot.y:
+            if absi(int(person["x"]) - pickup_depot.x) + absi(int(person["y"]) - pickup_depot.y) <= 1:
                 _action(canvas, p, size, t, "pickup")
         elif phase == "return" and carrying:
             var return_depot: Vector2i = world.settlements.center(world, world.settlements.sid(person))
-            if int(person["x"]) == return_depot.x and int(person["y"]) == return_depot.y:
+            if absi(int(person["x"]) - return_depot.x) + absi(int(person["y"]) - return_depot.y) <= 1:
                 _action(canvas, p, size, t, "unload")
         elif phase == "site" and nearby:
             if carrying and kind != "repair":
