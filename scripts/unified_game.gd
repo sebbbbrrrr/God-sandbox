@@ -265,6 +265,9 @@ func _input(event: InputEvent) -> void:
             (event is InputEventMouseButton or event is InputEventMouseMotion):
         return
     if inspector.visible:
+        if item_visual != null and ((event is InputEventScreenTouch and not event.pressed) or
+                (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT)):
+            item_visual.flash_feedback(event.position)
         super._input(event)
         if item_visual != null:
             item_visual.queue_redraw()
