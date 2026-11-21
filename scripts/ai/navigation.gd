@@ -96,34 +96,66 @@ static func plan(world: RefCounted, state: Dictionary, start: Vector2i, target: 
 static func manhattan(a: Vector2i, b: Vector2i) -> int:
     return absi(a.x - b.x) + absi(a.y - b.y)
 
-# Choose a deterministic, walkable contact tile adjacent to a depot/home.
-# Physical transfers still require adjacency; this prevents routing everyone onto
-# the identical centre cell. Crowd sampling is capped for mobile frame budgets.
+# Capped bucket sampling prevents O(population^2) scans at busy hubs.
+static func _occupants(world: RefCounted, cell: Vector2i, self_id: int) -> int:
+    var people: Array = world.ai_context.buckets.get(world.ai_context.bucket_of(cell), [])
+    var count: int = 0
+    for i in range(mini(40, people.size())):
+        var id: int = int(people[i])
+        if id == self_id:
+            continue
+        var person: Dictionary = world.ai_context.people.get(id, {})
+        if not person.is_empty() and int(person["x"]) == cell.x and int(person["y"]) == cell.y:
+            count += 1
+    return count
+
+# Choose adjacent contact for physical inventory/food transfers. If all four
+# counters are packed, route new arrivals to nearby staging cells instead of
+# putting dozens of sprites on one tile. Waiting is real walking, not teleport.
 static func hub_access(world: RefCounted, person: Dictionary, hub: Vector2i) -> Vector2i:
     var origin := Vector2i(int(person["x"]), int(person["y"]))
     if manhattan(origin, hub) <= 1:
         return origin
+    var self_id: int = int(person["id"])
     var best := hub
     var best_score := 2147483647
-    var offset: int = posmod(int(person["id"]) * 7, DIRS.size())
+    var minimum_occupied := 2147483647
+    var offset: int = posmod(self_id * 7, DIRS.size())
     for i in range(DIRS.size()):
         var candidate: Vector2i = hub + DIRS[(i + offset) % DIRS.size()]
         if not world.is_walkable(candidate.x, candidate.y) or danger_near(world, candidate):
             continue
-        var occupied := 0
-        var others: Array = world.ai_context.buckets.get(world.ai_context.bucket_of(candidate), [])
-        for j in range(mini(32, others.size())):
-            var other_id: int = int(others[j])
-            if other_id == int(person["id"]):
-                continue
-            var other: Dictionary = world.ai_context.people.get(other_id, {})
-            if not other.is_empty() and int(other["x"]) == candidate.x and int(other["y"]) == candidate.y:
-                occupied += 1
+        var occupied: int = _occupants(world, candidate, self_id)
+        minimum_occupied = mini(minimum_occupied, occupied)
         var score: int = manhattan(origin, candidate) * 3 + occupied * 12 + i
         if score < best_score:
             best_score = score
             best = candidate
-    return best
+    if minimum_occupied < 2:
+        return best
+    var staging := Vector2i(-1, -1)
+    var staging_score := 2147483647
+    for radius in range(2, 5):
+        for dy in range(-radius, radius + 1):
+            for dx in range(-radius, radius + 1):
+                if absi(dx) + absi(dy) != radius:
+                    continue
+                var candidate := hub + Vector2i(dx, dy)
+                if not world.is_walkable(candidate.x, candidate.y) or danger_near(world, candidate):
+                    continue
+                var occupied: int = _occupants(world, candidate, self_id)
+                var score: int = manhattan(origin, candidate) * 3 + occupied * 22
+                # Keep a citizen stable at their waiting point until a
+                # contact position becomes free instead of oscillating.
+                if candidate == origin:
+                    score -= 25
+                score += posmod(dx * 7 + dy * 11 + self_id, 7)
+                if score < staging_score:
+                    staging_score = score
+                    staging = candidate
+        if staging.x >= 0 and staging_score <= 25:
+            break
+    return staging if staging.x >= 0 else best
 
 static func next_step(world: RefCounted, person: Dictionary, state: Dictionary, target: Vector2i) -> Vector2i:
     var pos := Vector2i(person["x"], person["y"])
