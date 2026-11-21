@@ -28,6 +28,7 @@ var rendered_roads_revision := -1
 var facility_cells: Dictionary = {}
 var physical_buildings: Dictionary = {}
 var physical_footprints: Dictionary = {}
+var physical_terrain: Dictionary = {}
 var effects: PixelCommands
 var weather: SandboxWeather
 var weather_overlay: PixelWeatherOverlay
@@ -234,13 +235,14 @@ func bake_distant_chunk(chunk: PixelChunk) -> void:
         (chunk.far_sprite.texture as ImageTexture).update(image)
 
 func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
-    var type := world.at(x,y)
+    var type := int(physical_terrain.get(Vector2i(x,y),world.at(x,y)))
     var p := top_left(x,y)
     var v := variation(x,y,world.seed,4)
     var neighbour_masks := [0,0,0,0,0,0,0]
     for i in range(4):
         var q: Vector2i = Vector2i(x,y) + DIRECTIONS[i]
-        neighbour_masks[world.at(q.x,q.y)] |= 1 << i
+        var neighbor_type := int(physical_terrain.get(q,world.at(q.x,q.y)))
+        neighbour_masks[neighbor_type] |= 1 << i
     var is_capital := Vector2i(x,y) in world.capitals and world.is_walkable(x,y) and type!=world.ASH
     var water := chunk.layers[0]
     var ground := chunk.layers[1]
@@ -332,23 +334,29 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
         var path: int = path_cells[cell]
         decor.add("path_join_%d" % path,p)
     var salt := variation(x,y,world.seed+17,100)
-    if type == world.TOWN or is_capital:
+    if physical_footprints.has(cell) and not physical_buildings.has(cell) and not is_capital:
+        return
+    if type == world.TOWN or is_capital or physical_buildings.has(cell):
         if is_capital or building_cells.has(cell) or facility_cells.has(cell):
             var facility: String = str(facility_cells.get(cell, ""))
             var building: String = "workshop_a" if facility == "tool_area" else \
                 ("town_hall_a" if variation(x,y,world.seed,2)==0 else "town_hall_b") if is_capital else \
                 BUILDINGS[variation(x,y,world.seed,BUILDINGS.size())]
+            var building_foot := p+Vector2(16,27)
             if physical_buildings.has(cell):
                 var actual: Dictionary = physical_buildings[cell]
                 var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
-                building = str(definition.get("visual", {}).get("sprite", building)) if str(actual.get("type", "")) != "tool_area" else "workshop_a"
+                building = str(actual.get("architecture", {}).get("sprite", definition.get("visual", {}).get("sprite", building)))
+                building_foot.x = p.x+float(definition.get("footprint",[1,1])[0])*16.0
+            elif is_capital:
+                building = "arch_meeting_canopy"
             var building_tint := Color.WHITE
             if physical_buildings.has(cell):
                 var state: Dictionary = physical_buildings[cell]
                 if bool(state.get("abandoned",false)): building_tint = Color(0.52,0.55,0.50,0.8)
                 elif int(state.get("condition",100))<60: building_tint = Color(0.8,0.7,0.63)
-            prop(objects,building,p+Vector2(16,27),1.0,building_tint)
-            if detail > 0:
+            prop(objects,building,building_foot,1.0,building_tint)
+            if detail > 0 and not building.begins_with("arch_"):
                 prop(decor,"fence_gate" if v%2==0 else "stone_wall_h",p+Vector2(17,32),0.75)
                 prop(decor,"garden" if v%2==0 else "crops",p+Vector2(7,31),0.58)
                 if detail==2:prop(objects,["handcart","crates","hay","chopping_block"][v],p+Vector2(29,28),0.6)
@@ -394,21 +402,30 @@ func rebuild_paths() -> void:
     facility_cells.clear()
     physical_buildings.clear()
     physical_footprints.clear()
+    physical_terrain.clear()
     for house in world.construction.houses:
         var anchor := Vector2i(int(house["x"]), int(house["y"]))
-        physical_buildings[anchor] = house
         var definition: Dictionary = world.construction.catalogue.definition(str(house.get("definition_id", "primitive_shelter")))
-        for footprint_cell in world.construction.placement.footprint(definition,anchor,int(house.get("orientation",0))):
+        var footprint: Array = world.construction.placement.footprint(definition,anchor,int(house.get("orientation",0)))
+        for i in range(footprint.size()):
+            var footprint_cell: Vector2i = footprint[i]
             physical_footprints[footprint_cell] = true
-        building_cells[anchor] = true
+            var originals: Array = house.get("original_terrain",[])
+            physical_terrain[footprint_cell] = int(originals[i]) if i<originals.size() else world.MEADOW
+        var depth_cell := anchor+Vector2i(0,int(definition.get("footprint",[1,1])[1])-1)
+        physical_buildings[depth_cell] = house
+        building_cells[depth_cell] = true
         if str(house.get("type", "")) == "tool_area":
-            facility_cells[Vector2i(int(house["x"]), int(house["y"]))] = "tool_area"
+            facility_cells[depth_cell] = "tool_area"
     rendered_building_count = world.construction.houses.size()
     for y in range(world.HEIGHT):
         for x in range(world.WIDTH):
             if world.at(x,y)!=world.TOWN: continue
             var cell := Vector2i(x,y)
             town_cells[cell]=true
+            # Physical sites use the real constructed road network. Automatic
+            # decorative paths from every footprint cell made a false grid.
+            if physical_footprints.has(cell): continue
             var capital: Vector2i = world.capitals[0]
             if cell.distance_squared_to(world.capitals[1])<cell.distance_squared_to(capital):
                 capital=world.capitals[1]
@@ -437,22 +454,6 @@ func rebuild_paths() -> void:
         var index := int(key)
         if index >= 0 and index < world.WIDTH * world.HEIGHT:
             path_cells[Vector2i(index % world.WIDTH, index / world.WIDTH)] = 15
-    # Local deterministic minima reserve a one-cell gap between large building footprints.
-    for cell in town_cells:
-        if physical_footprints.has(cell):
-            continue
-        var priority := variation(cell.x,cell.y,world.seed+71,100000)
-        var anchor := true
-        for dy in range(-1,2):
-            for dx in range(-1,2):
-                var other: Vector2i = cell+Vector2i(dx,dy)
-                if other==cell:continue
-                if other in world.capitals:
-                    anchor=false
-                elif town_cells.has(other):
-                    var rank := variation(other.x,other.y,world.seed+71,100000)
-                    if rank<priority or (rank==priority and (other.y<cell.y or (other.y==cell.y and other.x<cell.x))):anchor=false
-        if anchor:building_cells[cell]=true
     var connected := {}
     for cell in path_cells:
         var mask := 0

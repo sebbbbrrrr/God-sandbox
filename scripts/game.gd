@@ -107,7 +107,7 @@ func _process(delta: float) -> void:
 # VisibleRect may be zero during headless SceneTree initialization. The
 # configured game canvas is the safe fallback; mobile always uses its real size.
 func ui_size() -> Vector2:
-    var actual: Vector2 = get_viewport_rect().size
+    var actual: Vector2 = get_viewport_rect().size if is_inside_tree() else Vector2.ZERO
     if actual.x < 1.0 or actual.y < 1.0:
         return Vector2(float(ProjectSettings.get_setting("display/window/size/viewport_width", 480)),
             float(ProjectSettings.get_setting("display/window/size/viewport_height", 850)))

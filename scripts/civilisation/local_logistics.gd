@@ -52,7 +52,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         job["phase"] = "return"
         mind["route"] = []
     var center: Vector2i = world.settlements.center(world,int(job["settlement_id"]))
-    if world.construction.walk(world,person,mind,center) and world.inventory.transfer(world,"citizen:"+key,"settlement:"+str(job["settlement_id"]),bundle,int(person["id"])):
+    if world.construction.walk(world,person,mind,center,1) and world.inventory.transfer(world,"citizen:"+key,"settlement:"+str(job["settlement_id"]),bundle,int(person["id"])):
         jobs.erase(key)
         mind["route"] = []
     return true

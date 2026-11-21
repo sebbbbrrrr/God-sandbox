@@ -120,6 +120,14 @@ func _initialize() -> void:
     quit(0 if ok else 1)
 
 func gather(w, pid: int, item_id: String, source: Vector2i, quantity: int) -> bool:
+    # Hub handoffs may end on any adjacent contact tile; return to the actual
+    # extraction contact instead of assuming the previous delivery teleported.
+    var person: Dictionary = w.ai_context.people[pid]
+    var mind: Dictionary = w.citizen_ai_by_id[str(pid)]
+    for i in range(20):
+        w.tick += 1
+        w.ai_context.begin_tick(w)
+        if w.construction.walk(w,person,mind,w.capitals[0]): break
     if not w.inventory.extract(w, pid, item_id, source, quantity):
         return false
     return w.inventory.transfer(w, "citizen:" + str(pid), "settlement:0",

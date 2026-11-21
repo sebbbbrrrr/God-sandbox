@@ -615,7 +615,8 @@
       "recipe": {
         "inputs": {
           "clay": 2,
-          "sand": 1
+          "sand": 1,
+          "charcoal": 1
         },
         "output": 1,
         "station": "kiln",

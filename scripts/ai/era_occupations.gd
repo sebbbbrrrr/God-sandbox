@@ -37,8 +37,8 @@ const ROLE_ROWS := [
     ["ceremony_facilitator",1,"communication","","gathering_site","",false],
     ["crop_farmer",2,"agriculture","cultivation","farm","meadow",true],
     ["herder",2,"agriculture","domestication","pasture","grassland",false],
-    ["potter",2,"materials","pottery","kiln","clay",false],
-    ["basket_weaver",2,"manufacturing","weaving","workshop","",false],
+    ["potter",2,"materials","pottery","kiln","clay",true],
+    ["basket_weaver",2,"manufacturing","weaving","workshop","",true],
     ["irrigation_keeper",2,"agriculture","irrigation","canal","water",false],
     ["granary_keeper",2,"agriculture","storage","granary","",false],
     ["bronze_smith",3,"materials","bronze_working","smelter","ore",false],
@@ -197,7 +197,7 @@ func facility_present(world: RefCounted, nation: int, facility: String) -> bool:
     # Only actual specialised building entities unlock advanced roles.
     # The existing town tile is not a forge, factory or research laboratory.
     for house in world.construction.houses:
-        if world.settlements.sid(house) == nation and not bool(house.get("abandoned",false)) and int(house.get("condition",100))>0 and str(house.get("type", "home")) == facility:
+        if world.settlements.sid(house) == nation and not bool(house.get("abandoned",false)) and int(house.get("condition",100))>0 and (str(house.get("type", "home")) == facility or facility in world.construction.catalogue.definition(str(house.get("definition_id", ""))).get("facility_tags", [])):
             return true
     return false
 
@@ -249,6 +249,9 @@ func context_exists(world: RefCounted, nation: int, context: String) -> bool:
                         return true
                 "coast":
                     if world.food.source_kind(world, cell) == "fish":
+                        return true
+                "clay":
+                    if world.construction.left_at(world, cell.x, cell.y, "clay") > 0:
                         return true
                 "water":
                     if terrain in [world.BEACH, world.OCEAN]:

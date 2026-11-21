@@ -2,6 +2,7 @@ extends RefCounted
 # Civilisation B1: food quantities arise only from reachable biome ecology or
 # physical crop production. Local customs guide choice, never human biology.
 const Nav = preload("res://scripts/ai/navigation.gd")
+const Labour = preload("res://scripts/ai/labour_priorities.gd")
 const Calendar = preload("res://scripts/ai/sim_calendar.gd")
 const FOOD_TYPES := ["berries", "fish", "grain"]
 const MAX_GATHERERS := 12
@@ -174,7 +175,9 @@ func source_for(world: RefCounted, person: Dictionary) -> Dictionary:
             var access := cell_access(world, origin, source)
             if access.x < 0:
                 continue
+            var claims: int = Labour.claim_count(jobs, [source.x, source.y], ["forage"])
             var score: int = Nav.manhattan(origin, access) + Nav.manhattan(access, depot)
+            score += claims * 52 + posmod(source.x * 5 + source.y * 3 + int(person["id"]), 5)
             if (preferred == "fisher" and source_kind(world, source) == "fish") or (
                     preferred == "forager" and source_kind(world, source) != "fish"):
                 score -= 4
@@ -191,16 +194,18 @@ func gatherers(nation: int) -> int:
             n += 1
     return n
 
-func move(world: RefCounted, person: Dictionary, mind: Dictionary, target: Vector2i) -> bool:
+func move(world: RefCounted, person: Dictionary, mind: Dictionary,
+        target: Vector2i, contact_radius: int = 0) -> bool:
     var previous := Vector2i(int(person["x"]), int(person["y"]))
-    if previous == target:
+    if Nav.manhattan(previous, target) <= contact_radius:
         return true
-    var next: Vector2i = Nav.next_step(world, person, mind, target)
+    var destination := Nav.hub_access(world, person, target) if contact_radius > 0 else target
+    var next: Vector2i = Nav.next_step(world, person, mind, destination)
     if next != previous:
         person["x"] = next.x
         person["y"] = next.y
         world.ai_context.moved(person, previous)
-    return next == target
+    return Nav.manhattan(next, target) <= contact_radius
 
 func pick_food(household_id: int, person: Dictionary, stores: Dictionary, day: int) -> String:
     var practice: Dictionary = customs.get(str(household_id), {})
@@ -388,10 +393,16 @@ func ready_farm(world: RefCounted, nation: int) -> Dictionary:
     var season: int = int(world.calendar.date_at(world.tick)["season_index"])
     if season == 3 or not has_tech(world,nation,"cultivation"):
         return {}
+    var chosen: Dictionary = {}
+    var fewest: int = 2 # at most two people per ripe field
     for farm in farms:
-        if world.settlements.sid(farm) == nation and not bool(farm["harvested"]) and int(world.tick) >= int(farm["ready_tick"]):
-            return farm
-    return {}
+        if world.settlements.sid(farm) != nation or bool(farm["harvested"]) or int(world.tick) < int(farm["ready_tick"]):
+            continue
+        var claims: int = Labour.claim_count(jobs, [int(farm["x"]), int(farm["y"])], ["farm"])
+        if claims < fewest:
+            chosen = farm
+            fewest = claims
+    return chosen
 
 func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var id := str(person["id"])
@@ -414,7 +425,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         var target := home
         if not house.is_empty() and total(pantry_for(int(person["household_id"]))) > 0:
             target = Vector2i(int(house["x"]), int(house["y"]))
-        if move(world, person, mind, target):
+        if move(world, person, mind, target, 1):
             take_ration(world, person)
         return true
     if not jobs.has(id) and world.founding.assignments.has(id):
@@ -454,7 +465,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             if family.is_empty() or int(family["home_id"]) <= 0 or total(pantry_for(family_id)) >= reserve_target(world, family) or total(store(nation)) < 2:
                 return false
             var house: Dictionary = world.households.house_by_id(world, int(family["home_id"]))
-            if house.is_empty():
+            if house.is_empty() or not Labour.can_deliver_food(world, nation, family_id):
                 return false
             jobs[id] = {"kind": "deliver", "nation": nation, "phase": "depot",
                 "family_id": family_id, "target": [int(house["x"]), int(house["y"])],
@@ -464,7 +475,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var job: Dictionary = jobs[id]
     if str(job["kind"]) == "sow":
         if str(job["phase"]) == "depot":
-            if not move(world,person,mind,home): return true
+            if not move(world,person,mind,home,1): return true
             if int(store(nation)["grain"]) < 1:
                 jobs.erase(id)
                 return false
@@ -489,7 +500,7 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             jobs.erase(id)
         return true
     if str(job["phase"]) == "depot":
-        if move(world, person, mind, home):
+        if move(world, person, mind, home, 1):
             if str(job["kind"]) == "deliver" and int(job["amount"]) == 0:
                 var food: String = pick_food(int(job["family_id"]), person, store(nation), int(world.calendar.date_at(world.tick)["day"]))
                 if food == "":
@@ -586,6 +597,25 @@ func on_tick_households(world: RefCounted) -> void:
         for farm in farms:
             if bool(farm["harvested"]):
                 farm["fertility"] = mini(5, int(farm["fertility"]) + 1)
+    # A granary protects finite grain reserves; exposed grain incurs a recorded
+    # annual 5% loss. Buildings outside local access, ruined or abandoned do not
+    # provide protection. The existing food ledger owns every unit.
+    if world.tick % Calendar.TICKS_PER_YEAR == 0:
+        var protected: Dictionary = {}
+        for house in world.construction.houses:
+            if str(house.get("function","")) != "granary" or bool(house.get("abandoned",false)) or int(house.get("condition",100))<25: continue
+            var sid: int = world.settlements.sid(house)
+            var center: Vector2i = world.settlements.center(world,sid)
+            if Nav.manhattan(center,Vector2i(int(house["x"]),int(house["y"])))>8: continue
+            var row: Dictionary = world.construction.catalogue.definition(str(house["definition_id"]))
+            protected[sid] = int(protected.get(sid,0))+int(row.get("food_capacity",0))
+        for key in world.settlements.records:
+            var sid := int(key)
+            var depot: Dictionary = store(sid)
+            var exposed := maxi(0,int(depot.get("grain",0))-int(protected.get(sid,0)))
+            var loss := (exposed+19)/20
+            depot["grain"] = int(depot.get("grain",0))-loss
+            lost["grain"] += loss
     for key in travel_cargo.keys():
         var traveller: Dictionary = world.ai_context.people.get(int(key),{})
         if traveller.is_empty() or int(traveller["hp"])<=0:

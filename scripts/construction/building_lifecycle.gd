@@ -23,6 +23,8 @@ func complete(engine: RefCounted, world: RefCounted, person: Dictionary, site: D
         "condition": int(row["structural"]["max_health"]), "max_health": int(row["structural"]["max_health"]),
         "abandoned": false, "history": site["history"].duplicate(true), "last_condition_tick": int(world.tick),
         "original_terrain": site["original_terrain"].duplicate()}
+    house["architecture"] = site.get("architecture", engine.catalogue.architecture_for(row)).duplicate(true)
+    house["placement_reason"] = site.get("placement_reason", {}).duplicate(true)
     if site.has("previous_building"):
         var previous: Dictionary = site["previous_building"]
         for field in ["built_tick", "original_age", "original_nation", "builder_id"]:
@@ -39,6 +41,7 @@ func complete(engine: RefCounted, world: RefCounted, person: Dictionary, site: D
     engine.buildings_by_id[int(house["id"])] = house
     engine.placement.claim(row, house)
     engine.indexed_houses = engine.houses.size()
+    engine.building_revision += 1
     for cell in engine.placement.footprint(row, Vector2i(int(house["x"]), int(house["y"])), int(house["orientation"])):
         world.set_terrain_cell(cell.x, cell.y, world.TOWN)
     world.regional_economy.on_building_changed(world, Vector2i(int(house["x"]),int(house["y"])))
@@ -80,23 +83,39 @@ func request_action(engine: RefCounted, world: RefCounted, id: int, kind: String
     return true
 
 func assign(engine: RefCounted, world: RefCounted, person: Dictionary) -> bool:
+    var chosen: Dictionary = {}
+    var highest := -2147483647
+    var sid: int = world.settlements.sid(person)
+    var origin := Vector2i(int(person["x"]), int(person["y"]))
     for key in pending:
         var house: Dictionary = engine.building_by_id(int(key))
-        if house.is_empty():
+        if house.is_empty() or world.settlements.sid(house) != sid or \
+                not house.has("pending_action") or int(house.get("worker", 0)) > 0:
             continue
-        if world.settlements.sid(house) != world.settlements.sid(person) or not house.has("pending_action") or int(house.get("worker", 0)) > 0:
-            continue
-        var row: Dictionary = engine.catalogue.definition(str(house.get("definition_id", "primitive_shelter")))
+        var row: Dictionary = engine.catalogue.definition(
+            str(house.get("definition_id", "primitive_shelter")))
         if not engine.catalogue.worker_eligible(world, person, row):
             continue
-        var kind = str(house["pending_action"])
-        house["worker"] = int(person["id"])
-        pending.erase(int(house["id"]))
-        engine.jobs[str(person["id"])] = {"kind": kind, "nation": int(person["nation"]), "settlement_id": world.settlements.sid(person), "building_id": int(house["id"]),
-            "phase": "depot" if kind == "repair" else "site", "cargo": {}, "wood": 0, "stone": 0,
-            "remaining": int(row[kind if kind == "repair" else "demolition"]["labour"]), "last_active_tick": int(world.tick)}
-        return true
-    return false
+        var kind := str(house["pending_action"])
+        var condition: int = int(house.get("condition", 100))
+        var urgency: int = (1400 + (100 - condition) * 18) if kind == "repair" else 150
+        urgency -= absi(origin.x - int(house["x"])) + absi(origin.y - int(house["y"]))
+        if urgency > highest:
+            highest = urgency
+            chosen = house
+    if chosen.is_empty():
+        return false
+    var row: Dictionary = engine.catalogue.definition(str(
+        chosen.get("definition_id", "primitive_shelter")))
+    var kind := str(chosen["pending_action"])
+    chosen["worker"] = int(person["id"])
+    pending.erase(int(chosen["id"]))
+    engine.jobs[str(person["id"])] = {"kind": kind, "nation": int(person["nation"]),
+        "settlement_id": sid, "building_id": int(chosen["id"]),
+        "phase": "depot" if kind == "repair" else "site", "cargo": {}, "wood": 0, "stone": 0,
+        "remaining": int(row[kind if kind == "repair" else "demolition"]["labour"]),
+        "last_active_tick": int(world.tick)}
+    return true
 
 func work(engine: RefCounted, world: RefCounted, person: Dictionary, mind: Dictionary, task: Dictionary) -> bool:
     var house: Dictionary = engine.building_by_id(int(task["building_id"]))
@@ -107,7 +126,7 @@ func work(engine: RefCounted, world: RefCounted, person: Dictionary, mind: Dicti
         return true
     var row: Dictionary = engine.catalogue.definition(str(house["definition_id"]))
     if str(task["phase"]) == "depot":
-        if engine.walk(world, person, mind, world.settlements.center(world, world.settlements.sid(person))):
+        if engine.walk(world, person, mind, world.settlements.center(world, world.settlements.sid(person)), 1):
             var materials: Dictionary = row["repair"]["materials"]
             if world.inventory.transfer(world, "settlement:" + str(world.settlements.sid(person)), "citizen:" + id, materials, int(person["id"])):
                 task["cargo"] = materials.duplicate(true)
@@ -129,6 +148,7 @@ func work(engine: RefCounted, world: RefCounted, person: Dictionary, mind: Dicti
         house.erase("worker")
     else:
         remove(engine, world, int(house["id"]), true, "demolished")
+    world.terrain_changed.emit(Vector2i(int(house["x"]),int(house["y"])))
     engine.tasks.finish(engine, id, mind)
     return true
 
@@ -146,6 +166,12 @@ func remove(engine: RefCounted, world: RefCounted, id: int, salvage: bool, reaso
                 recovered[material] = count
     if not world.inventory.close_site(world, house, recovered):
         return false
+    # End facility work at the same authoritative removal boundary. A save
+    # immediately after a god-power collapse must never retain an operation
+    # referencing a nonexistent building; living carriers keep their goods.
+    for key in engine.jobs.keys():
+        if int(engine.jobs[key].get("building_id",0))==id:
+            engine.tasks.interrupt(engine,world,str(key))
     Site.history(house, world.tick, reason)
     engine.archived.append(house.duplicate(true))
     if engine.archived.size() > 128:
@@ -156,6 +182,7 @@ func remove(engine: RefCounted, world: RefCounted, id: int, salvage: bool, reaso
     engine.placement.release(id)
     engine.houses.erase(house)
     engine.indexed_houses = engine.houses.size()
+    engine.building_revision += 1
     # Release first, then paint; callbacks must not destroy a second time.
     var cells: Array = engine.placement.footprint(row, Vector2i(int(house["x"]), int(house["y"])), int(house["orientation"]))
     for i in range(cells.size()):
@@ -221,6 +248,7 @@ func begin_transition(engine: RefCounted, world: RefCounted, id: int, target: St
     engine.sites_by_id[id] = site
     engine.placement.claim(row,site)
     engine.indexed_houses = engine.houses.size()
+    engine.building_revision += 1
     engine.reserve_available(world,site)
     world.households.dirty = true
     engine.revision += 1

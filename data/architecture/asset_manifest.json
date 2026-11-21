@@ -1,0 +1,472 @@
+{
+  "version": 1,
+  "source_mode": "image_gen reference-guided commissioned sheets",
+  "quality_status": "reviewed at logical size; owner/device approval pending",
+  "assets": {
+    "arch_branch_shelter": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        0,
+        0,
+        64,
+        59
+      ],
+      "rect": [
+        0,
+        0,
+        64,
+        59
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        0,
+        0,
+        4,
+        2
+      ],
+      "sha256": "55bb6df6a30077a3419d6b63e8b20e48d6fbf071a4250850ee8f34ce8dc6d0d4",
+      "ground_anchor": [
+        32,
+        59
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_knapping_canopy": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        128,
+        0,
+        64,
+        58
+      ],
+      "rect": [
+        128,
+        0,
+        64,
+        58
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        1,
+        0,
+        4,
+        2
+      ],
+      "sha256": "7cbdddfea8d8e83bb4d5c965ab2c1641a3480514aaec560b5bc11ad4b326a4af",
+      "ground_anchor": [
+        32,
+        58
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_logging_canopy": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        256,
+        0,
+        64,
+        51
+      ],
+      "rect": [
+        256,
+        0,
+        64,
+        51
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        2,
+        0,
+        4,
+        2
+      ],
+      "sha256": "4cded0322f5304c483f1116c9e023acc7439a394a5743a5a7147fb1c81a28ccf",
+      "ground_anchor": [
+        32,
+        51
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_quarry_shade": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        384,
+        0,
+        64,
+        55
+      ],
+      "rect": [
+        384,
+        0,
+        64,
+        55
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        3,
+        0,
+        4,
+        2
+      ],
+      "sha256": "75d76b66bf6c770b088522fe49c76fb6e449254992e640adbeffd376d4bb0d2f",
+      "ground_anchor": [
+        32,
+        55
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_basket_store": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        512,
+        0,
+        64,
+        63
+      ],
+      "rect": [
+        512,
+        0,
+        64,
+        63
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        0,
+        1,
+        4,
+        2
+      ],
+      "sha256": "d2fc852c903d8fb5377f6551a3a10f7767df5b942a5ded5207e1bacc5b1c097b",
+      "ground_anchor": [
+        32,
+        63
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_meeting_canopy": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        640,
+        0,
+        64,
+        59
+      ],
+      "rect": [
+        640,
+        0,
+        64,
+        59
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        1,
+        1,
+        4,
+        2
+      ],
+      "sha256": "d429b5d088df3e7f2d5299f816137aa4879d0f21a902229b676ecdbc9d2d625b",
+      "ground_anchor": [
+        32,
+        59
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_charcoal_clamp": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        768,
+        0,
+        64,
+        46
+      ],
+      "rect": [
+        768,
+        0,
+        64,
+        46
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        2,
+        1,
+        4,
+        2
+      ],
+      "sha256": "894e7b4173240eaeb99cd124410501c56548317d8690c12aef238697dd402ede",
+      "ground_anchor": [
+        32,
+        46
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_earth_shelter": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        896,
+        0,
+        64,
+        53
+      ],
+      "rect": [
+        896,
+        0,
+        64,
+        53
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_stone.png",
+      "source_cell": [
+        3,
+        1,
+        4,
+        2
+      ],
+      "sha256": "7dc417a95a72f96845741ba19a2648bfaee75234164968db312c3fbbb067e997",
+      "ground_anchor": [
+        32,
+        53
+      ],
+      "primary_age": 1,
+      "quality_approved": true
+    },
+    "arch_wattle_house": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        0,
+        128,
+        63,
+        64
+      ],
+      "rect": [
+        0,
+        128,
+        63,
+        64
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        0,
+        0,
+        4,
+        2
+      ],
+      "sha256": "10ea7b7639070398b44e4b94e6d498d6cb70da9b28d0dba563229563f861e13f",
+      "ground_anchor": [
+        31,
+        64
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    },
+    "arch_longhouse": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        128,
+        128,
+        64,
+        63
+      ],
+      "rect": [
+        128,
+        128,
+        64,
+        63
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        1,
+        0,
+        4,
+        2
+      ],
+      "sha256": "c48f1f0a32c530e6c835352687f7c57e47633f6ce24a43eaaeb9796bec82d2af",
+      "ground_anchor": [
+        32,
+        63
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    },
+    "arch_raised_granary": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        256,
+        128,
+        57,
+        64
+      ],
+      "rect": [
+        256,
+        128,
+        57,
+        64
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        2,
+        0,
+        4,
+        2
+      ],
+      "sha256": "9a7409853ff22c140c089cbffb91fd0b995528f375ec1a056aecf16c50ef5318",
+      "ground_anchor": [
+        28,
+        64
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    },
+    "arch_pottery_kiln": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        384,
+        128,
+        64,
+        64
+      ],
+      "rect": [
+        384,
+        128,
+        64,
+        64
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        3,
+        0,
+        4,
+        2
+      ],
+      "sha256": "b2019d9eb5a0b4ac69d2ead6e9f05e7e9e822865f7b11ee7122c3a3a918a0145",
+      "ground_anchor": [
+        32,
+        64
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    },
+    "arch_weaving_house": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        512,
+        128,
+        64,
+        61
+      ],
+      "rect": [
+        512,
+        128,
+        64,
+        61
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        0,
+        1,
+        4,
+        2
+      ],
+      "sha256": "75d0e660282be1c6f45cdb7372c3d0ca24e2ef01f0fbb2d600d292b53325364d",
+      "ground_anchor": [
+        32,
+        61
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    },
+    "arch_adobe_house": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        768,
+        128,
+        64,
+        60
+      ],
+      "rect": [
+        768,
+        128,
+        64,
+        60
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        2,
+        1,
+        4,
+        2
+      ],
+      "sha256": "2d5542e821aa26e2937ab92ee404279022d615c632c72f3df679a7258941fe1a",
+      "ground_anchor": [
+        32,
+        60
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    },
+    "arch_stilt_house": {
+      "atlas": "architecture",
+      "page": 1,
+      "packed_rect": [
+        896,
+        128,
+        57,
+        64
+      ],
+      "rect": [
+        896,
+        128,
+        57,
+        64
+      ],
+      "category": "architecture",
+      "source": "tools/source/architecture_agricultural.png",
+      "source_cell": [
+        3,
+        1,
+        4,
+        2
+      ],
+      "sha256": "8f4706159fd3c507918e40f9ab83f68ce88b4f2d8387852016b456e91d5f0265",
+      "ground_anchor": [
+        28,
+        64
+      ],
+      "primary_age": 2,
+      "quality_approved": true
+    }
+  }
+}

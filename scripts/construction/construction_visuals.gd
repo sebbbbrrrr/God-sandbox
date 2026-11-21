@@ -43,6 +43,20 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
         var current: float = 1.0
         if stage < stages.size():
             current = clampf(float(stage_work) / maxf(1.0, float(stages[stage].get("labour", 1))), 0.0, 1.0)
+        # Shared visual assembly follows the actual technique stages. Six-stage
+        # structures cannot show their roof during foundation work.
+        if stages.size() > 3 and stage < stages.size():
+            var technique := str(stages[stage]["id"])
+            if technique in ["survey","site_preparation"]: stage = 0
+            elif technique in ["foundations","stacking"]:
+                stage = 1
+                current *= 0.5
+            elif technique == "framework":
+                stage = 1
+                current = 0.5+current*0.5
+            else:
+                stage = 2
+                if technique == "inspection": current = 1.0
         var footprint: Array = row.get("footprint", [1, 1])
         var orientation: int = int(site.get("orientation", 0))
         var width: float = float(footprint[orientation % 2]) * ts

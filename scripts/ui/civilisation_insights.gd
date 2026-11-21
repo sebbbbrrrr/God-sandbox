@@ -181,6 +181,8 @@ static func capture(world: RefCounted) -> Dictionary:
             "reason": str(project.get("pause_reason", "")),
             "remaining_labour": int(project.get("remaining_labour", 0)),
             "progress": int(project.get("progress", 0)),
+            "placement": project.get("placement_reason",{}).duplicate(true),
+            "primary_age":int(world.construction.catalogue.definition(str(project.get("definition_id",""))).get("primary_age",1)),
             "pending": pending, "last_tick": int(project.get("last_progress_tick", world.tick))})
     var social := _social_snapshot(world, lookup)
     var routes := _routes(world)
