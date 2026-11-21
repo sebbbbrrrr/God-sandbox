@@ -7,6 +7,24 @@ const Art = preload("res://scripts/ui/item_pixel_art.gd")
 const InspectorOverlay = preload("res://scripts/ui/item_overlay.gd")
 var game: Node2D
 var mode := "world"
+var feedback_point := Vector2.ZERO
+var feedback_alpha := 0.0
+var feedback_radius := 0.0
+var feedback_tween: Tween
+
+func flash_feedback(point: Vector2) -> void:
+    if mode != "items":
+        return
+    if feedback_tween != null and feedback_tween.is_running():
+        feedback_tween.kill()
+    feedback_point = point
+    feedback_alpha = 0.28
+    feedback_radius = 4.0
+    feedback_tween = create_tween().set_parallel(true)
+    feedback_tween.tween_property(self, "feedback_alpha", 0.0, 0.23).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+    feedback_tween.tween_property(self, "feedback_radius", 26.0, 0.23).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+    queue_redraw()
+
 
 func _draw() -> void:
     if game == null or game.world == null:
@@ -15,6 +33,11 @@ func _draw() -> void:
         if game.inspector.visible:
             InspectorOverlay.draw_panel(self, game.font, game.world, game.inspector,
                 game.ui_size(), game.toolbar_height())
+            if feedback_alpha > 0.001:
+                draw_circle(feedback_point, feedback_radius,
+                    Color("#f6d8a0", feedback_alpha * 0.42))
+                draw_arc(feedback_point, feedback_radius, 0.0, TAU, 32,
+                    Color("#f9e5bd", feedback_alpha), 1.7, true)
         return
     ConstructionVisuals.draw(self, game)
     CitizenWorkVisuals.draw(self, game, game.work_visual_clock)
