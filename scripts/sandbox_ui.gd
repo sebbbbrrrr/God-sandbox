@@ -664,6 +664,7 @@ func _layout() -> void:
     dock_brush_button.custom_minimum_size.x = 38 if narrow else 43
     palette_button.text = "Powers" if not narrow else "Tools"
     var is_landscape := size_view.x > size_view.y * 1.2
+    power_grid.columns = 2 if narrow else 3
     var palette_width := minf(385.0, size_view.x * 0.52) if is_landscape else width
     var palette_x := size_view.x - palette_width - 12.0 if is_landscape else x
     var palette_height := palette_content.get_combined_minimum_size().y + 22
