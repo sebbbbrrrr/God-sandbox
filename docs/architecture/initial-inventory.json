@@ -1,0 +1,140 @@
+{
+  "baseline": "9bc108b21f30d14442a12291a939b02ea09fd029",
+  "reference": "tools/source/settlement_phase1b.png",
+  "logical_tile": [
+    32,
+    32
+  ],
+  "atlas_regions": 330,
+  "pages": [
+    "sprite_atlas.png"
+  ],
+  "functional_buildings": [
+    {
+      "id": "primitive_shelter",
+      "function": "shelter",
+      "recipe": {
+        "wood": 3,
+        "stone": 1
+      },
+      "sprite": "hut_a",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "timber_hut",
+      "function": "shelter",
+      "recipe": {
+        "wood": 6,
+        "stone": 2
+      },
+      "sprite": "cottage_a",
+      "footprint": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": "tool_area",
+      "function": "tool_area",
+      "recipe": {
+        "wood": 2,
+        "stone": 1
+      },
+      "sprite": "workshop_a",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "local_storage",
+      "function": "storage",
+      "recipe": {
+        "wood": 4,
+        "stone": 1
+      },
+      "sprite": "storage_a",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "forest_camp",
+      "function": "forestry",
+      "recipe": {
+        "wood": 3,
+        "stone": 1
+      },
+      "sprite": "workshop_b",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "quarry_camp",
+      "function": "quarry",
+      "recipe": {
+        "wood": 2,
+        "stone": 3
+      },
+      "sprite": "stone_house_a",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "cultivation_field",
+      "function": "farm",
+      "recipe": {
+        "wood": 2,
+        "stone": 1
+      },
+      "sprite": "farmhouse_a",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "market_square",
+      "function": "market",
+      "recipe": {
+        "wood": 4,
+        "stone": 2
+      },
+      "sprite": "market_a",
+      "footprint": [
+        1,
+        1
+      ]
+    },
+    {
+      "id": "gathering_hall",
+      "function": "civic",
+      "recipe": {
+        "wood": 4,
+        "stone": 1
+      },
+      "sprite": "barn_a",
+      "footprint": [
+        1,
+        1
+      ]
+    }
+  ],
+  "excluded_low_detail_branch": "feature/civilisation-architecture-ages-i-v",
+  "master_design": "God_Sandbox_Civilisation_Evolution_Master_Design.pdf (all 16 pages reviewed)",
+  "gaps": [
+    "Later-age production, services and utilities",
+    "Authored regional/state sprites",
+    "Skill/facility-gated specialist work beyond early slice",
+    "Native regional climate field integration",
+    "Huawei P30 physical validation"
+  ]
+}

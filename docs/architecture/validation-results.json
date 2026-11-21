@@ -1,0 +1,149 @@
+{
+  "engine": "4.5.2.stable.official.6ce3de25a",
+  "results": [
+    {
+      "suite": "architecture_integration",
+      "passed": true,
+      "seconds": 2.241
+    },
+    {
+      "suite": "simulation",
+      "passed": true,
+      "seconds": 7.318
+    },
+    {
+      "suite": "universal_construction",
+      "passed": true,
+      "seconds": 4.148
+    },
+    {
+      "suite": "construction_animation",
+      "passed": true,
+      "seconds": 0.726
+    },
+    {
+      "suite": "workforce_distribution",
+      "passed": true,
+      "seconds": 0.618
+    },
+    {
+      "suite": "item_catalogue",
+      "passed": true,
+      "seconds": 0.154
+    },
+    {
+      "suite": "physical_inventory",
+      "passed": true,
+      "seconds": 0.729
+    },
+    {
+      "suite": "toolmaking",
+      "passed": true,
+      "seconds": 0.63
+    },
+    {
+      "suite": "toolmaking_autonomy",
+      "passed": true,
+      "seconds": 6.021
+    },
+    {
+      "suite": "era_occupations",
+      "passed": true,
+      "seconds": 0.714
+    },
+    {
+      "suite": "food_survival",
+      "passed": true,
+      "seconds": 0.986
+    },
+    {
+      "suite": "settlement_founding",
+      "passed": true,
+      "seconds": 1.646
+    },
+    {
+      "suite": "settlement_planning",
+      "passed": true,
+      "seconds": 0.519
+    },
+    {
+      "suite": "settlement_family_farm",
+      "passed": true,
+      "seconds": 0.896
+    },
+    {
+      "suite": "settlement_network_lifecycle",
+      "passed": true,
+      "seconds": 1.364
+    },
+    {
+      "suite": "regional_economy",
+      "passed": true,
+      "seconds": 0.523
+    },
+    {
+      "suite": "rendering",
+      "passed": true,
+      "seconds": 6.861
+    },
+    {
+      "suite": "civilisation_observatory",
+      "passed": true,
+      "seconds": 0.898
+    },
+    {
+      "suite": "civilisation_premium_menu",
+      "passed": true,
+      "seconds": 1.358
+    },
+    {
+      "suite": "unified_integration",
+      "passed": true,
+      "seconds": 1.09
+    },
+    {
+      "suite": "game_item_ui",
+      "passed": true,
+      "seconds": 0.621
+    },
+    {
+      "suite": "item_inspector",
+      "passed": true,
+      "seconds": 0.627
+    },
+    {
+      "suite": "pinch_zoom_anchor",
+      "passed": true,
+      "seconds": 0.903
+    },
+    {
+      "suite": "civilisation_calendar_lifecycle",
+      "passed": true,
+      "seconds": 0.709
+    },
+    {
+      "suite": "household_care",
+      "passed": true,
+      "seconds": 0.611
+    },
+    {
+      "suite": "autonomous_demography",
+      "passed": true,
+      "seconds": 0.708
+    },
+    {
+      "suite": "construction",
+      "passed": true,
+      "seconds": 4.061
+    }
+  ],
+  "passed": true,
+  "source_commit": "d479f23c548297f36953933a76ff9c522d53cbf8",
+  "new_integration_checks": 96,
+  "atlas_rebuild_passed": true,
+  "gl_captures": 6,
+  "main_scene_smoke_passed": true,
+  "local_build_commit": "cd8a5c5046a863b6de7057c22ece6ceeeb9f0301",
+  "source_tree": "eb98756d885ba69ab5fb87f5240afebdbc0bb489",
+  "publication_verification": "Published Git tree is byte-identical to the locally built and tested code tree."
+}
