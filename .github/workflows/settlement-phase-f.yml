@@ -37,7 +37,7 @@ jobs:
           set -euo pipefail
           sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
           sudo apt-get update -qq
-          sudo apt-get install -y unzip
+          sudo apt-get install -y unzip xvfb
       - name: Download Godot editor and Android export templates
         run: |
           set -euo pipefail
@@ -78,6 +78,14 @@ jobs:
           set -euo pipefail
           ./godot --headless --path . --script res://tests/settlement_benchmark.gd 2>&1 | tee /tmp/phase-f-benchmark.log
           if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:" /tmp/phase-f-benchmark.log; then exit 1; fi
+      - name: Capture actual premium mobile menu screens
+        if: ${{ github.ref_name == 'feature/civilisation-aaa-menu-polish' }}
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s "-screen 0 1024x1024x24" ./godot --path . --script res://tests/capture_civilisation_premium.gd 2>&1 | tee /tmp/civilisation-premium-captures.log
+          if grep -Ei "SCRIPT ERROR|Parse Error|FAILED:|CIVILISATION_PREMIUM_VISUALS_FAILED" /tmp/civilisation-premium-captures.log; then exit 1; fi
+          test -s tests/captures/civilisation-premium-overview.png
+          test -s tests/captures/civilisation-premium-compact.png
       - name: Export Android debug APK
         run: |
           set -euo pipefail
@@ -87,6 +95,14 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose build/GodSandbox-PhaseF-debug.apk
           unzip -tqq build/GodSandbox-PhaseF-debug.apk
           ls -lh build/GodSandbox-PhaseF-debug.apk
+      - name: Upload premium Android UI screenshot evidence
+        if: ${{ github.ref_name == 'feature/civilisation-aaa-menu-polish' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: GodSandbox-Civilisation-Premium-UI-Real-Renders
+          path: tests/captures/civilisation-premium-*.png
+          if-no-files-found: error
+          retention-days: 14
       - name: Upload Phase F debug APK and QA reports
         uses: actions/upload-artifact@v4
         with:
