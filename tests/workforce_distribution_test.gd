@@ -60,8 +60,20 @@ func _initialize() -> void:
     check(urgent_score > Labour.project_score(world,shelter,Vector2i(10,10),pressure),
         "housing shortage elevates shelter construction")
 
+    world.set_terrain_cell(14, 12, World.FOREST)
+    world.set_terrain_cell(12, 14, World.FOREST)
+    var first_source: Dictionary = world.construction.source_for(world, seeker, "wood")
+    check(not first_source.is_empty(), "forest resource is reachable")
+    if not first_source.is_empty():
+        world.construction.jobs["900"] = {"kind":"gather","phase":"source",
+            "source":first_source["source"], "nation":0}
+        var second_source: Dictionary = world.construction.source_for(world, seeker, "wood")
+        check(not second_source.is_empty() and
+            second_source.get("source", []) != first_source["source"],
+            "wood gatherers reserve different viable source tiles")
+        world.construction.jobs.erase("900")
     var sid := 0
-    for id in world.food.FOOD_TYPES:
+    for id in ["berries", "fish", "grain"]:
         world.food.store(sid)[id] = 0
     world.food.store(sid)["berries"] = 60
     var family: int = int(world.citizens[0]["household_id"])
