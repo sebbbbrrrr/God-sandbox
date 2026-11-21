@@ -127,6 +127,7 @@ static func capture(world: RefCounted) -> Dictionary:
     _add_job(world.regional_economy.trade_jobs, lookup, work, "Trade")
     # One pass per large authoritative collection. This keeps a 24-settlement
     # display cheap even in worlds with thousands of structures.
+    var facilities_by: Dictionary = {}
     var buildings_by: Dictionary = {}
     var housing_by: Dictionary = {}
     var families_by: Dictionary = {}
@@ -136,6 +137,7 @@ static func capture(world: RefCounted) -> Dictionary:
     var traders_by: Dictionary = {}
     for id in ids:
         var key := str(id)
+        facilities_by[key] = []
         buildings_by[key] = 0
         housing_by[key] = 0
         families_by[key] = 0
@@ -146,6 +148,19 @@ static func capture(world: RefCounted) -> Dictionary:
     for house in world.construction.houses:
         var key := str(_sid(house))
         if buildings_by.has(key):
+            var definition: Dictionary = world.construction.catalogue.definition(str(house.get("definition_id","")))
+            var processes: Array = world.construction.operations.processes(definition)
+            if not processes.is_empty() and facilities_by[key].size()<24:
+                var inputs: Dictionary = {}
+                for process in processes:
+                    for ingredient in world.construction.operations.recipe(world,process).get("inputs",{}):
+                        inputs[str(ingredient)] = world.inventory.available("settlement:"+key,str(ingredient))
+                facilities_by[key].append({"id":int(house["id"]),"name":str(definition["display_name"]),
+                    "purpose":str(definition["purpose"]),"age":int(definition["primary_age"]),
+                    "cycles":int(house.get("operating_cycles",0)),"state":world.construction.catalogue.state_of(house,world.tick),
+                    "processes":processes.duplicate(true),"inputs_available":inputs,
+                    "irrigation_slots":int(house.get("irrigation_slots",0)),
+                    "irrigation_ticks":maxi(0,int(house.get("irrigation_until",0))-world.tick)})
             buildings_by[key] += 1
             housing_by[key] += int(house.get("capacity", 0))
     for family in world.households.families:
@@ -268,7 +283,7 @@ static func capture(world: RefCounted) -> Dictionary:
             "status": status, "specialisation": str(record.get("specialisation", "subsistence")),
             "founded_tick": int(record.get("founded_tick", 0)),
             "population": population, "housing": capacity, "buildings": buildings,
-            "families": families, "farms": farms, "projects": projects,
+            "families": families, "farms": farms, "projects": projects, "facilities":facilities_by[key],
             "jobs": work[str(id)]["jobs"], "active_workers": work[str(id)]["workers"].size(),
             "food": food, "materials": materials, "prosperity": int(record.get("prosperity", -1)),
             "prosperity_assessed": not plans.is_empty(), "stress": int(record.get("stress_ticks", 0)),

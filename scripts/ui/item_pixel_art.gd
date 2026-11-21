@@ -103,6 +103,12 @@ const ICONS := {
         "......wk.....",
         "............."
     ],
+    "bronze_sickle": [
+        "....kllllk...", "...kls..sdk..", "..kls....sdk.", "...kk....sdk.",
+        "........sdk..", ".......sdk...", "......sdk....", ".....cww.....",
+        ".....hww.....", ".....ww......", "....wh.......", "....wk.......",
+        "............."
+    ],
     "fallback": [
         ".........", "..kkk....", ".kllllk..", ".klsdsl..", ".klssdl..",
         ".kldddl..", "..kkkk...", ".........", "........."
@@ -124,8 +130,11 @@ const WORKSHOP := [
     "...dddddddd...",
     ".............."
 ]
+const BRONZE := {"s":Color("#ba8741"),"l":Color("#e5bd75"),"d":Color("#765332")}
 
 static func sprite(item_id: String) -> Array:
+    if item_id=="bronze_axe": return ICONS["stone_axe"]
+    if item_id=="bronze_sickle": return ICONS["bronze_sickle"]
     return ICONS.get(item_id, ICONS["fallback"])
 
 static func pixel_count(item_id: String) -> int:
@@ -150,8 +159,9 @@ static func draw_item(canvas: CanvasItem, item_id: String, center: Vector2, pixe
             var letter := row.substr(x, 1)
             if letter == ".":
                 continue
+            var colour: Color = BRONZE.get(letter,P.get(letter,P["k"])) if item_id.begins_with("bronze_") else P.get(letter,P["k"])
             canvas.draw_rect(Rect2(Vector2(x0 + float(x) * pixel, y0 + float(y) * pixel),
-                Vector2(ceilf(pixel), ceilf(pixel))), P.get(letter, P["k"]))
+                Vector2(ceilf(pixel), ceilf(pixel))), colour)
 
 static func draw_workshop(canvas: CanvasItem, tile_rect: Rect2, tick: int) -> void:
     var pixel := tile_rect.size.x / 15.0

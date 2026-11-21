@@ -39,7 +39,7 @@ func validate(items: Dictionary) -> Array[String]:
         result.append("Missing canonical age or regional grammar")
     for row in definitions.values():
         var id := str(row["id"])
-        if str(row.get("function","")) not in ["shelter","tool_area","storage","forestry","quarry","farm","market","civic","production","granary"]:
+        if str(row.get("function","")) not in ["shelter","tool_area","storage","forestry","quarry","farm","market","civic","production","granary","mine","irrigation"]:
             result.append("Unimplemented building function: " + id)
         if int(row.get("primary_age", 0)) not in range(1, 12):
             result.append("Invalid primary age: " + id)
@@ -57,6 +57,10 @@ func validate(items: Dictionary) -> Array[String]:
             var item: Dictionary = items.get(str(process.get("item", "")), {})
             if not item.get("recipe") is Dictionary or int(process.get("work", 0)) <= 0:
                 result.append("Invalid production recipe: " + id)
+        for service in row.get("services",[]):
+            if str(service.get("kind",""))!="irrigation" or int(service.get("work",0))<=0 or int(service.get("capacity",0))<=0: result.append("Invalid service: "+id)
+            for material in service.get("inputs",{}):
+                if not items.has(material) or typeof(service["inputs"][material])!=TYPE_INT or int(service["inputs"][material])<=0: result.append("Invalid service input: "+id)
         var size: Array = row.get("footprint", [])
         if size.size() != 2 or int(size[0]) <= 0 or int(size[1]) <= 0:
             result.append("Invalid footprint: " + id)

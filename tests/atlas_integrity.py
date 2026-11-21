@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parents[1]
 folder=ROOT/'assets/pixel'
 meta=json.loads((folder/'atlas.json').read_text())
 pages=[Image.open(folder/name).convert('RGBA') for name in json.loads((folder/'pages.json').read_text())]
-assert len(meta)==345
+assert len(meta)==358
 assert len(pages)==2, 'Architecture occupies its own bounded atlas page'
 rects=[];fingerprints=set()
 for name,entry in meta.items():
@@ -29,14 +29,18 @@ for name,entry in meta.items():
         assert set(im.getchannel('A').tobytes())<={0,255},name
         assert (ROOT/entry['source']).is_file(),name
 assert len(fingerprints)==64
+architecture_hashes=set()
 for name,e in meta.items():
     if e.get('category')!='architecture': continue
+    assert e['sha256'] not in architecture_hashes,name
+    architecture_hashes.add(e['sha256'])
     x,y,w,h=e['packed_rect']; im=pages[e['page']].crop((x,y,x+w,y+h))
     assert set(im.getchannel('A').tobytes())<={0,255}
     assert hashlib.sha256(im.tobytes()).hexdigest()==e['sha256']
     assert (ROOT/e['source']).is_file()
     assert w<=64 and h<=64
 
+assert len(architecture_hashes)==28
 # Exercise overflow page boundaries without manufacturing duplicate artwork.
 tree=ast.parse((ROOT/'tools/expand_pixel_assets.py').read_text())
 function=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='runtime_slot')
@@ -51,4 +55,4 @@ before=[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths]
 subprocess.run([sys.executable,str(ROOT/'tools/expand_pixel_assets.py')],check=True)
 subprocess.run([sys.executable,str(ROOT/'tools/pack_architecture.py')],check=True)
 assert before==[hashlib.sha256(p.read_bytes()).hexdigest() for p in paths]
-print('ATLAS_INTEGRITY_PASSED: 345 nonoverlapping regions; 64 original cutouts + 15 architectural sprites; deterministic rebuild')
+print('ATLAS_INTEGRITY_PASSED: 358 nonoverlapping regions; 64 original cutouts + 28 architectural sprites; deterministic rebuild')

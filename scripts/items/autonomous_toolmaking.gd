@@ -12,7 +12,7 @@ const WORKSITE_WOOD := 2
 const WORKSITE_STONE := 1
 const GOALS := ["hammerstone", "stone_axe", "stone_pick", "flint_knife"]
 const REPAIR_INPUTS := {"stone_axe": "stone", "stone_pick": "stone",
-    "flint_knife": "flint", "hammerstone": "stone"}
+    "flint_knife": "flint", "hammerstone": "stone", "bronze_axe":"bronze_ingot", "bronze_sickle":"bronze_ingot"}
 
 var candidate_tick := -1
 var candidate_cache: Dictionary = {}
@@ -143,10 +143,13 @@ func tool_for(world: RefCounted, person: Dictionary, material: String) -> String
     if serial == "" or not instances.has(serial):
         return ""
     var instance: Dictionary = instances[serial]
-    var expected := "stone_axe" if material == "wood" else "stone_pick" if material == "stone" else ""
+    var expected := "stone_axe" if material == "wood" else "stone_pick" if material == "stone" else "bronze_sickle" if material=="grain" else ""
+    if material=="wood" and str(instance["item_id"])=="bronze_axe": expected = "bronze_axe"
     if expected == "" or str(instance["item_id"]) != expected or int(instance["condition"]) <= 0 or \
             str(instance["holder"]) != "citizen:" + id:
         return ""
+    if expected in ["bronze_axe","bronze_sickle"]:
+        return serial if world.occupations.enabled(world,world.settlements.sid(person),"woodcutter" if material=="wood" else "crop_farmer") else ""
     var ability := "woodcutting" if material == "wood" else "quarrying"
     var inventory: Dictionary = world.inventory.citizen_inventory(int(person["id"]))
     var context: Dictionary = world.inventory.catalogue.context_for_citizen(world, person, ability, true)
@@ -157,7 +160,7 @@ func wear(world: RefCounted, person: Dictionary, material: String) -> void:
     if serial == "":
         return
     var instance: Dictionary = instances[serial]
-    instance["condition"] = maxi(0, int(instance["condition"]) - 12)
+    instance["condition"] = maxi(0, int(instance["condition"]) - (6 if str(instance["item_id"]).begins_with("bronze_") else 12))
     var history: Array = instance["history"]
     history.append({"tick": int(world.tick), "work": material, "condition": int(instance["condition"])})
     if history.size() > MAX_HISTORY:
@@ -179,7 +182,7 @@ func _put_away(world: RefCounted, person: Dictionary) -> void:
 
 # Existing resource gatherers only borrow a durable tool at the real depot.
 func try_equip(world: RefCounted, person: Dictionary, material: String) -> void:
-    if material not in ["wood", "stone"] or not _living_adolescent(world, person):
+    if material not in ["wood", "stone", "grain"] or not _living_adolescent(world, person):
         return
     var pid := str(person["id"])
     var held := "citizen:" + pid
@@ -189,7 +192,8 @@ func try_equip(world: RefCounted, person: Dictionary, material: String) -> void:
     _put_away(world, person)
     if tool_for(world, person, material) != "":
         return
-    var wanted := "stone_axe" if material == "wood" else "stone_pick"
+    var wanted := "stone_axe" if material == "wood" else "stone_pick" if material=="stone" else "bronze_sickle"
+    if material=="wood" and not _matching_serials("settlement:"+str(world.settlements.sid(person)),"bronze_axe").is_empty(): wanted = "bronze_axe"
     var depot_id := "settlement:" + str(world.settlements.sid(person))
     var ids := _matching_serials(depot_id, wanted)
     var viable := ""
@@ -230,6 +234,11 @@ func unequip_owned(world: RefCounted, citizen_id: int, serial: String) -> bool:
 
 # A repair request becomes a persistent D3 work job. It never repairs the
 # item instantly and cannot interrupt another physical job mid-cargo.
+func repair_qualified(world: RefCounted, person: Dictionary, entry: Dictionary) -> bool:
+    if not str(entry["item_id"]).begins_with("bronze_"): return true
+    var nation: int = world.settlements.sid(person)
+    return world.occupations.enabled(world,nation,"bronze_smith") and world.occupations.xp_for(person,"bronze_smith")>=160 and world.occupations.facility_present(world,nation,"forge")
+
 func request_repair(world: RefCounted, citizen_id: int, serial: String) -> bool:
     if not instances.has(serial):
         return false
@@ -244,6 +253,7 @@ func request_repair(world: RefCounted, citizen_id: int, serial: String) -> bool:
     if Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), station) > 1:
         return false
     var entry: Dictionary = instances[serial]
+    if not repair_qualified(world,person,entry): return false
     if str(entry["holder"]) != "settlement:" + str(nation) or \
             int(entry["condition"]) >= int(entry["max_condition"]):
         return false
@@ -346,8 +356,10 @@ func _select(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
         var row: Dictionary = instances[serial]
         if str(row["holder"]) != "settlement:" + str(nation) or int(row["condition"]) > 40:
             continue
+        if not repair_qualified(world,person,row): continue
         var material: String = str(REPAIR_INPUTS.get(str(row["item_id"]), "stone"))
         if int(stores.get(material, 0)) <= 0:
+            if str(row["item_id"]).begins_with("bronze_"): continue
             return _gather(world, person, mind, material)
         return _begin(world, person, mind, "repair", {"serial": serial, "remaining": 3})
     for product in GOALS:
@@ -517,6 +529,7 @@ func repair(world: RefCounted, artisan_id: int, serial: String) -> bool:
     if str(entry["holder"]) != "settlement:" + str(nation) or \
             int(entry["condition"]) >= int(entry["max_condition"]):
         return false
+    if not repair_qualified(world,person,entry): return false
     var material: String = str(REPAIR_INPUTS.get(str(entry["item_id"]), "stone"))
     if not world.inventory.consume(world, "settlement:" + str(nation),
             {material: 1}, artisan_id, "tool_repair"):

@@ -6556,5 +6556,408 @@
     ],
     "primary_age": 2,
     "quality_approved": true
+  },
+  "arch_cordage_canopy": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      0,
+      256,
+      64,
+      61
+    ],
+    "rect": [
+      0,
+      256,
+      64,
+      61
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      0,
+      0,
+      4,
+      3
+    ],
+    "sha256": "eefd3ff5b2e24e12daede6ecbd8ee4947579883cc830bb2d06ce7689039ff363",
+    "ground_anchor": [
+      32,
+      61
+    ],
+    "primary_age": 1,
+    "quality_approved": true
+  },
+  "arch_timber_workyard": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      128,
+      256,
+      64,
+      63
+    ],
+    "rect": [
+      128,
+      256,
+      64,
+      63
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      1,
+      0,
+      4,
+      3
+    ],
+    "sha256": "fcafb3e87610dc86e48585979443f29e15af9d70e7b1319054cd226b41eadf7c",
+    "ground_anchor": [
+      32,
+      63
+    ],
+    "primary_age": 2,
+    "quality_approved": true
+  },
+  "arch_grain_grinding_shelter": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      256,
+      256,
+      64,
+      56
+    ],
+    "rect": [
+      256,
+      256,
+      64,
+      56
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      2,
+      0,
+      4,
+      3
+    ],
+    "sha256": "c648fee73a85b3e694da07fd57f22632fd42fa94381345d7a8a221837c70c9b0",
+    "ground_anchor": [
+      32,
+      56
+    ],
+    "primary_age": 2,
+    "quality_approved": true
+  },
+  "arch_water_lift": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      384,
+      256,
+      64,
+      60
+    ],
+    "rect": [
+      384,
+      256,
+      64,
+      60
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      3,
+      0,
+      4,
+      3
+    ],
+    "sha256": "00346dce1d14961af957f7ae2ca19a8ed2dcb060c4366cbb8f27398565b648c5",
+    "ground_anchor": [
+      32,
+      60
+    ],
+    "primary_age": 2,
+    "quality_approved": true
+  },
+  "arch_bronze_courtyard": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      512,
+      256,
+      64,
+      59
+    ],
+    "rect": [
+      512,
+      256,
+      64,
+      59
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      0,
+      1,
+      4,
+      3
+    ],
+    "sha256": "970fd6ce08e252797d541a9d6e728e9e977d38b8682156126aa7a6dcc7b9486a",
+    "ground_anchor": [
+      32,
+      59
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_bronze_smelter": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      640,
+      256,
+      62,
+      64
+    ],
+    "rect": [
+      640,
+      256,
+      62,
+      64
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      1,
+      1,
+      4,
+      3
+    ],
+    "sha256": "9b0d40f2fc942da2c2acf35d4026b47aefaa70a600ee68be5ce3954378758c1b",
+    "ground_anchor": [
+      31,
+      64
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_bronze_forge": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      768,
+      256,
+      64,
+      61
+    ],
+    "rect": [
+      768,
+      256,
+      64,
+      61
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      2,
+      1,
+      4,
+      3
+    ],
+    "sha256": "12a7fe45d7b9abea3f47fe7a67ac929b0ceb60fa811039a7f2a8290aadcdde5e",
+    "ground_anchor": [
+      32,
+      61
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_ore_mine": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      896,
+      256,
+      64,
+      59
+    ],
+    "rect": [
+      896,
+      256,
+      64,
+      59
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      3,
+      1,
+      4,
+      3
+    ],
+    "sha256": "5fc18764e373efe37b97a2715df3d0bc11dd120eeaed556d75ce76b668697c82",
+    "ground_anchor": [
+      32,
+      59
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_bronze_granary": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      0,
+      384,
+      64,
+      58
+    ],
+    "rect": [
+      0,
+      384,
+      64,
+      58
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      0,
+      2,
+      4,
+      3
+    ],
+    "sha256": "64e3a84f8042ec5251d7a43b75ea4c997c603a2e854016015faac484004098b3",
+    "ground_anchor": [
+      32,
+      58
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_bronze_market": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      128,
+      384,
+      64,
+      59
+    ],
+    "rect": [
+      128,
+      384,
+      64,
+      59
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      1,
+      2,
+      4,
+      3
+    ],
+    "sha256": "9e58ce55b86e1ee9c382da9ae8cef4068deb7a9e87c78f04bdb1bbff02f6ea07",
+    "ground_anchor": [
+      32,
+      59
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_bronze_meeting_hall": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      256,
+      384,
+      64,
+      58
+    ],
+    "rect": [
+      256,
+      384,
+      64,
+      58
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      2,
+      2,
+      4,
+      3
+    ],
+    "sha256": "b8d6f012ffdb98090ba0cbd483dc1cfef424ef35b59220df95bb290a581a4c65",
+    "ground_anchor": [
+      32,
+      58
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_masonry_workyard": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      384,
+      384,
+      64,
+      59
+    ],
+    "rect": [
+      384,
+      384,
+      64,
+      59
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_batch_b.png",
+    "source_cell": [
+      3,
+      2,
+      4,
+      3
+    ],
+    "sha256": "78b998f40ee83364f93e58fa91c83c05642e689920492f03999bb4c40ea47a04",
+    "ground_anchor": [
+      32,
+      59
+    ],
+    "primary_age": 3,
+    "quality_approved": true
+  },
+  "arch_fenced_farmstead": {
+    "atlas": "architecture",
+    "page": 1,
+    "packed_rect": [
+      512,
+      384,
+      64,
+      51
+    ],
+    "rect": [
+      512,
+      384,
+      64,
+      51
+    ],
+    "category": "architecture",
+    "source": "tools/source/architecture_farmstead.png",
+    "source_cell": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "sha256": "bb215d0f0aba37227b9f557184a0f21a760e518c2e43939ed8735abaa380f0ac",
+    "ground_anchor": [
+      32,
+      51
+    ],
+    "primary_age": 2,
+    "quality_approved": true
   }
 }

@@ -50,6 +50,23 @@ func validate(world: RefCounted, row: Dictionary, cell: Vector2i, orientation: i
     var coast: String = str(row["placement"].get("shoreline", "any"))
     if (coast == "required" and not shoreline) or (coast == "forbidden" and shoreline):
         return "shoreline"
+    var water_radius := int(row["placement"].get("water_radius",0))
+    if water_radius>0:
+        var water := false
+        for dy in range(-water_radius,water_radius+2):
+            for dx in range(-water_radius,water_radius+2):
+                if world.at(cell.x+dx,cell.y+dy)==world.OCEAN: water = true
+        if not water: return "water_source"
+    var requirement: Dictionary = row["placement"].get("resource_nearby",{})
+    if not requirement.is_empty():
+        var found := false
+        var radius := int(requirement["radius"])
+        for dy in range(-radius,radius+1):
+            for dx in range(-radius,radius+1):
+                if absi(dx)+absi(dy)>radius: continue
+                for material in requirement["materials"]:
+                    if world.construction.left_at(world,cell.x+dx,cell.y+dy,str(material))>0: found = true
+        if not found: return "ore_deposit"
     return ""
 
 func claim(row: Dictionary, entity: Dictionary) -> void:
