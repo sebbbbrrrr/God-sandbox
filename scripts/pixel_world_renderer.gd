@@ -7,6 +7,7 @@ const Commands = preload("res://scripts/pixel_commands.gd")
 const Weather = preload("res://scripts/weather_cycle.gd")
 const RainOverlay = preload("res://scripts/weather_overlay.gd")
 const Walk = preload("res://scripts/citizen_walk.gd")
+const BuildOverlay = preload("res://scripts/construction/architectural_build_overlay.gd")
 const TILE := 32
 const CHUNK := 16
 const RISE := 12
@@ -32,6 +33,7 @@ var physical_terrain: Dictionary = {}
 var effects: PixelCommands
 var weather: SandboxWeather
 var weather_overlay: PixelWeatherOverlay
+var build_overlay
 var sway_clock := 0.0
 var sway_accum := 0.0
 const SWAY_INTERVAL := 1.0 / 15.0
@@ -79,6 +81,9 @@ func setup(simulation: SandboxSimulation) -> void:
     weather_overlay = RainOverlay.new()
     weather_overlay.z_index = 501
     add_child(weather_overlay)
+    build_overlay = BuildOverlay.new()
+    add_child(build_overlay)
+    build_overlay.setup(self, world, atlas)
     world.terrain_changed.connect(invalidate_cell)
     rebuild_paths()
 
@@ -345,6 +350,11 @@ func build_cell(chunk: PixelChunk, x: int, y: int) -> void:
             var building_foot := p+Vector2(16,27)
             if physical_buildings.has(cell):
                 var actual: Dictionary = physical_buildings[cell]
+                # Preserve the last in-progress frames over the real built
+                # sprite. Simulation completion is never delayed; this skips
+                # only the cached static draw until presentation catches up.
+                if build_overlay != null and build_overlay.is_finishing(int(actual.get("id", -1))):
+                    return
                 var definition: Dictionary = world.construction.catalogue.definition(str(actual.get("definition_id", "primitive_shelter")))
                 building = str(actual.get("architecture", {}).get("sprite", definition.get("visual", {}).get("sprite", building)))
                 building_foot.x = p.x+float(definition.get("footprint",[1,1])[0])*16.0
@@ -512,6 +522,8 @@ func render_units() -> void:
 
 func animate(delta: float, simulated_delta: float = -1.0) -> void:
     var motion_delta: float = delta if simulated_delta < 0.0 else simulated_delta
+    if build_overlay != null:
+        build_overlay.advance(motion_delta)
     if walks.advance(motion_delta):
         walk_draw_accum += delta
         if walk_draw_accum >= 1.0 / 30.0 or not walks.has_active_motion():

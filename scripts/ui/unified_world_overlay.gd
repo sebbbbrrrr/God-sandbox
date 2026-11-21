@@ -41,7 +41,10 @@ func _draw() -> void:
                     Color("#f9e5bd", feedback_alpha), 1.7, true)
         return
     BuildingStateVisuals.draw(self, game)
-    ConstructionVisuals.draw(self, game)
+    # The original atlas-frame assembly is now drawn at native resolution by
+    # PixelWorldRenderer; do not paint the old generic house above it.
+    if game.world_renderer == null or game.world_renderer.build_overlay == null:
+        ConstructionVisuals.draw(self, game)
     CitizenWorkVisuals.draw(self, game, game.work_visual_clock)
     var world: SandboxSimulation = game.world
     var size: Vector2 = game.ui_size()
