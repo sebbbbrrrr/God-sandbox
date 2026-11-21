@@ -168,6 +168,7 @@ func _animate_press(button: Button) -> void:
 
 func _settings_section(column: VBoxContainer, title: String, description: String) -> void:
     var panel := PanelContainer.new()
+    panel.custom_minimum_size.y = 64
     panel.add_theme_stylebox_override("panel", Motion.tile(11))
     column.add_child(panel)
     var stack := VBoxContainer.new()
@@ -201,7 +202,8 @@ func _make_interface() -> void:
     caption_line = _label("Year 1  ·  0 souls", 10, MUTED)
     status.add_child(status_line)
     status.add_child(caption_line)
-    civilisation_button = _button("Towns", "village", 76)
+    civilisation_button = _button("", "village", 52)
+    civilisation_button.tooltip_text = "Towns and civilisation information"
     pause_button = _button("", "pause", 42)
     speed_button = _button("1×", "", 44)
     var settings_button := _button("", "settings", 42)
@@ -233,9 +235,11 @@ func _make_interface() -> void:
     var dock_row := HBoxContainer.new()
     dock_row.add_theme_constant_override("separation", 6)
     dock_panel.add_child(dock_row)
-    hand_button = _button("Hand", "hand", 68)
+    hand_button = _button("", "hand", 54)
+    hand_button.tooltip_text = "Hand: navigate and inspect"
     items_button = _button("Items", "", 62)
-    palette_button = _button("Powers", "tools", 86)
+    palette_button = _button("", "tools", 58)
+    palette_button.tooltip_text = "Choose god powers"
     active_button = _button("Select", "", 45)
     active_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     dock_brush_button = _button("M", "", 43)
@@ -653,16 +657,16 @@ func _layout() -> void:
     dock_panel.size = Vector2(width, 72)
     dock_panel.position = Vector2(x, size_view.y - 82)
     var narrow := size_view.x < 390.0
-    civilisation_button.text = "" if narrow else "Towns"
-    civilisation_button.custom_minimum_size.x = 44 if narrow else 76
+    civilisation_button.text = ""
+    civilisation_button.custom_minimum_size.x = 44 if narrow else 52
     for button in [pause_button, speed_button]:
         button.custom_minimum_size.x = 38 if narrow else (42 if button == pause_button else 44)
-    hand_button.custom_minimum_size.x = 44 if narrow else 68
+    hand_button.custom_minimum_size.x = 44 if narrow else 54
     items_button.custom_minimum_size.x = 48 if narrow else 62
-    palette_button.custom_minimum_size.x = 60 if narrow else 86
+    palette_button.custom_minimum_size.x = 49 if narrow else 58
     active_button.custom_minimum_size.x = 44 if narrow else 45
     dock_brush_button.custom_minimum_size.x = 38 if narrow else 43
-    palette_button.text = "Powers" if not narrow else "Tools"
+    palette_button.text = ""
     var is_landscape := size_view.x > size_view.y * 1.2
     power_grid.columns = 2 if narrow else 3
     var palette_width := minf(385.0, size_view.x * 0.52) if is_landscape else width
@@ -678,7 +682,7 @@ func _layout() -> void:
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
     modal_dim.size = size_view
-    settings_panel.size = Vector2(minf(size_view.x - 30, 380), minf(size_view.y - 26, maxf(260.0, settings_panel.get_combined_minimum_size().y)))
+    settings_panel.size = Vector2(minf(size_view.x - 30, 380), minf(size_view.y - 26, maxf(380.0, size_view.y * 0.70)))
     settings_panel.position = (size_view - settings_panel.size) * 0.5
 
 func blocks_world_input(point: Vector2) -> bool:
