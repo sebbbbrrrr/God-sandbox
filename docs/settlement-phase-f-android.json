@@ -1,11 +1,12 @@
 {
-  "scope": "F1-F3 foundations; full Phase F incomplete",
+  "scope": "F1-F7 early-age settlement runtime; Huawei P30 hardware validation pending",
   "engine": "Godot 4.5.2 stable",
-  "source_commit_local": "42177220dda16cad87bc4fd96fef90463642588a",
+  "source_parent_commit": "9a474c4f9dc4bffeb98e9e336d3900df07e4d152",
+  "runtime_content_sha256": "fd3206a5dec616ca4826bc92e7db83bf8b9b0e1ebb448708e2d00520b48a0e78",
   "base_commit": "cebf8e52dea048e14a90c6d09067306ee9f0f09c",
-  "apk": "GodSandbox-PhaseF-Foundations-debug.apk",
-  "bytes": 29341806,
-  "sha256": "da1d41458af5e0f8d0bc58bd9bfac9b59deca6d1086dbae13124c974127b1781",
+  "apk": "GodSandbox-PhaseF-debug.apk",
+  "bytes": 29395828,
+  "sha256": "6e6301d4d5eb0186474e869cfb97718b8bb9712007c17721a98cda41f621ac6e",
   "architecture": "arm64-v8a",
   "renderer": "GL Compatibility",
   "min_sdk": 24,
@@ -16,6 +17,6 @@
   "ci_java": "Temurin 17",
   "android_device_tested": false,
   "device_status": "No Android device attached during validation",
-  "headless_validation_steps": 26,
+  "headless_validation_steps": 28,
   "headless_validation_passed": true
 }

@@ -14,6 +14,8 @@ const Demography = preload("res://scripts/ai/autonomous_demography.gd")
 const Occupations = preload("res://scripts/ai/era_occupations.gd")
 const Inventory = preload("res://scripts/items/physical_inventory.gd")
 const Toolmaking = preload("res://scripts/items/autonomous_toolmaking.gd")
+const SettlementLifecycle = preload("res://scripts/civilisation/settlement_lifecycle.gd")
+const LocalLogistics = preload("res://scripts/civilisation/local_logistics.gd")
 const Settlements = preload("res://scripts/civilisation/settlement_registry.gd")
 const Founding = preload("res://scripts/civilisation/founding_expeditions.gd")
 const SettlementPlanner = preload("res://scripts/civilisation/settlement_planner.gd")
@@ -51,6 +53,8 @@ var occupations := Occupations.new()
 var inventory := Inventory.new()
 var toolmaking := Toolmaking.new()
 var regional_economy := RegionalEconomy.new()
+var settlement_lifecycle := SettlementLifecycle.new()
+var local_logistics := LocalLogistics.new()
 var settlements := Settlements.new()
 var founding := Founding.new()
 var settlement_planner := SettlementPlanner.new()
@@ -152,9 +156,18 @@ func add_citizen(x: int, y: int, nation: int) -> bool:
         return false
     if capitals[nation].x < 0:
         capitals[nation] = Vector2i(x, y)
+    var local_id := nation
+    var local_distance := 7
+    for key in settlements.records:
+        if settlements.nation(int(key)) != nation: continue
+        var location: Vector2i = settlements.center(self,int(key))
+        var distance := absi(x-location.x)+absi(y-location.y)
+        if distance<local_distance:
+            local_id = int(key)
+            local_distance = distance
     citizens.append({
         "id": next_id,
-        "nation": nation, "settlement_id": nation,
+        "nation": nation, "settlement_id": local_id,
         "x": x,
         "y": y,
         "hp": 100,
@@ -229,6 +242,7 @@ func step() -> void:
     ai_context.begin_tick(self)
     settlements.rebuild_membership(self)
     founding.tick(self)
+    local_logistics.tick(self)
     if tick % 15 == 3:
         settlement_planner.update_one(self)
     construction.prune(self)
@@ -308,7 +322,7 @@ func snapshot(legacy: bool = false) -> Dictionary:
         "food": food.snapshot(), "demography": demography.snapshot(),
         "occupations": occupations.snapshot(), "inventory": inventory.snapshot(),
         "toolmaking": toolmaking.snapshot(), "regional_economy": regional_economy.snapshot(),
-        "settlements": settlements.snapshot(), "founding": founding.snapshot(),
+        "local_logistics":local_logistics.snapshot(), "settlements": settlements.snapshot(), "founding": founding.snapshot(),
         "settlement_planner_cursor": settlement_planner.cursor
     }
 
@@ -442,6 +456,7 @@ static func from_snapshot(data: Dictionary) -> SandboxSimulation:
         return null
     if not result.settlements.validate(result) or not result.founding.load_state(result, data.get("founding", null)):
         return null
+    if not result.local_logistics.load_state(result,data.get("local_logistics",null)): return null
     result.settlements.rebuild_membership(result)
     for key in result.food.local_depots:
         if result.settlements.get_record(int(key)).is_empty():

@@ -171,7 +171,7 @@ func adopt_unprotected(world: RefCounted, child: Dictionary) -> void:
     var selected: Dictionary = {}
     var best_distance := 2147483647
     for family in families:
-        if int(family["id"]) == int(child["household_id"]) or int(family["nation"]) != int(child["nation"]):
+        if int(family["id"]) == int(child["household_id"]) or int(family.get("settlement_id",family["nation"])) != world.settlements.sid(child):
             continue
         var adult_id: int = pick_guardian(world, family)
         if adult_id <= 0:
@@ -286,6 +286,8 @@ func reconcile(world: RefCounted) -> void:
         adopt_unprotected(world, child)
 
 func care_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
+    if world.founding.assignments.has(str(person["id"])):
+        return world.founding.care_travel(world,person,mind)
     if str(person["life_stage"]) not in ["adult", "elder"]:
         return false
     var family := family_for(int(person["household_id"]))

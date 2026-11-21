@@ -30,6 +30,15 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             task["kind"] = "merchant"
         elif task.is_empty() and world.founding.assignments.has(str(id)):
             task = {"kind": "founder", "phase": "travel", "cargo": world.inventory.citizen_inventory(id)}
+        if task.is_empty() and world.local_logistics.jobs.has(str(id)):
+            task = world.local_logistics.jobs[str(id)].duplicate()
+            task["kind"] = "merchant"
+            task["cargo"] = world.inventory.citizen_inventory(id)
+        if task.is_empty() and world.food.jobs.has(str(id)):
+            task = world.food.jobs[str(id)].duplicate()
+            task["food_action"] = str(task["kind"])
+            task["kind"] = "food"
+            task["cargo"] = {str(task.get("type","grain")):int(task.get("amount",0))} if int(task.get("amount",0))>0 else {}
         if task.is_empty():
             continue
         var kind := str(task.get("kind", ""))
@@ -51,6 +60,8 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             cargo = {str(task.get("material", "wood")): int(task.get("amount", 0))}
         if kind == "merchant" and phase in ["exchange", "return"]:
             cargo = world.inventory.citizen_inventory(id)
+            for good in world.food.travel_cargo.get(str(id),{}):
+                if int(world.food.travel_cargo[str(id)][good])>0: cargo[good] = int(world.food.travel_cargo[str(id)][good])
         var carrying := not cargo.is_empty()
         var t := clock + float(posmod(id * 37, 97)) * 0.23
         if carrying:
@@ -59,6 +70,9 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
             # Stride dust and a swinging carrying posture. No new animation actors.
             if ts >= 19.0 and sin(t * 8.0) > 0.84:
                 _specks(canvas, p + Vector2(0, 9) * size, size, t, DUST, 2)
+            continue
+        if kind == "food":
+            _action(canvas,p,size,t,"dig" if str(task.get("food_action",""))=="sow" else "sweep")
             continue
         if kind == "road":
             var road_key: String = str(world.regional_economy.road_jobs.get(str(id), ""))
@@ -72,7 +86,7 @@ static func draw(canvas: Node2D, game: Node2D, clock: float) -> void:
                 break
             continue
         if kind == "merchant":
-            var market: Vector2i = world.capitals[int(task.get("other", 1 - int(person["nation"])))]
+            var market: Vector2i = world.settlements.center(world, int(task.get("other", 1 - int(person["nation"]))))
             var homeland: Vector2i = world.settlements.center(world, world.settlements.sid(person))
             var here := Vector2i(int(person["x"]), int(person["y"]))
             if phase == "pickup" and here == homeland:

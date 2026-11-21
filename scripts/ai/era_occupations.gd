@@ -133,7 +133,7 @@ func grant_capability(world: RefCounted, nation: int, tech: String, evidence: St
     # class or calendar. Callers must supply an attributable experiment,
     # teaching/trade or institutional event. Future releases will validate
     # event IDs and the physical production preconditions.
-    if nation not in [0, 1] or evidence not in ["experiment", "trade", "teaching", "institution"]:
+    if (nation not in [0,1] and world.settlements.get_record(nation).is_empty()) or evidence not in ["experiment", "trade", "teaching", "institution"]:
         return false
     var recognised := false
     for definition in definitions.values():
@@ -142,6 +142,12 @@ func grant_capability(world: RefCounted, nation: int, tech: String, evidence: St
             break
     if not recognised:
         return false
+    if nation > 1:
+        var known: Dictionary = world.settlements.get_record(nation)["knowledge"]
+        if known.size() >= MAX_CAPABILITIES and not known.has(tech): return false
+        known[tech] = true
+        world.settlements.event(world,nation,"knowledge_adopted:"+tech)
+        return true
     if tech in ["cultivation", "irrigation"]:
         return world.food.set_technique(nation, tech, true)
     var key := settlement_key(world, nation)
@@ -157,9 +163,11 @@ func grant_capability(world: RefCounted, nation: int, tech: String, evidence: St
 func lose_capability(world: RefCounted, nation: int, tech: String, reason: String) -> bool:
     # Future collapse / specialist-death events can withdraw actually lost
     # manufacturing knowledge without deleting citizens' past skills.
-    if nation not in [0, 1] or reason not in [
+    if (nation not in [0,1] and world.settlements.get_record(nation).is_empty()) or reason not in [
             "knowledge_lost", "catastrophe", "infrastructure_lost"]:
         return false
+    if nation > 1:
+        return world.settlements.get_record(nation)["knowledge"].erase(tech)
     if tech in ["cultivation", "irrigation"]:
         return world.food.set_technique(nation, tech, false)
     var key := settlement_key(world, nation)
@@ -175,6 +183,8 @@ func facility_present(world: RefCounted, nation: int, facility: String) -> bool:
     if facility == "":
         return true
     if facility == "farm":
+        for building in world.construction.houses:
+            if world.settlements.sid(building) == nation and str(building.get("function","")) == "farm" and not bool(building.get("abandoned",false)): return true
         for farm in world.food.farms:
             if world.settlements.sid(farm) == nation:
                 return true
@@ -187,7 +197,7 @@ func facility_present(world: RefCounted, nation: int, facility: String) -> bool:
     # Only actual specialised building entities unlock advanced roles.
     # The existing town tile is not a forge, factory or research laboratory.
     for house in world.construction.houses:
-        if world.settlements.sid(house) == nation and str(house.get("type", "home")) == facility:
+        if world.settlements.sid(house) == nation and not bool(house.get("abandoned",false)) and int(house.get("condition",100))>0 and str(house.get("type", "home")) == facility:
             return true
     return false
 
@@ -423,6 +433,7 @@ func auto_apprenticeship(world: RefCounted) -> void:
     for link in apprenticeships.values():
         occupied_teachers[str(link["teacher_id"])] = true
     for teacher in world.citizens:
+        if world.toolmaking.artisan_candidate(world,teacher): continue
         if int(teacher["hp"]) <= 0 or occupied_teachers.has(str(teacher["id"])) or                 world.calendar.age_years(int(teacher["birth_tick"]), world.tick) < 18:
             continue
         var rec := record_for(teacher)

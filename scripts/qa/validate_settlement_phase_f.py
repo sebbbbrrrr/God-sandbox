@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the Phase F foundations and inherited regression contracts, fail closed."""
+"""Run the Phase F settlement lifecycle and inherited regressions, fail closed."""
 import argparse
 import json
 import pathlib
@@ -18,7 +18,7 @@ names = ["simulation", "citizen_ai", "citizen_cognition", "civilisation_calendar
          "item_catalogue", "physical_inventory", "construction", "toolmaking",
          "toolmaking_autonomy", "item_inspector", "game_item_ui", "unified_integration",
          "pinch_zoom_anchor", "universal_construction", "construction_animation",
-         "regional_economy", "settlement_founding", "settlement_planning", "rendering", "input"]
+         "regional_economy", "settlement_founding", "settlement_planning", "settlement_network_lifecycle", "settlement_family_farm", "rendering", "input"]
 commands = [("import", ["--headless", "--editor", "--path", str(root), "--import", "--quit"])]
 commands += [(n, ["--headless", "--path", str(root), "--script", f"res://tests/{n}_test.gd"]) for n in names]
 commands += [("demo_scene", ["--headless", "--path", str(root), "res://scenes/settlement_demo.tscn", "--quit-after", "30"])]
@@ -40,7 +40,7 @@ for name, command in commands:
         print(output[-3000:], flush=True)
     if name == "import" and not passed:
         break
-report = {"scope": "F1-F3 foundations and local shelter/food integration; full Phase F incomplete",
+report = {"scope": "F1-F7 early-age settlement runtime; Android hardware performance pending",
           "results": results, "passed": all(r["passed"] for r in results)}
 (root / "docs/settlement-phase-f-validation.json").write_text(json.dumps(report, indent=2) + "\n")
 raise SystemExit(0 if report["passed"] else 1)

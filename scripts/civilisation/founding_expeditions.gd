@@ -33,8 +33,8 @@ func pressure(world: RefCounted, id: int) -> int:
         result += 20
     return clampi(result, 0, 100)
 
-func eligible_family(world: RefCounted, family: Dictionary, source: int) -> bool:
-    if int(family.get("settlement_id", family["nation"])) != source or world.food.total(world.food.pantry_for(int(family["id"]))) > 0:
+func eligible_family(world: RefCounted, family: Dictionary, source: int, emergency: bool = false) -> bool:
+    if int(family.get("settlement_id", family["nation"])) != source:
         return false
     var adults := 0
     for member in family["members"]:
@@ -42,11 +42,10 @@ func eligible_family(world: RefCounted, family: Dictionary, source: int) -> bool
         if person.is_empty() or int(person["hp"]) <= 0:
             continue
         var key := str(member)
-        # Infants need an explicit travelling-care extension; never leave one
-        # behind or bypass the current stationary infant-care controller.
-        if str(person["life_stage"]) == "infant" or int(person["hp"]) < 70 or int(person["hunger"]) >= 36 \
+        # Whole households retain their existing care and work commitments.
+        if int(person["hp"]) < (20 if emergency else 70) or int(person["hunger"]) >= (95 if emergency else 36) \
                 or assignments.has(key) or world.construction.jobs.has(key) or world.food.jobs.has(key) \
-                or world.toolmaking.jobs.has(key) or world.regional_economy.road_jobs.has(key) \
+                or world.toolmaking.jobs.has(key) or world.local_logistics.jobs.has(key) or world.regional_economy.road_jobs.has(key) \
                 or world.regional_economy.trade_jobs.has(key) or world.demography.pregnancies.has(key):
             return false
         if not world.lifecycle.is_dependent(person):
@@ -56,7 +55,7 @@ func eligible_family(world: RefCounted, family: Dictionary, source: int) -> bool
         for link in world.occupations.apprenticeships.values():
             if int(link.get("teacher_id", 0)) == int(member) or int(link.get("student_id", 0)) == int(member):
                 return false # don't override an existing teaching commitment
-    return adults > 0
+    return adults > 0 and world.food.total(world.food.pantry_for(int(family["id"]))) <= adults*3
 
 func try_start(world: RefCounted, source: int) -> Dictionary:
     if active_count() >= MAX_ACTIVE or world.settlements.records.size() >= world.settlements.MAX_SETTLEMENTS \
@@ -111,7 +110,7 @@ func try_start(world: RefCounted, source: int) -> Dictionary:
     var id := next_id
     next_id += 1
     var row := {"id": id, "source": source, "target": [target.x, target.y],
-        "members": members, "families": families, "founder_id": int(members[0]),
+        "members": members, "families": families, "prepared": {}, "founder_id": int(members[0]),
         "phase": "travel", "started_tick": world.tick, "settlement_id": -1,
         "reason": "population_and_resource_pressure", "last_progress_tick": world.tick}
     expeditions[str(id)] = row
@@ -164,6 +163,7 @@ func travel_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> boo
     # Prioritised AFTER urgent safety, care and eating, BEFORE optional work.
     # Food jobs that predate the decision are excluded by eligibility.
     var target: Vector2i = world.settlements.center(world, int(row["source"])) if str(row["phase"]) == "return" else Vector2i(int(row["target"][0]), int(row["target"][1]))
+    if str(row["phase"])=="travel" and not _prepare_family(world,person,mind,row): return true
     var here := Vector2i(int(person["x"]), int(person["y"]))
     if Nav.manhattan(here, target) <= 2:
         return true
@@ -175,12 +175,16 @@ func travel_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> boo
                 and Nav.manhattan(here, Vector2i(int(child["x"]), int(child["y"]))) > 3:
             return true
     world.construction.walk(world, person, mind, target)
+    _move_infants(world,person)
     if here != Vector2i(int(person["x"]), int(person["y"])):
         row["last_progress_tick"] = world.tick
     return true
 
 func tick(world: RefCounted) -> void:
-    for row in expeditions.values():
+    var ordered: Array = expeditions.keys()
+    ordered.sort_custom(func(a: Variant,b: Variant) -> bool: return int(a)<int(b))
+    for key in ordered:
+        var row: Dictionary = expeditions[key]
         var phase := str(row["phase"])
         if phase not in ["travel", "camp", "return"]:
             continue
@@ -214,8 +218,19 @@ func tick(world: RefCounted) -> void:
             if not world.lifecycle.is_dependent(person):
                 adults += 1
             arrived = arrived and Nav.manhattan(target, Vector2i(int(person["x"]), int(person["y"]))) <= 3
-        if adults < MIN_ADULTS:
+        if adults < int(row.get("minimum_adults",MIN_ADULTS)):
             fail(world, row, "essential_workers_lost")
+            continue
+        if phase=="travel" and arrived and int(row.get("destination",-1))>=0:
+            var destination := int(row["destination"])
+            if str(world.settlements.get_record(destination).get("status","failed")) in ["failed"]:
+                fail(world,row,"destination_lost")
+                continue
+            world.settlements.move_households(world,row["families"],destination)
+            world.settlements.event(world,destination,"household_immigration")
+            row["settlement_id"] = destination
+            row["phase"] = "complete"
+            _release(row)
             continue
         if phase == "travel" and arrived:
             # Revalidate depleted resources before committing land and identity.
@@ -290,3 +305,98 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
                     return false
                 assignments[str(member)] = int(key)
     return active_count() <= MAX_ACTIVE
+
+func _prepare_family(world: RefCounted, person: Dictionary, mind: Dictionary, row: Dictionary) -> bool:
+    if not row.has("prepared"): row["prepared"] = {}
+    var family: Dictionary = world.households.family_for(int(person["household_id"]))
+    if family.is_empty(): return true
+    var key := str(family["id"])
+    if bool(row["prepared"].get(key,false)): return true
+    var pantry: Dictionary = world.food.pantry_for(int(family["id"]))
+    if world.food.total(pantry)==0:
+        row["prepared"][key] = true
+        return true
+    var house: Dictionary = world.households.house_by_id(world,int(family["home_id"]))
+    var source: Vector2i = world.settlements.center(world,int(row["source"])) if house.is_empty() else Vector2i(int(house["x"]),int(house["y"]))
+    if not world.construction.walk(world,person,mind,source):
+        _move_infants(world,person)
+        return false
+    var cargo: Dictionary = world.food.travel_cargo.get(str(person["id"]),world.food.empty_food())
+    for kind in world.food.FOOD_TYPES:
+        while int(pantry.get(kind,0))>0 and world.food.total(cargo)<3:
+            pantry[kind] -= 1
+            cargo[kind] += 1
+    world.food.travel_cargo[str(person["id"])] = cargo
+    if world.food.total(pantry)==0: row["prepared"][key] = true
+    mind["route"] = []
+    return bool(row["prepared"].get(key,false))
+
+func care_travel(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
+    var family: Dictionary = world.households.family_for(int(person["household_id"]))
+    for member in family.get("members",[]):
+        var child: Dictionary = world.ai_context.people.get(int(member),{})
+        if child.is_empty() or int(child["hp"])<=0 or str(child["life_stage"])!="infant" or int(child["guardian_id"])!=int(person["id"]): continue
+        var here := Vector2i(int(person["x"]),int(person["y"]))
+        var there := Vector2i(int(child["x"]),int(child["y"]))
+        if int(child["carried_by"])!=int(person["id"]):
+            if Nav.manhattan(here,there)>1:
+                world.construction.walk(world,person,mind,there)
+                return true
+            child["carried_by"] = int(person["id"])
+            _move_infants(world,person)
+            return true
+    _move_infants(world,person)
+    return false
+
+func _move_infants(world: RefCounted, person: Dictionary) -> void:
+    var family: Dictionary = world.households.family_for(int(person["household_id"]))
+    for member in family.get("members",[]):
+        var child: Dictionary = world.ai_context.people.get(int(member),{})
+        if child.is_empty() or int(child.get("carried_by",0))!=int(person["id"]): continue
+        var old := Vector2i(int(child["x"]),int(child["y"]))
+        if Nav.manhattan(old,Vector2i(int(person["x"]),int(person["y"])))>2: continue
+        child["x"] = person["x"]
+        child["y"] = person["y"]
+        child["last_care_tick"] = world.tick
+        world.ai_context.moved(child,old)
+
+func request_migration(world: RefCounted, family: Dictionary, destination: int) -> Dictionary:
+    var source := int(family.get("settlement_id",family["nation"]))
+    if source==destination or active_count()>=MAX_ACTIVE or not eligible_family(world,family,source,true): return {}
+    if world.settlements.nation(source)!=world.settlements.nation(destination): return {}
+    var target: Vector2i = world.settlements.center(world,destination)
+    if target.x<0 or not world.is_walkable(target.x,target.y) or Nav.danger_near(world,target): return {}
+    var members: Array = []
+    for member in family["members"]:
+        var person: Dictionary = world.ai_context.people.get(int(member),{})
+        if not person.is_empty() and int(person["hp"])>0: members.append(int(member))
+    if members.is_empty() or members.size()>MAX_PARTY: return {}
+    var booked := 0
+    for journey in expeditions.values():
+        if str(journey["phase"])=="travel" and int(journey.get("destination",-1))==destination: booked += _survivors(world,journey).size()
+    if world.settlements.housing(world,destination)-world.settlements.population(destination)-booked<members.size(): return {}
+    var representative: Dictionary = world.ai_context.people.get(int(family["steward_id"]),{})
+    if representative.is_empty() or not _reachable(world,Vector2i(int(representative["x"]),int(representative["y"])),target): return {}
+    var row := {"id":next_id,"source":source,"target":[target.x,target.y],"destination":destination,"members":members,"families":[int(family["id"])],"prepared":{},"founder_id":int(family["steward_id"]),"phase":"travel","started_tick":world.tick,"settlement_id":-1,"reason":"decline_migration","last_progress_tick":world.tick,"minimum_adults":1}
+    expeditions[str(next_id)] = row
+    for member in members:
+        assignments[str(member)] = next_id
+        world.citizen_ai_by_id[str(member)]["route"] = []
+    next_id += 1
+    world.settlements.event(world,source,"household_emigration")
+    return row
+
+func _reachable(world: RefCounted, start: Vector2i, target: Vector2i) -> bool:
+    var frontier: Array[Vector2i] = [start]
+    var seen := {start:true}
+    var head := 0
+    while head<frontier.size() and seen.size()<2048:
+        var here := frontier[head]
+        head += 1
+        if here==target: return true
+        for direction in Nav.DIRS:
+            var next: Vector2i = here+direction
+            if seen.has(next) or seen.size()>=2048 or not world.is_walkable(next.x,next.y) or Nav.danger_near(world,next): continue
+            seen[next] = true
+            frontier.append(next)
+    return seen.has(target)

@@ -9,6 +9,7 @@ func percentile(samples: Array, fraction: float) -> float:
 func _initialize() -> void:
     var report := {"engine": Engine.get_version_info()["string"], "platform": OS.get_name(),
         "hardware": OS.get_processor_name(), "android_device_tested": false, "scenarios": []}
+    var passed := true
     for population in [120, 500]:
         var world = Demo.create()
         world.citizens.clear()
@@ -24,6 +25,8 @@ func _initialize() -> void:
         var ids: Array = [0]
         for i in range(1, centers.size()):
             ids.append(world.settlements.register_camp(world, 0, centers[i], 0))
+        for id in ids:
+            world.settlements.get_record(int(id))["status"] = "active"
         for i in range(population):
             var which := i % centers.size()
             var cell: Vector2i = centers[which]
@@ -47,7 +50,9 @@ func _initialize() -> void:
             "completed_buildings": world.construction.houses.size(),
             "inventory_conserved": world.inventory.ledger_ok(), "food_conserved": world.food.ledger_ok()}
         report["scenarios"].append(measure)
+        passed = passed and bool(measure["inventory_conserved"]) and bool(measure["food_conserved"])
         print(JSON.stringify(measure))
+    report["passed"] = passed
     var file := FileAccess.open("res://docs/settlement-phase-f-benchmark.json", FileAccess.WRITE)
     file.store_string(JSON.stringify(report, "  ") + "\n")
-    quit()
+    quit(0 if passed else 1)

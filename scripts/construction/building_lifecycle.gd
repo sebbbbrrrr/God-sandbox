@@ -16,7 +16,7 @@ func migrate(house: Dictionary) -> void:
 
 func complete(engine: RefCounted, world: RefCounted, person: Dictionary, site: Dictionary, row: Dictionary) -> void:
     var house = {"id": int(site["id"]), "nation": int(site["nation"]), "original_nation": int(site["nation"]),
-        "settlement_id": world.settlements.sid(site), "builder_id": int(person["id"]), "definition_id": row["id"], "type": "home", "function": row["function"],
+        "settlement_id": world.settlements.sid(site), "builder_id": int(person["id"]), "definition_id": row["id"], "type": "home" if row["function"] == "shelter" else row["function"], "function": row["function"],
         "x": int(site["x"]), "y": int(site["y"]), "orientation": int(site["orientation"]),
         "capacity": int(row["occupancy_capacity"]), "built_tick": int(world.tick), "original_age": engine.catalogue.local_age(world, world.settlements.sid(site)),
         "materials": site["consumed"].duplicate(true), "quality": int(site["quality"]),
@@ -41,6 +41,7 @@ func complete(engine: RefCounted, world: RefCounted, person: Dictionary, site: D
     engine.indexed_houses = engine.houses.size()
     for cell in engine.placement.footprint(row, Vector2i(int(house["x"]), int(house["y"])), int(house["orientation"])):
         world.set_terrain_cell(cell.x, cell.y, world.TOWN)
+    world.regional_economy.on_building_changed(world, Vector2i(int(house["x"]),int(house["y"])))
     world.households.dirty = true
 
 func damage(engine: RefCounted, world: RefCounted, id: int, amount: int, cause: String) -> bool:
@@ -49,6 +50,7 @@ func damage(engine: RefCounted, world: RefCounted, id: int, amount: int, cause: 
         return false
     migrate(house)
     house["condition"] = maxi(0, int(house["condition"]) - amount)
+    world.terrain_changed.emit(Vector2i(int(house["x"]),int(house["y"])))
     Site.history(house, world.tick, "damage", {"amount": amount, "cause": cause})
     if int(house["condition"]) == 0:
         return remove(engine, world, id, false, "collapse")
@@ -60,6 +62,7 @@ func abandon(engine: RefCounted, world: RefCounted, id: int, value: bool = true)
         return false
     migrate(house)
     house["abandoned"] = value
+    world.terrain_changed.emit(Vector2i(int(house["x"]),int(house["y"])))
     var row: Dictionary = engine.catalogue.definition(str(house["definition_id"]))
     house["capacity"] = 0 if value else int(row.get("occupancy_capacity", 0))
     Site.history(house, world.tick, "abandoned" if value else "reoccupied")
@@ -147,6 +150,7 @@ func remove(engine: RefCounted, world: RefCounted, id: int, salvage: bool, reaso
     engine.archived.append(house.duplicate(true))
     if engine.archived.size() > 128:
         engine.archived.pop_front()
+    world.inventory.close_storage(world,house)
     pending.erase(id)
     engine.buildings_by_id.erase(id)
     engine.placement.release(id)
@@ -209,6 +213,7 @@ func begin_transition(engine: RefCounted, world: RefCounted, id: int, target: St
         var old_index: int = old_cells.find(point)
         site["original_terrain"].append(house["original_terrain"][old_index] if old_index >= 0 and old_index < house["original_terrain"].size() else world.at(point.x,point.y))
     engine.houses.erase(house)
+    world.inventory.close_storage(world,house)
     pending.erase(id)
     engine.buildings_by_id.erase(id)
     engine.placement.release(id)

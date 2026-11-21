@@ -1,4 +1,4 @@
-name: God Sandbox Phase F Foundations QA and Android
+name: God Sandbox Phase F Settlement QA and Android
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: phase-f-foundations-apk-${{ github.ref }}
+  group: phase-f-settlements-apk-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -80,17 +80,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build
-          ./godot --headless --path . --export-debug "Android" build/GodSandbox-PhaseF-Foundations-debug.apk
-          test -s build/GodSandbox-PhaseF-Foundations-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose build/GodSandbox-PhaseF-Foundations-debug.apk
-          unzip -tqq build/GodSandbox-PhaseF-Foundations-debug.apk
-          ls -lh build/GodSandbox-PhaseF-Foundations-debug.apk
+          ./godot --headless --path . --export-debug "Android" build/GodSandbox-PhaseF-debug.apk
+          test -s build/GodSandbox-PhaseF-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose build/GodSandbox-PhaseF-debug.apk
+          unzip -tqq build/GodSandbox-PhaseF-debug.apk
+          ls -lh build/GodSandbox-PhaseF-debug.apk
       - name: Upload Phase F debug APK and QA reports
         uses: actions/upload-artifact@v4
         with:
-          name: GodSandbox-PhaseF-Foundations-Android-debug
+          name: GodSandbox-PhaseF-Android-debug
           path: |
-            build/GodSandbox-PhaseF-Foundations-debug.apk
+            build/GodSandbox-PhaseF-debug.apk
             docs/settlement-phase-f-validation.json
             docs/settlement-phase-f-benchmark.json
           if-no-files-found: error
@@ -99,7 +99,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: phase-f-foundations-failure-logs
+          name: phase-f-settlements-failure-logs
           path: |
             /tmp/god-sandbox-phase-f-qa/*.log
             /tmp/phase-f-benchmark.log

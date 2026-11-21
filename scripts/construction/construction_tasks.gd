@@ -44,7 +44,7 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
     if depot.x < 0 or not world.is_walkable(depot.x, depot.y):
         return false
     if not engine.jobs.has(id):
-        if engine.jobs.size() >= engine.MAX_JOBS or world.food.jobs.has(id) or world.toolmaking.jobs.has(id):
+        if engine.jobs.size() >= engine.MAX_JOBS or world.food.jobs.has(id) or world.toolmaking.jobs.has(id) or world.regional_economy.trade_jobs.has(id) or world.regional_economy.road_jobs.has(id) or world.local_logistics.jobs.has(id):
             return false
         # Actual occupation, tools, proximity and local knowledge govern work.
         var chosen = {}

@@ -27,6 +27,8 @@ func validate(world: RefCounted, row: Dictionary, cell: Vector2i, orientation: i
         var biome: String = str(["ocean", "beach", "meadow", "forest", "mountain", "ash", "town"][world.at(point.x, point.y)])
         if biome not in row["placement"]["terrain"] or Nav.danger_near(world, point):
             return "terrain"
+        for farm in world.food.farms:
+            if int(farm["x"])==point.x and int(farm["y"])==point.y and not bool(farm["harvested"]): return "agriculture"
         if tiles.has(point) and int(tiles[point]) != ignore_id:
             return "overlap"
         if absi(world.height_at(point.x, point.y) - elevation) > int(row["placement"].get("max_elevation_difference", 3)):

@@ -82,8 +82,8 @@ func housing(world: RefCounted, id: int) -> int:
     return capacity
 
 func move_households(world: RefCounted, household_ids: Array, destination: int) -> void:
-    # Called only AFTER every survivor physically arrives. Nonempty pantries
-    # are ineligible for this slice; no remote pantry relocation is possible.
+    # Called only AFTER every survivor physically arrives and pantry provisions
+    # have been packed into real carried food. No remote relocation of stock.
     for id in household_ids:
         var family: Dictionary = world.households.family_for(int(id))
         if family.is_empty():
@@ -96,6 +96,7 @@ func move_households(world: RefCounted, household_ids: Array, destination: int) 
                 continue
             person["settlement_id"] = destination
             person["home_id"] = 0
+            person["carried_by"] = 0
             var mind: Dictionary = world.citizen_ai_by_id[str(member)]
             mind["route"] = []
             mind["next_path_tick"] = world.tick

@@ -126,6 +126,16 @@ func rank(world: RefCounted, definition: Dictionary, cell: Vector2i, center: Vec
         score += mini(30, int(local["land"]))
     elif category in ["storage", "commerce", "market"]:
         score += 20 - mini(20, Nav.manhattan(cell, center) * 2)
+    var function_name := str(definition.get("function",""))
+    if function_name in ["forestry","quarry"]:
+        var material := "wood" if function_name=="forestry" else "stone"
+        var proximity := 0
+        for direction in Nav.DIRS:
+            for radius in range(1,5):
+                var source: Vector2i = cell+direction*radius
+                if world.construction.left_at(world,source.x,source.y,material)>0: proximity += 20-radius*3
+        score += mini(80,proximity)
+    if function_name=="farm" and world.at(cell.x,cell.y)!=world.MEADOW: return -1000000
     return clampi(score, -1000, 1000)
 
 func update_one(world: RefCounted) -> void:
@@ -149,16 +159,4 @@ func update_one(world: RefCounted) -> void:
         "food": food, "resources": local.duplicate(true), "corridor_axis": posmod(center.x + center.y + id, 2),
         "communal_center": [center.x, center.y]}
     row["prosperity"] = clampi(food * 2 + capacity * 3 - population, 0, 100)
-    var specialisation := "subsistence"
-    if int(local["wood"]) > int(local["stone"]) * 2 and int(local["wood"]) >= 20:
-        specialisation = "forestry"
-    elif int(local["stone"]) >= 20:
-        specialisation = "quarrying"
-    elif int(local["coast"]) >= 3:
-        specialisation = "coastal_foraging"
-    # Cultivation is only an identity if there is an actual local farm.
-    for farm in world.food.farms:
-        if world.settlements.sid(farm) == id:
-            specialisation = "agricultural"
-            break
-    row["specialisation"] = specialisation
+    world.settlement_lifecycle.evaluate(world,id,local)

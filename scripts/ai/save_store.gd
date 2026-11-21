@@ -33,7 +33,7 @@ static func prepare(world: RefCounted) -> PackedByteArray:
         "occupations":world.occupations.snapshot(), "inventory":world.inventory.snapshot(),
         "toolmaking":world.toolmaking.snapshot(),
         "regional_economy":world.regional_economy.snapshot(),
-        "settlements":world.settlements.snapshot(), "founding":world.founding.snapshot(),
+        "local_logistics":world.local_logistics.snapshot(), "settlements":world.settlements.snapshot(), "founding":world.founding.snapshot(),
         "settlement_planner_cursor":world.settlement_planner.cursor}
     # No yield, callbacks or threads between borrowing state and producing the immutable byte buffer.
     var payload := var_to_bytes(view)

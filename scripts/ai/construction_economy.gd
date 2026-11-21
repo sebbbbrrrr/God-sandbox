@@ -96,7 +96,8 @@ func find_location(world: RefCounted, row: Dictionary, center: Vector2i, orienta
     var choice := Vector2i(-1, -1)
     var best := -2147483647
     var scored := 0
-    for distance in range(1, 10):
+    var limit := clampi(int(world.settlements.get_record(nation).get("radius",9)),9,16)
+    for distance in range(1, limit+1):
         for dy in range(-distance, distance + 1):
             for dx in range(-distance, distance + 1):
                 if absi(dx) + absi(dy) != distance:
@@ -131,7 +132,7 @@ func request_construction(world: RefCounted, request: Dictionary) -> Dictionary:
     if request.get("location") is Array and request["location"].size() == 2:
         cell = Vector2i(int(request["location"][0]), int(request["location"][1]))
     var home: Vector2i = world.settlements.center(world, nation)
-    if nation > 1 and (world.settlement_planner.reserved(world, nation, cell) or absi(cell.x - home.x) + absi(cell.y - home.y) > 9):
+    if nation > 1 and (world.settlement_planner.reserved(world, nation, cell) or absi(cell.x - home.x) + absi(cell.y - home.y) > int(world.settlements.get_record(nation).get("radius",9))):
         return {"ok": false, "reason": "reserved_or_outside_local_plan"}
     var invalid = placement.validate(world, row, cell, orientation)
     if invalid != "":
@@ -168,10 +169,38 @@ func plan(world: RefCounted) -> void:
     var capacity: int = world.settlements.housing(world, id)
     var record: Dictionary = world.settlements.get_record(id)
     var carrying := int(record.get("plan", {}).get("carrying_capacity", 72))
-    if str(record["status"]) in ["failed", "abandoned"]:
+    if str(record["status"]) in ["failed", "abandoned", "struggling"]:
         return
     if id > 1 and capacity > 0 and world.food.total(world.food.store(id)) < population:
         return
+    if capacity >= mini(carrying,population) and population >= 4 and project_for(id).is_empty() and world.food.total(world.food.store(id)) >= population:
+        var functions: Array = []
+        var local: Dictionary = record.get("plan",{}).get("resources",{})
+        if int(local.get("wood",0))>=6: functions.append("forestry")
+        if int(local.get("stone",0))>=3: functions.append("quarry")
+        functions.append_array(["storage","farm","tool_area","civic","market"])
+        var scores := {"forestry":20+maxi(0,40-int(local.get("wood",0))),"quarry":20+maxi(0,40-int(local.get("stone",0))),"storage":15+houses.size()/2,"farm":40 if world.food.total(world.food.store(id))<population*2 else 10,"tool_area":25,"civic":population,"market":0}
+        for member in world.settlements.residents.get(str(id),[]):
+            var expert: Dictionary = world.ai_context.people.get(int(member),{})
+            if not expert.is_empty(): scores["tool_area"] += mini(10,world.occupations.xp_for(expert,"stone_toolmaker"))
+        for link in world.regional_economy.links.values():
+            if id in [int(link["a"]),int(link["b"])] and str(link["status"])=="connected": scores["market"] += 20
+        functions.sort_custom(func(a: Variant,b: Variant) -> bool: return int(scores.get(a,0))>int(scores.get(b,0)) or (int(scores.get(a,0))==int(scores.get(b,0)) and str(a)<str(b)))
+        for function_name in functions:
+            if str(function_name)=="market" and int(scores["market"])==0: continue
+            if str(function_name)=="civic" and population<8: continue
+            var present := false
+            for house in houses:
+                if world.settlements.sid(house)==id and str(house.get("function",house.get("type","")))==str(function_name) and not bool(house.get("abandoned",false)): present = true
+            if present: continue
+            var can_supply: bool = int(local.get("wood",0))+world.inventory.available("settlement:"+str(id),"wood")>=4 and int(local.get("stone",0))+world.inventory.available("settlement:"+str(id),"stone")>=3
+            if not can_supply: continue
+            var requested: Dictionary = request_construction(world,{"settlement_id":id,"function":function_name,"priority":40})
+            if bool(requested.get("ok",false)): return
+    if capacity >= population and project_for(id).is_empty() and catalogue.local_age(world,id)>=1 and world.occupations.has_capability(world,id,"stone_working"):
+        for house in houses:
+            if world.settlements.sid(house)==id and capacity-int(house.get("capacity",0))>=population and int(house.get("capacity",0))>0 and str(house.get("function","shelter"))=="shelter" and str(house.get("definition_id",""))=="primitive_shelter" and (population>=8 or int(record.get("plan",{}).get("resources",{}).get("land",100))<20):
+                if lifecycle.begin_transition(self,world,int(house["id"]),"timber_hut","upgrade"): return
     if capacity < mini(carrying, population) and project_for(id).is_empty():
         request_construction(world, {"settlement_id": id, "function": "shelter", "priority": 70, "demand": {"unsheltered": population - capacity}})
 

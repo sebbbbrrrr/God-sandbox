@@ -84,8 +84,6 @@ func worker_eligible(world: RefCounted, person: Dictionary, row: Dictionary) -> 
 
 func local_age(world: RefCounted, nation: int) -> int:
     # C1 has no global date-driven era. Report the local evidence floor.
-    if nation > 1:
-        return 1 # advanced local institution/knowledge propagation is a later extension
     var age := 1
     for role in world.occupations.definitions.values():
         var tech := str(role["tech"])

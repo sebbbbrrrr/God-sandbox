@@ -14,6 +14,8 @@ const GOALS := ["hammerstone", "stone_axe", "stone_pick", "flint_knife"]
 const REPAIR_INPUTS := {"stone_axe": "stone", "stone_pick": "stone",
     "flint_knife": "flint", "hammerstone": "stone"}
 
+var candidate_tick := -1
+var candidate_cache: Dictionary = {}
 var jobs: Dictionary = {} # citizen id -> persistent physical task
 var instances: Dictionary = {} # serial id -> {item_id, holder, condition...}
 var equipped: Dictionary = {} # citizen id -> serial id; never extra units
@@ -37,7 +39,7 @@ func _knowledge(world: RefCounted, nation: int) -> bool:
 
 func _has_worker(nation: int) -> bool:
     for job in jobs.values():
-        if int(job.get("nation", -1)) == nation:
+        if int(job.get("settlement_id",job.get("nation", -1))) == nation:
             return true
     return false
 
@@ -51,7 +53,7 @@ func _total_in_nation(world: RefCounted, nation: int, item_id: String) -> int:
         if not holder.begins_with("citizen:"):
             continue
         var person := _person(world, int(holder.trim_prefix("citizen:")))
-        if not person.is_empty() and int(person["nation"]) == nation:
+        if not person.is_empty() and world.settlements.sid(person) == nation:
             amount += 1
     return amount
 
@@ -102,7 +104,7 @@ func on_crafted(world: RefCounted, holder: String, item_id: String, quantity: in
         instance["max_condition"] = maximum
         instance["holder"] = holder
         instance["crafted_tick"] = int(world.tick)
-        instance["origin_settlement"] = str(_person(world, artisan).get("nation", -1))
+        instance["origin_settlement"] = str(world.settlements.sid(_person(world,artisan)))
         instances[serial] = instance
 
 func _unassign(serial: String) -> void:
@@ -165,7 +167,7 @@ func wear(world: RefCounted, person: Dictionary, material: String) -> void:
 
 func _put_away(world: RefCounted, person: Dictionary) -> void:
     var pid := str(person["id"])
-    var depot: Vector2i = world.capitals[int(person["nation"])]
+    var depot: Vector2i = world.settlements.center(world,world.settlements.sid(person))
     if Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), depot) > 1:
         return
     for serial in _matching_serials("citizen:" + pid, "stone_axe") + \
@@ -173,7 +175,7 @@ func _put_away(world: RefCounted, person: Dictionary) -> void:
         var instance: Dictionary = instances[serial]
         if int(instance["condition"]) <= 40:
             world.inventory.transfer(world, "citizen:" + pid,
-                "settlement:" + str(person["nation"]), {str(instance["item_id"]): 1}, int(person["id"]))
+                "settlement:" + str(world.settlements.sid(person)), {str(instance["item_id"]): 1}, int(person["id"]))
 
 # Existing resource gatherers only borrow a durable tool at the real depot.
 func try_equip(world: RefCounted, person: Dictionary, material: String) -> void:
@@ -181,14 +183,14 @@ func try_equip(world: RefCounted, person: Dictionary, material: String) -> void:
         return
     var pid := str(person["id"])
     var held := "citizen:" + pid
-    var depot: Vector2i = world.capitals[int(person["nation"])]
+    var depot: Vector2i = world.settlements.center(world,world.settlements.sid(person))
     if Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), depot) > 1:
         return
     _put_away(world, person)
     if tool_for(world, person, material) != "":
         return
     var wanted := "stone_axe" if material == "wood" else "stone_pick"
-    var depot_id := "settlement:" + str(person["nation"])
+    var depot_id := "settlement:" + str(world.settlements.sid(person))
     var ids := _matching_serials(depot_id, wanted)
     var viable := ""
     for serial in ids:
@@ -234,11 +236,11 @@ func request_repair(world: RefCounted, citizen_id: int, serial: String) -> bool:
     var person := _person(world, citizen_id)
     if person.is_empty() or not _living_adolescent(world, person):
         return false
-    var nation := int(person["nation"])
+    var nation: int = world.settlements.sid(person)
     if not _site(world, nation) or not _knowledge(world, nation) or \
             not world.occupations.enabled(world, nation, "stone_toolmaker"):
         return false
-    var station: Vector2i = world.capitals[nation]
+    var station: Vector2i = world.settlements.center(world,nation)
     if Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), station) > 1:
         return false
     var entry: Dictionary = instances[serial]
@@ -261,7 +263,7 @@ func _begin(world: RefCounted, person: Dictionary, mind: Dictionary, kind: Strin
         extra: Dictionary = {}) -> bool:
     if jobs.size() >= MAX_JOBS:
         return false
-    var record := {"kind": kind, "nation": int(person["nation"]),
+    var record := {"kind": kind, "nation": int(person["nation"]), "settlement_id": world.settlements.sid(person),
         "phase": "depot", "remaining": 2}
     for key in extra:
         record[key] = extra[key]
@@ -305,7 +307,7 @@ func _need(world: RefCounted, nation: int, recipe_item: String, depth: int = 0) 
     var stores: Dictionary = world.inventory.stockpile(nation)
     var inputs: Dictionary = recipe["inputs"]
     for ingredient in inputs:
-        if int(stores.get(ingredient, 0)) >= int(inputs[ingredient]):
+        if world.inventory.available("settlement:"+str(nation),str(ingredient)) >= int(inputs[ingredient]):
             continue
         var row: Dictionary = world.inventory.catalogue.item(str(ingredient))
         if str(row.get("acquisition", "")) == "gather":
@@ -316,8 +318,12 @@ func _need(world: RefCounted, nation: int, recipe_item: String, depth: int = 0) 
     return recipe_item
 
 func _select(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
-    var nation := int(person["nation"])
+    var nation: int = world.settlements.sid(person)
     var stores: Dictionary = world.inventory.stockpile(nation)
+    if not _site(world, nation) and nation > 1:
+        if world.construction.project_for(nation).is_empty():
+            world.construction.request_construction(world,{"settlement_id":nation,"function":"tool_area"})
+        return false
     if not _site(world, nation):
         for material in ["wood", "stone"]:
             var required := WORKSITE_WOOD if material == "wood" else WORKSITE_STONE
@@ -356,9 +362,9 @@ func _do_job(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     var task: Dictionary = jobs.get(id, {})
     if task.is_empty():
         return false
-    var nation := int(task["nation"])
-    var depot: Vector2i = world.capitals[nation]
-    if not _living_adolescent(world, person) or int(person["nation"]) != nation or \
+    var nation := int(task.get("settlement_id",task["nation"]))
+    var depot: Vector2i = world.settlements.center(world,nation)
+    if not _living_adolescent(world, person) or world.settlements.sid(person) != nation or \
             depot.x < 0 or not world.is_walkable(depot.x, depot.y):
         _end(person, mind)
         return false
@@ -382,6 +388,34 @@ func _do_job(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
                     "settlement:" + str(nation), {str(task["material"]): int(task["amount"])}, int(person["id"])):
                 _end(person, mind)
         return true
+    if str(task["kind"]) in ["craft","experiment"]:
+        if str(task["phase"]) == "depot":
+            if not _walk(world,person,mind,depot): return true
+            var inputs: Dictionary = {"flint":1,"stone":1} if str(task["kind"]) == "experiment" else world.inventory.catalogue.item(str(task["item_id"]))["recipe"]["inputs"].duplicate()
+            for item in inputs: inputs[item] = int(inputs[item])
+            if str(task.get("item_id","")) == "knapped_flint": inputs["hammerstone"] = 1
+            if not world.inventory.transfer(world,"settlement:"+str(nation),"citizen:"+id,inputs,int(person["id"])):
+                _end(person,mind)
+                return false
+            task["phase"] = "station"
+            mind["route"] = []
+        if str(task["phase"]) == "station":
+            if not _walk(world,person,mind,station(world,nation)): return true
+            task["remaining"] -= 1
+            if int(task["remaining"])>0: return true
+            if str(task["kind"]) == "experiment":
+                if world.inventory.prototype_knapping(world,int(person["id"]),true): experiments_total += 1
+            elif world.inventory.craft_at(world,str(task["item_id"]),int(person["id"]),true): crafted_total += 1
+            task["phase"] = "return"
+            task["return_goods"] = world.inventory.citizen_inventory(int(person["id"]))
+            for good in task["return_goods"].keys():
+                if int(task["return_goods"][good])<=0: task["return_goods"].erase(good)
+            mind["route"] = []
+        if not _walk(world,person,mind,depot): return true
+        var goods: Dictionary = task.get("return_goods",{})
+        if not goods.is_empty() and not world.inventory.transfer(world,"citizen:"+id,"settlement:"+str(nation),goods,int(person["id"])): return true
+        _end(person,mind)
+        return true
     if not _walk(world, person, mind, depot):
         return true
     if str(task["kind"]) == "build" and str(task["phase"]) == "depot":
@@ -398,7 +432,7 @@ func _do_job(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
             if not _site(world, nation) and world.inventory.consume(world,
                     "citizen:" + id, {"wood": WORKSITE_WOOD, "stone": WORKSITE_STONE},
                     int(person["id"]), "tool_area"):
-                var site: Vector2i = world.capitals[nation]
+                var site: Vector2i = world.settlements.center(world,nation)
                 world.construction.houses.append({"id": world.construction.next_building_id,
                     "type": "tool_area", "capacity": 0, "nation": nation,
                     "x": site.x, "y": site.y, "built_tick": int(world.tick)})
@@ -435,23 +469,23 @@ func work_step(world: RefCounted, person: Dictionary, mind: Dictionary) -> bool:
     if jobs.has(id):
         return _do_job(world, person, mind)
     # Give the independent housing/food scheduler ownership of existing jobs.
-    if world.construction.jobs.has(id) or world.food.jobs.has(id):
+    if world.construction.jobs.has(id) or world.food.jobs.has(id) or world.regional_economy.trade_jobs.has(id) or world.regional_economy.road_jobs.has(id) or world.local_logistics.jobs.has(id):
         return false
-    if int(person["id"]) % 11 != 0 and str(world.occupations.record_for(person).get("preference", "")) != "stone_toolmaker":
+    if not artisan_candidate(world,person):
         return false
-    if _has_worker(int(person["nation"])):
+    if _has_worker(world.settlements.sid(person)):
         return false
     return _select(world, person, mind)
 
 # Knapping at the yard physically wears one local hammerstone.
-func workshop_tool_ready(nation: int, item_id: String) -> bool:
-    for serial in _matching_serials("settlement:" + str(nation), item_id):
+func workshop_tool_ready(nation: int, item_id: String, holder: String = "") -> bool:
+    for serial in _matching_serials(holder if holder!="" else "settlement:" + str(nation), item_id):
         if int(instances[serial]["condition"]) > 0:
             return true
     return false
 
-func wear_workshop(world: RefCounted, nation: int, item_id: String) -> void:
-    var ids := _matching_serials("settlement:" + str(nation), item_id)
+func wear_workshop(world: RefCounted, nation: int, item_id: String, holder: String = "") -> void:
+    var ids := _matching_serials(holder if holder!="" else "settlement:" + str(nation), item_id)
     if ids.is_empty():
         return
     var instance: Dictionary = instances[ids[0]]
@@ -467,8 +501,8 @@ func repair(world: RefCounted, artisan_id: int, serial: String) -> bool:
     var person := _person(world, artisan_id)
     if person.is_empty() or not _living_adolescent(world, person):
         return false
-    var nation := int(person["nation"])
-    var station: Vector2i = world.capitals[nation]
+    var nation: int = world.settlements.sid(person)
+    var station: Vector2i = world.settlements.center(world,nation)
     if Nav.manhattan(Vector2i(int(person["x"]), int(person["y"])), station) > 1 or \
             not _site(world, nation) or not _knowledge(world, nation) or \
             not world.occupations.enabled(world, nation, "stone_toolmaker"):
@@ -554,7 +588,7 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
         var person := _person(world, int(id))
         if not task is Dictionary or person.is_empty() or int(person["hp"]) <= 0 or \
                 str(task.get("kind", "")) not in ["gather", "build", "experiment", "craft", "repair"] or \
-                int(task.get("nation", -1)) != int(person["nation"]):
+                int(task.get("settlement_id",task.get("nation", -1))) != world.settlements.sid(person):
             instances = saved_instances
             return false
         candidate_jobs[str(id)] = task.duplicate(true)
@@ -565,3 +599,35 @@ func load_state(world: RefCounted, raw: Variant) -> bool:
     repaired_total = maxi(0, int(raw.get("repaired_total", 0)))
     experiments_total = maxi(0, int(raw.get("experiments_total", 0)))
     return true
+
+func station(world: RefCounted, id: int) -> Vector2i:
+    for house in world.construction.houses:
+        if world.settlements.sid(house)==id and str(house.get("type",""))=="tool_area" and not bool(house.get("abandoned",false)):
+            return Vector2i(int(house["x"]),int(house["y"]))
+    return world.settlements.center(world,id)
+
+func artisan_candidate(world: RefCounted, person: Dictionary) -> bool:
+    var sid: int = world.settlements.sid(person)
+    if jobs.has(str(person["id"])): return true
+    if candidate_tick!=world.tick:
+        candidate_tick = world.tick
+        candidate_cache.clear()
+    if not candidate_cache.has(sid):
+        var best := -2147483647
+        var chosen := 0
+        for member in world.settlements.residents.get(str(sid),[]):
+            var worker: Dictionary = world.ai_context.people.get(int(member),{})
+            if worker.is_empty() or world.lifecycle.is_dependent(worker) or int(worker["hp"])<50: continue
+            var key := str(member)
+            if world.founding.assignments.has(key) or world.construction.jobs.has(key) or world.regional_economy.trade_jobs.has(key) or world.local_logistics.jobs.has(key): continue
+            var busy := false
+            for link in world.occupations.apprenticeships.values():
+                if int(link.get("teacher_id",0))==int(member) or int(link.get("student_id",0))==int(member): busy = true
+            if busy: continue
+            var mind: Dictionary = world.citizen_ai_by_id[key]
+            var score: int = world.occupations.xp_for(worker,"stone_toolmaker")*10+int(mind["personality"]["diligence"])+int(mind["personality"]["curiosity"])
+            if score>best or (score==best and int(member)<chosen):
+                chosen = int(member)
+                best = score
+        candidate_cache[sid] = chosen
+    return int(candidate_cache[sid])==int(person["id"])

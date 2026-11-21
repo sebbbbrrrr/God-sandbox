@@ -158,7 +158,7 @@ func context_for_citizen(world: RefCounted, person: Dictionary, definition_id: S
     var requirements: Dictionary = requirements_variant
     var tech := str(requirements.get("capability", ""))
     var facility := str(requirements.get("facility", requirements.get("station", "")))
-    var nation := int(person.get("nation", -1))
+    var nation: int = world.settlements.sid(person)
     var skills: Dictionary = world.occupations.record_for(person).get("xp", {})
     var role := str(requirements.get("occupation", requirements.get("skill", "")))
     var roles: Dictionary = {}
