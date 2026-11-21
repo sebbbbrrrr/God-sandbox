@@ -225,7 +225,7 @@ func _update_picker() -> void:
 
 func _on_picker(index: int) -> void:
     selected_id = picker.get_item_id(index)
-    _render()
+    _render(false)
 
 
 func open_for(id: int = -1) -> void:
@@ -276,7 +276,7 @@ func _selected() -> Dictionary:
 
 func _switch_tab(tab: int) -> void:
     current_tab = tab
-    _render()
+    _render(false)
     scroller.scroll_vertical = 0
 
 
@@ -306,7 +306,7 @@ func _stat(name: String, value: String) -> void:
     content.add_child(line)
 
 
-func _bar(name: String, value: int, description: String = "") -> void:
+func _bar(name: String, value: int, description: String = "", inverse: bool = false) -> void:
     var top := HBoxContainer.new()
     top.add_child(_label(name, 12, IVORY))
     var amount := _label("%d%%" % value if value >= 0 else "Not assessed", 12, GOLD)
@@ -319,7 +319,7 @@ func _bar(name: String, value: int, description: String = "") -> void:
     bar.value = clampi(value, 0, 100)
     bar.show_percentage = false
     bar.custom_minimum_size.y = 12
-    var tint := GOOD if value >= 70 else (WARNING if value >= 40 else DANGER)
+    var tint := MUTED if value < 0 else (DANGER if value >= 70 else (WARNING if value >= 40 else GOOD)) if inverse else (GOOD if value >= 70 else (WARNING if value >= 40 else DANGER))
     bar.add_theme_stylebox_override("background", _style(DARK, 5))
     bar.add_theme_stylebox_override("fill", _style(tint, 5))
     content.add_child(bar)
@@ -340,13 +340,13 @@ func _goto_button(id: int, title: String) -> void:
         selected_id = id
         current_tab = 0
         _update_picker()
-        _render()
+        _render(false)
         scroller.scroll_vertical = 0
     )
     content.add_child(button)
 
 
-func _render() -> void:
+func _render(keep_scroll: bool = true) -> void:
     if not is_open:
         return
     var retained := scroller.scroll_vertical
@@ -368,7 +368,8 @@ func _render() -> void:
         2: _routes(row)
         3: _people(row)
         4: _history(row)
-    scroller.set_deferred("scroll_vertical", retained)
+    if keep_scroll:
+        scroller.set_deferred("scroll_vertical", retained)
 
 
 func _overview(row: Dictionary) -> void:
@@ -456,7 +457,7 @@ func _routes(row: Dictionary) -> void:
         int(row["active_links"]), int(row["building_links"]), int(row["blocked_links"])])
     _stat("Pending local road tiles", str(row["road_queue"]))
     _stat("Active merchant journeys", str(row["traders"]))
-    _text("Route lines show planned or physically built walking paths. Goods travel with citizens; disconnected roads do not imply completed trade.")
+    _text("Map: solid green = connected roads, dotted amber = planned, green dots = built segments, dotted red = blocked attempt. Citizens physically carry goods; an unbuilt route does not represent trade.")
     var found := 0
     for route in snapshot.get("routes", []):
         if selected_id not in [int(route["a"]), int(route["b"])]:
@@ -482,9 +483,9 @@ func _routes(row: Dictionary) -> void:
         if selected_id not in [int(trade.get("from", -1)), int(trade.get("to", -1))]:
             continue
         recent += 1
-        _text("Tick %d  ·  %s → %s  ·  %s" % [int(trade.get("tick", 0)),
+        _text("Tick %d · %s → %s · sent %s / received %s" % [int(trade.get("tick", 0)),
             _settlement_name(int(trade["from"])), _settlement_name(int(trade["to"])),
-            str(trade.get("kind", "barter")).capitalize()])
+            str(trade.get("export", "?")), str(trade.get("import", "?"))])
     if recent == 0:
         _text("No recent recorded deliveries involving this settlement.")
     _section("Observed social connections")
@@ -515,7 +516,7 @@ func _people(row: Dictionary) -> void:
     _stat("Active workers", str(row["active_workers"]))
     _bar("Resident health", int(row["health_pct"]))
     _bar("Average hunger", int(row["hunger_pct"]),
-        "Higher hunger means worse nutrition; this bar is a burden, not a success score.")
+        "Higher hunger means worse nutrition; this bar is a burden, not a success score.", true)
     _stat("Settlement stress", "%d ticks" % int(row["stress"]))
     _stat("Safety assessment", "Safe" if int(row["security"]) == 100 else (
         "Hazards detected" if int(row["security"]) == 0 else "Not yet assessed"))
@@ -525,7 +526,7 @@ func _people(row: Dictionary) -> void:
     if int(row["ties"]) > 0:
         _bar("Mean observed trust", int(row["trust"]))
         _bar("Mean observed rivalry", int(row["rivalry"]),
-            "Higher rivalry means stronger reported tensions, not better performance.")
+            "Higher rivalry means stronger reported tensions, not better performance.", true)
     else:
         _text("Citizens have not recorded enough personal encounters yet.")
     _section("Development")
