@@ -223,9 +223,11 @@ return async function(tools, repo, ref, selectedIds, previewOnly) {
     const encoded64=to64(encoded);
     if(previewOnly)result.push({id,base64:encoded64,pieces:image.pieces,width:image.w,height:image.h});
     else {
-      const b=await tools.mcp__GitHub__create_blob({repository_full_name:repo,content:encoded64,encoding:"base64"});
-      result.push({path:"assets/pixel/construction_frames/"+id+".png",mode:"100644",type:"blob",
-        sha:b.result.sha,id,pieces:image.pieces,bytes:encoded.length});
+      const path="assets/pixel/construction_frames/"+id+".png.b64";
+      const b=await tools.mcp__GitHub__create_file({repository_full_name:repo,path,
+        content:encoded64,message:"Add original-pixel authored construction frames for "+id,
+        branch:ref});
+      result.push({path,id,pieces:image.pieces,bytes:encoded.length,commit:b.result.commit_sha});
     }
   }
   return result;
