@@ -13,7 +13,9 @@ func _initialize() -> void:
     call_deferred("capture")
 
 func settle() -> void:
-    for i in range(12):
+    # Capture settled real frames, not translucent mid-transition states.
+    await create_timer(0.43).timeout
+    for i in range(5):
         await process_frame
     await RenderingServer.frame_post_draw
 
@@ -43,6 +45,10 @@ func capture() -> void:
     game = CaptureGame.new()
     root.add_child(game)
     game.paused = true
+    # The real backend computes its initial local environment assessment,
+    # allowing screenshot review of populated and evidence-based town cards.
+    for i in range(2):
+        game.world.settlement_planner.update_one(game.world)
     game.civilisation_ui.open_for(0)
     await save("civilisation-premium-overview")
     game.civilisation_ui._switch_tab(1)
