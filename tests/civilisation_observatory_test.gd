@@ -84,16 +84,6 @@ func run() -> void:
     dashboard.close()
     check(not dashboard.is_open and dashboard.show_routes,
         "map route overlay persists independently when inspector closes")
-    var fake_game := Node2D.new()
-    root.add_child(fake_game)
-    var overlay = Routes.new()
-    overlay.configure(fake_game)
-    overlay.set_snapshot(snapshot)
-    overlay.set_enabled(true)
-    check(overlay.enabled, "route overlay can be enabled without writing to simulation")
-    overlay.free()
-    root.remove_child(fake_game)
-    fake_game.free()
     root.remove_child(dashboard)
     dashboard.free()
 
@@ -102,6 +92,10 @@ func run() -> void:
     game.paused = true
     check(game.hud.civilisation_button != null and game.civilisation_ui != null,
         "unified Android world contains Towns shortcut and complete inspector")
+    game.civilisation_routes.set_snapshot(snapshot)
+    game.civilisation_routes.set_enabled(true)
+    check(game.civilisation_routes.enabled, "route overlay uses the live game camera")
+    game.civilisation_routes.set_enabled(false)
     game.hud.civilisation_pressed.emit()
     check(game.civilisation_ui.is_open and game.selected_power == -1,
         "opening inspector switches to Hand and blocks world powers")
