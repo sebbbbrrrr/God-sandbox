@@ -4,16 +4,26 @@ extends RefCounted
 # Keep recruitment bounded for Android and leave ongoing cargo/jobs uninterrupted.
 
 static func pressures(world: RefCounted, sid: int) -> Dictionary:
+    # Housing capacity is an O(buildings) query; compute it once per
+    # settlement per simulation tick, not once for every idle citizen.
+    var engine = world.construction
+    if int(engine.labour_cache_tick) != int(world.tick):
+        engine.labour_cache_tick = int(world.tick)
+        engine.labour_pressure_cache.clear()
+    if engine.labour_pressure_cache.has(sid):
+        return engine.labour_pressure_cache[sid]
     var population: int = maxi(0, world.settlements.population(sid))
     var food_units: int = world.food.total(world.food.store(sid))
     var shelter: int = world.settlements.housing(world, sid)
-    return {
+    var pressure := {
         "food_emergency": food_units < maxi(4, population),
         "food_low": food_units < maxi(8, population * 3),
         "unsheltered": maxi(0, population - shelter),
         "population": population,
         "food_units": food_units
     }
+    engine.labour_pressure_cache[sid] = pressure
+    return pressure
 
 static func project_score(world: RefCounted, site: Dictionary,
         origin: Vector2i, pressure: Dictionary) -> int:
