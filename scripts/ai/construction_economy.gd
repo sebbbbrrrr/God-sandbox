@@ -26,6 +26,9 @@ var plan_cursor := 0
 var site_cursor = 0
 var revision = 0
 var indexed_houses = 0
+# Derived tick-local workforce pressure cache (never persisted).
+var labour_cache_tick := -1
+var labour_pressure_cache: Dictionary = {}
 
 func site_by_id(id: int) -> Dictionary:
     return sites_by_id.get(id, {})
