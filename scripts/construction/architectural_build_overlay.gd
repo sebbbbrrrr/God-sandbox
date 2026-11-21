@@ -82,7 +82,8 @@ func _draw() -> void:
         var x: int = int(site["x"])
         var y: int = int(site["y"])
         var foot: Array = row.get("footprint", [1, 1])
-        var end := parent_renderer.top_left(x, y) + Vector2(float(foot[0]) * 16.0, 27.0)
+        var depth_y: int = y + int(foot[1]) - 1
+        var end := parent_renderer.top_left(x, depth_y) + Vector2(float(foot[0]) * 16.0, 27.0)
         var size: Vector2 = atlas.size_of(sprite)
         var dest := Rect2((end - Vector2(size.x * 0.5, size.y)).round(), size)
         if not view.intersects(dest.grow(12.0)):
@@ -137,7 +138,8 @@ func _draw_finishing_buildings(view: Rect2) -> void:
         var x: int = int(building["x"])
         var y: int = int(building["y"])
         var footprint: Array = definition.get("footprint", [1, 1])
-        var foot := parent_renderer.top_left(x, y) + Vector2(float(footprint[0]) * 16.0, 27.0)
+        var depth_y: int = y + int(footprint[1]) - 1
+        var foot := parent_renderer.top_left(x, depth_y) + Vector2(float(footprint[0]) * 16.0, 27.0)
         var size: Vector2 = atlas.size_of(sprite)
         var dest := Rect2((foot - Vector2(size.x * 0.5, size.y)).round(), size)
         if not view.intersects(dest.grow(12.0)):
@@ -153,7 +155,7 @@ func _draw_finishing_buildings(view: Rect2) -> void:
         draw_texture_rect_region(sheet, dest, rect, Color.WHITE, false, true)
         if index >= 31:
             playback_frames.erase(id)
-            parent_renderer.invalidate_cell(Vector2i(x, y))
+            parent_renderer.invalidate_cell(Vector2i(x, depth_y))
 
 static func frame_for_phase(phase: Dictionary) -> int:
     var base: float = clampf(float(phase.get("base", 0.0)), 0.0, 1.0)
