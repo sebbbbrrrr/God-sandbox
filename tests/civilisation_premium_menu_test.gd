@@ -75,6 +75,10 @@ func run() -> void:
         hud.open_palette(true)
         await frame()
         var palette: Rect2 = hud.palette_panel.get_global_rect()
+        if not (palette.position.y >= -1 and palette.end.y <= size.y + 1 and palette.end.x <= size.x + 1):
+            print("QA_SCREEN_BOUNDS size=", size, " palette=", palette,
+                " palette_min=", hud.palette_panel.get_combined_minimum_size(),
+                " grid_cols=", hud.power_grid.columns, " dock=", hud.dock_panel.position)
         check(palette.position.y >= -1 and palette.end.y <= size.y + 1 and
             palette.end.x <= size.x + 1,
             "power palette remains fully on-screen " + str(size))
