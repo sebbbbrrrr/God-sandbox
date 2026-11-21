@@ -6,12 +6,13 @@ signal focus_requested(cell: Vector2i)
 signal route_visibility_changed(enabled: bool)
 
 const Insights = preload("res://scripts/ui/civilisation_insights.gd")
-const DARK := Color("#142620")
-const SURFACE := Color("#213831")
-const RAISED := Color("#2b473c")
-const GOLD := Color("#e7c88d")
-const IVORY := Color("#f5eddc")
-const MUTED := Color("#adbfaf")
+const Motion = preload("res://scripts/ui/premium_motion.gd")
+const DARK := Color("#0d1916")
+const SURFACE := Color("#162a24")
+const RAISED := Color("#2b463a")
+const GOLD := Color("#e9cb95")
+const IVORY := Color("#f8f1e3")
+const MUTED := Color("#aac0ad")
 const GOOD := Color("#83bd91")
 const WARNING := Color("#d7ae72")
 const DANGER := Color("#df8e81")
@@ -33,6 +34,15 @@ var tab_buttons: Array[Button] = []
 var scroller: ScrollContainer
 var content: VBoxContainer
 var heading: Label
+var hero: PanelContainer
+var hero_name: Label
+var hero_status: Label
+var hero_values: Array[Label] = []
+var live_caption: Label
+var current_group: VBoxContainer
+var reduced_motion := false
+var panel_tween: Tween
+var animate_content := false
 
 func setup(source: RefCounted) -> void:
     world = source
@@ -50,10 +60,12 @@ func _style(color: Color, radius: int = 13, border: bool = false) -> StyleBoxFla
     var box := StyleBoxFlat.new()
     box.bg_color = color
     box.set_corner_radius_all(radius)
-    box.set_content_margin_all(7)
+    box.set_content_margin_all(10)
+    box.anti_aliasing = true
+    box.anti_aliasing_size = 0.7
     if border:
         box.set_border_width_all(1)
-        box.border_color = Color("#829682", 0.48)
+        box.border_color = Color("#829682", 0.35)
     return box
 
 
@@ -74,10 +86,11 @@ func _button(text: String, min_width: float = 44.0) -> Button:
     node.add_theme_color_override("font_color", IVORY)
     node.add_theme_color_override("font_hover_color", IVORY)
     node.add_theme_font_size_override("font_size", 12)
-    node.add_theme_stylebox_override("normal", _style(RAISED, 9))
-    node.add_theme_stylebox_override("hover", _style(Color("#3e5e4c"), 9))
-    node.add_theme_stylebox_override("pressed", _style(Color("#58715b"), 9))
-    node.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+    node.add_theme_stylebox_override("normal", Motion.action())
+    node.add_theme_stylebox_override("hover", Motion.action(false, true))
+    node.add_theme_stylebox_override("pressed", Motion.action(true))
+    node.add_theme_stylebox_override("focus", _style(Color("#426b53", 0.28), 11, true))
+    Motion.attach(node, func() -> bool: return not reduced_motion)
     return node
 
 
@@ -87,7 +100,7 @@ func _build() -> void:
     root.mouse_filter = Control.MOUSE_FILTER_IGNORE
     add_child(root)
     shade = ColorRect.new()
-    shade.color = Color(0.015, 0.03, 0.028, 0.63)
+    shade.color = Color(0.015, 0.03, 0.028, 0.72)
     shade.mouse_filter = Control.MOUSE_FILTER_STOP
     shade.visible = false
     root.add_child(shade)
@@ -97,7 +110,7 @@ func _build() -> void:
     )
     sheet = PanelContainer.new()
     sheet.name = "CivilisationSheet"
-    sheet.add_theme_stylebox_override("panel", _style(SURFACE, 17, true))
+    sheet.add_theme_stylebox_override("panel", Motion.surface(true, 20, true))
     sheet.mouse_filter = Control.MOUSE_FILTER_STOP
     sheet.visible = false
     root.add_child(sheet)
@@ -108,14 +121,20 @@ func _build() -> void:
     var headline := HBoxContainer.new()
     headline.add_theme_constant_override("separation", 4)
     layout.add_child(headline)
-    var title := _label("CIVILISATION", 16, GOLD)
-    title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    headline.add_child(title)
+    var brand := VBoxContainer.new()
+    brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    brand.add_theme_constant_override("separation", -1)
+    headline.add_child(brand)
+    brand.add_child(_label("CIVILISATION", 18, GOLD))
+    brand.add_child(_label("THE LIVING WORLD  /  INTELLIGENCE", 9, MUTED))
     map_button = CheckButton.new()
     map_button.text = "Routes"
     map_button.tooltip_text = "Draw real road connections and settlement markers on the world"
     map_button.custom_minimum_size = Vector2(78, 44)
     map_button.add_theme_color_override("font_color", IVORY)
+    map_button.add_theme_color_override("font_pressed_color", GOLD)
+    map_button.add_theme_font_size_override("font_size", 11)
+    Motion.attach(map_button, func() -> bool: return not reduced_motion)
     headline.add_child(map_button)
     map_button.toggled.connect(_on_map_toggled)
     var focus := _button("Locate", 58)
@@ -125,7 +144,7 @@ func _build() -> void:
     dismiss.pressed.connect(close)
     headline.add_child(dismiss)
 
-    heading = _label("SELECT A SETTLEMENT", 10, MUTED)
+    heading = _label("SELECT A SETTLEMENT", 10, GOLD)
     layout.add_child(heading)
     picker = OptionButton.new()
     picker.custom_minimum_size.y = 46
@@ -135,8 +154,45 @@ func _build() -> void:
     picker.add_theme_color_override("font_color", IVORY)
     picker.add_theme_color_override("font_hover_color", IVORY)
     picker.add_theme_font_size_override("font_size", 13)
+    Motion.attach(picker, func() -> bool: return not reduced_motion)
     picker.item_selected.connect(_on_picker)
     layout.add_child(picker)
+
+    hero = PanelContainer.new()
+    hero.name = "SettlementHero"
+    hero.add_theme_stylebox_override("panel", _style(Color("#29483b"), 14, true))
+    layout.add_child(hero)
+    var hero_col := VBoxContainer.new()
+    hero_col.add_theme_constant_override("separation", 5)
+    hero.add_child(hero_col)
+    var hero_row := HBoxContainer.new()
+    hero_col.add_child(hero_row)
+    hero_name = _label("SETTLEMENT", 19, IVORY)
+    hero_name.clip_text = true
+    hero_row.add_child(hero_name)
+    hero_status = _label("●  LIVE", 11, GOLD)
+    hero_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    hero_row.add_child(hero_status)
+    var hero_grid := GridContainer.new()
+    hero_grid.columns = 4
+    hero_grid.add_theme_constant_override("h_separation", 5)
+    hero_grid.add_theme_constant_override("v_separation", 5)
+    hero_col.add_child(hero_grid)
+    for caption in ["RESIDENTS", "PROSPERITY", "CONNECTIONS", "PROJECTS"]:
+        var metric := PanelContainer.new()
+        metric.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+        metric.add_theme_stylebox_override("panel", _style(Color("#1b332b"), 9, false))
+        hero_grid.add_child(metric)
+        var stack := VBoxContainer.new()
+        stack.add_theme_constant_override("separation", -2)
+        metric.add_child(stack)
+        var number := _label("—", 19, GOLD)
+        number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        stack.add_child(number)
+        var subtitle := _label(caption, 8, MUTED)
+        subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        stack.add_child(subtitle)
+        hero_values.append(number)
 
     var tabs := HBoxContainer.new()
     tabs.add_theme_constant_override("separation", 3)
@@ -145,7 +201,7 @@ func _build() -> void:
         var index := tab_buttons.size()
         var button := _button(name, 0)
         button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-        button.custom_minimum_size.y = 43
+        button.custom_minimum_size.y = 47
         button.add_theme_font_size_override("font_size", 11)
         button.pressed.connect(func() -> void: _switch_tab(index))
         tabs.add_child(button)
@@ -159,12 +215,17 @@ func _build() -> void:
     layout.add_child(scroller)
     content = VBoxContainer.new()
     content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    content.add_theme_constant_override("separation", 8)
+    content.add_theme_constant_override("separation", 10)
     scroller.add_child(content)
 
-    var caption := _label("LIVE SIMULATION  ·  readings update on world ticks", 10, MUTED)
-    caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    layout.add_child(caption)
+    var footer := HBoxContainer.new()
+    footer.add_theme_constant_override("separation", 6)
+    layout.add_child(footer)
+    live_caption = _label("● LIVE  ·  SIMULATION", 10, GOLD)
+    footer.add_child(live_caption)
+    var source := _label("ACTUAL WORLD DATA", 9, MUTED)
+    source.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    footer.add_child(source)
 
 
 func _layout() -> void:
@@ -176,12 +237,16 @@ func _layout() -> void:
     shade.size = size
     var landscape := size.x > size.y * 1.18
     if landscape:
-        var width := minf(490.0, maxf(320.0, size.x * 0.54))
+        var width := minf(540.0, maxf(320.0, size.x * 0.59))
         sheet.position = Vector2(size.x - width - 8, 8)
         sheet.size = Vector2(width, size.y - 16)
     else:
-        sheet.position = Vector2(8, minf(82.0, size.y * 0.12))
-        sheet.size = Vector2(size.x - 16, size.y - sheet.position.y - 88)
+        sheet.position = Vector2(8, minf(80.0, size.y * 0.105))
+        sheet.size = Vector2(size.x - 16, size.y - sheet.position.y - 85)
+    if hero != null:
+        hero.visible = size.y >= 620.0
+    if scroller != null:
+        scroller.scroll_deadzone = 18
 
 
 func _process(delta: float) -> void:
@@ -204,6 +269,7 @@ func refresh(force: bool = false) -> void:
         var rows: Array = snapshot.get("settlements", [])
         selected_id = int(rows[0]["id"]) if not rows.is_empty() else -1
     _update_picker()
+    _update_hero()
     if is_open:
         _render()
     route_visibility_changed.emit(show_routes)
@@ -223,25 +289,74 @@ func _update_picker() -> void:
         picker.select(count)
 
 
+func _update_hero() -> void:
+    if hero == null:
+        return
+    var row := _selected()
+    if row.is_empty():
+        hero_name.text = "NO SETTLEMENT"
+        return
+    hero_name.text = str(row["name"]).to_upper()
+    hero_status.text = "●  " + str(row["status"]).to_upper()
+    hero_status.add_theme_color_override("font_color",
+        DANGER if str(row["status"]) in ["struggling", "abandoned", "failed"] else GOLD)
+    var values := [str(row["population"]),
+        str(row["prosperity"]) if row["prosperity_assessed"] else "—",
+        str(row["active_links"]), str(row["projects"].size())]
+    for i in range(mini(values.size(), hero_values.size())):
+        hero_values[i].text = values[i]
+    if live_caption != null:
+        live_caption.text = "● LIVE  ·  TICK %d" % int(snapshot.get("tick", 0))
+
+
 func _on_picker(index: int) -> void:
     selected_id = picker.get_item_id(index)
+    _update_hero()
+    animate_content = true
     _render(false)
 
 
 func open_for(id: int = -1) -> void:
     if id >= 0:
         selected_id = id
+    if panel_tween != null and panel_tween.is_running():
+        panel_tween.kill()
     is_open = true
     shade.visible = true
     sheet.visible = true
     _layout()
     refresh(true)
+    if reduced_motion:
+        sheet.modulate.a = 1.0
+        shade.modulate.a = 1.0
+        sheet.scale = Vector2.ONE
+        return
+    var target := sheet.position
+    shade.modulate.a = 0.0
+    sheet.modulate.a = 0.0
+    sheet.position = target + Vector2(0, 30)
+    panel_tween = create_tween().set_parallel(true)
+    panel_tween.tween_property(shade, "modulate:a", 1.0, 0.19)
+    panel_tween.tween_property(sheet, "modulate:a", 1.0, 0.26)
+    panel_tween.tween_property(sheet, "position", target, 0.33).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
 
 
 func close() -> void:
     is_open = false
-    shade.visible = false
-    sheet.visible = false
+    if panel_tween != null and panel_tween.is_running():
+        panel_tween.kill()
+    if reduced_motion:
+        shade.visible = false
+        sheet.visible = false
+        return
+    panel_tween = create_tween().set_parallel(true)
+    panel_tween.tween_property(shade, "modulate:a", 0.0, 0.16)
+    panel_tween.tween_property(sheet, "modulate:a", 0.0, 0.17)
+    panel_tween.chain().tween_callback(func() -> void:
+        if not is_open:
+            shade.visible = false
+            sheet.visible = false
+    )
 
 
 func toggle() -> void:
@@ -275,7 +390,10 @@ func _selected() -> Dictionary:
 
 
 func _switch_tab(tab: int) -> void:
+    if tab == current_tab:
+        return
     current_tab = tab
+    animate_content = true
     _render(false)
     scroller.scroll_vertical = 0
 
