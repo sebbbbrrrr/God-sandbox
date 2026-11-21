@@ -64,6 +64,7 @@ var palette_content: VBoxContainer
 var inspector_panel: PanelContainer
 var modal_dim: ColorRect
 var settings_panel: PanelContainer
+var settings_content: VBoxContainer
 var status_line: Label
 var caption_line: Label
 var pause_button: Button
@@ -168,7 +169,7 @@ func _animate_press(button: Button) -> void:
 
 func _settings_section(column: VBoxContainer, title: String, description: String) -> void:
     var panel := PanelContainer.new()
-    panel.custom_minimum_size.y = 64
+    panel.custom_minimum_size.y = 78
     panel.add_theme_stylebox_override("panel", Motion.tile(11))
     column.add_child(panel)
     var stack := VBoxContainer.new()
@@ -177,6 +178,9 @@ func _settings_section(column: VBoxContainer, title: String, description: String
     stack.add_child(_label(title, 13, GOLD))
     var details := _label(description, 11, MUTED)
     details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    details.clip_text = false
+    details.custom_minimum_size.y = 30
+    details.size_flags_vertical = Control.SIZE_EXPAND_FILL
     stack.add_child(details)
 
 
@@ -397,6 +401,7 @@ func _make_interface() -> void:
     settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
     settings_panel.add_child(settings_scroll)
     var settings_col := VBoxContainer.new()
+    settings_content = settings_col
     settings_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     settings_col.add_theme_constant_override("separation", 11)
     settings_scroll.add_child(settings_col)
@@ -682,7 +687,9 @@ func _layout() -> void:
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
     modal_dim.size = size_view
-    settings_panel.size = Vector2(minf(size_view.x - 30, 380), minf(size_view.y - 26, maxf(380.0, size_view.y * 0.70)))
+    var settings_height := maxf(330.0, settings_content.get_combined_minimum_size().y + 24.0)
+    settings_panel.size = Vector2(minf(size_view.x - 30, 380),
+        minf(size_view.y - 26, settings_height))
     settings_panel.position = (size_view - settings_panel.size) * 0.5
 
 func blocks_world_input(point: Vector2) -> bool:
