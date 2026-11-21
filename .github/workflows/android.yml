@@ -2,7 +2,7 @@ name: God Sandbox Android APK
 
 on:
   push:
-    branches: [main, fix/citizen-workforce-distribution-pixel-tools]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
