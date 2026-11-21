@@ -36,6 +36,11 @@ func _ready() -> void:
     world = load_world()
     if world == null:
         world = Simulation.new(int(Time.get_unix_time_from_system()) % 2147483647)
+    # A fresh world can be inspected before its first authoritative tick.
+    # Initialise the existing legacy-capital registry and membership once,
+    # rather than showing a false "No settlements" empty UI at 1x/paused.
+    world.settlements.ensure_legacy(world)
+    world.settlements.rebuild_membership(world)
     font = ThemeDB.fallback_font
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
     selected_power = -1
