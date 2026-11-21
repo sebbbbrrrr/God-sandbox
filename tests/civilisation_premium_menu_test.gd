@@ -93,6 +93,14 @@ func run() -> void:
     await frame()
     check(hud.settings_panel.visible and hud.settings_panel.size.y <= root.size.y,
         "world settings are bounded in landscape")
+    var details_visible := false
+    for section in hud.settings_content.get_children():
+        if section is PanelContainer:
+            var group: Node = section.get_child(0)
+            for child in group.get_children():
+                if child is Label and child.text.contains("autosaves") and child.size.y > 12:
+                    details_visible = true
+    check(details_visible, "settings descriptions have visible height instead of blank cards")
     hud._show_settings(false)
     game._set_reduced_menu_motion(true)
     check(sheet.reduced_motion, "reduced motion propagates to all civilisation views")
