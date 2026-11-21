@@ -124,6 +124,63 @@ static func capture(world: RefCounted) -> Dictionary:
     _add_job(world.local_logistics.jobs, lookup, work, "Hauling")
     _add_job(world.regional_economy.road_jobs, lookup, work, "Roadwork")
     _add_job(world.regional_economy.trade_jobs, lookup, work, "Trade")
+    # One pass per large authoritative collection. This keeps a 24-settlement
+    # display cheap even in worlds with thousands of structures.
+    var buildings_by: Dictionary = {}
+    var housing_by: Dictionary = {}
+    var families_by: Dictionary = {}
+    var farms_by: Dictionary = {}
+    var projects_by: Dictionary = {}
+    var roads_by: Dictionary = {}
+    var traders_by: Dictionary = {}
+    for id in ids:
+        var key := str(id)
+        buildings_by[key] = 0
+        housing_by[key] = 0
+        families_by[key] = 0
+        farms_by[key] = 0
+        projects_by[key] = []
+        roads_by[key] = 0
+        traders_by[key] = 0
+    for house in world.construction.houses:
+        var key := str(_sid(house))
+        if buildings_by.has(key):
+            buildings_by[key] += 1
+            housing_by[key] += int(house.get("capacity", 0))
+    for family in world.households.families:
+        var key := str(_sid(family))
+        if families_by.has(key):
+            families_by[key] += 1
+    for farm in world.food.farms:
+        var key := str(_sid(farm))
+        if farms_by.has(key) and not bool(farm.get("harvested", false)):
+            farms_by[key] += 1
+    for road in world.regional_economy.road_queue:
+        var key := str(_sid(road))
+        if roads_by.has(key):
+            roads_by[key] += 1
+    for trade in world.regional_economy.trade_jobs.values():
+        var key := str(_sid(trade))
+        if traders_by.has(key):
+            traders_by[key] += 1
+    for project in world.construction.projects:
+        var key := str(_sid(project))
+        if not projects_by.has(key):
+            continue
+        var required: Dictionary = project.get("required", {})
+        var delivered: Dictionary = project.get("delivered", {})
+        var pending: Dictionary = {}
+        for good in required:
+            var remaining := maxi(0, int(required[good]) - int(delivered.get(good, 0)))
+            if remaining > 0:
+                pending[str(good)] = remaining
+        projects_by[key].append({"id": int(project.get("id", 0)),
+            "definition": str(project.get("definition_id", project.get("type", "Building"))),
+            "paused": bool(project.get("paused", false)),
+            "reason": str(project.get("pause_reason", "")),
+            "remaining_labour": int(project.get("remaining_labour", 0)),
+            "progress": int(project.get("progress", 0)),
+            "pending": pending, "last_tick": int(project.get("last_progress_tick", world.tick))})
     var social := _social_snapshot(world, lookup)
     var routes := _routes(world)
     var summaries: Array[Dictionary] = []
@@ -140,23 +197,24 @@ static func capture(world: RefCounted) -> Dictionary:
     for id in ids:
         var record: Dictionary = world.settlements.get_record(id)
         var population: int = world.settlements.population(id)
-        var capacity: int = world.settlements.housing(world, id)
+        var key := str(id)
+        var capacity: int = int(housing_by[key])
         var materials: Dictionary = world.inventory.settlement_inventory(id)
         var food: int = world.food.total(world.food.store(id))
         var status: String = str(record.get("status", "unknown"))
         var plans: Dictionary = record.get("plan", {})
-        var projects: Array[Dictionary] = []
-        var buildings := 0
-        var families := 0
-        var farms := 0
+        var projects: Array = projects_by[key]
+        var buildings: int = int(buildings_by[key])
+        var families: int = int(families_by[key])
+        var farms: int = int(farms_by[key])
         var hp := 0
         var hunger := 0
         var counted := 0
         var active_links := 0
         var building_links := 0
         var blocked := 0
-        var road_queue := 0
-        var traders := 0
+        var road_queue: int = int(roads_by[key])
+        var traders: int = int(traders_by[key])
         for person_id in world.settlements.residents.get(str(id), []):
             var person: Dictionary = lookup.get(str(person_id), {})
             if person.is_empty():
@@ -164,43 +222,12 @@ static func capture(world: RefCounted) -> Dictionary:
             counted += 1
             hp += int(person.get("hp", 0))
             hunger += clampi(int(person.get("hunger", 0)), 0, 100)
-        for house in world.construction.houses:
-            if _sid(house) == id:
-                buildings += 1
-        for family in world.households.families:
-            if _sid(family) == id:
-                families += 1
-        for farm in world.food.farms:
-            if _sid(farm) == id and not bool(farm.get("harvested", false)):
-                farms += 1
-        for project in world.construction.projects:
-            if _sid(project) == id:
-                var required: Dictionary = project.get("required", {})
-                var delivered: Dictionary = project.get("delivered", {})
-                var pending: Dictionary = {}
-                for good in required:
-                    var remaining := maxi(0, int(required[good]) - int(delivered.get(good, 0)))
-                    if remaining > 0:
-                        pending[str(good)] = remaining
-                projects.append({"id": int(project.get("id", 0)),
-                    "definition": str(project.get("definition_id", project.get("type", "Building"))),
-                    "paused": bool(project.get("paused", false)),
-                    "reason": str(project.get("pause_reason", "")),
-                    "remaining_labour": int(project.get("remaining_labour", 0)),
-                    "progress": int(project.get("progress", 0)),
-                    "pending": pending, "last_tick": int(project.get("last_progress_tick", world.tick))})
         for link in routes:
             if id in [int(link["a"]), int(link["b"])]:
                 match str(link["status"]):
                     "connected": active_links += 1
                     "blocked": blocked += 1
                     "building": building_links += 1
-        for road in world.regional_economy.road_queue:
-            if _sid(road) == id:
-                road_queue += 1
-        for trade in world.regional_economy.trade_jobs.values():
-            if _sid(trade) == id:
-                traders += 1
         var alerts: Array[String] = []
         var strengths: Array[String] = []
         if population > capacity:
