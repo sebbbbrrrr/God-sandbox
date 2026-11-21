@@ -13,12 +13,12 @@ args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parents[2]
 logs = pathlib.Path(args.logs)
 logs.mkdir(parents=True, exist_ok=True)
-names = ["simulation", "citizen_ai", "citizen_cognition", "civilisation_calendar_lifecycle",
+names = ["civilisation_premium_menu", "simulation", "citizen_ai", "citizen_cognition", "civilisation_calendar_lifecycle",
          "household_care", "food_survival", "autonomous_demography", "era_occupations",
          "item_catalogue", "physical_inventory", "construction", "toolmaking",
          "toolmaking_autonomy", "item_inspector", "game_item_ui", "unified_integration",
          "pinch_zoom_anchor", "universal_construction", "construction_animation",
-         "regional_economy", "settlement_founding", "settlement_planning", "settlement_network_lifecycle", "settlement_family_farm", "rendering", "input", "civilisation_observatory", "civilisation_premium_menu"]
+         "regional_economy", "settlement_founding", "settlement_planning", "settlement_network_lifecycle", "settlement_family_farm", "rendering", "input", "civilisation_observatory"]
 commands = [("import", ["--headless", "--editor", "--path", str(root), "--import", "--quit"])]
 commands += [(n, ["--headless", "--path", str(root), "--script", f"res://tests/{n}_test.gd"]) for n in names]
 commands += [("demo_scene", ["--headless", "--path", str(root), "res://scenes/settlement_demo.tscn", "--quit-after", "30"])]
