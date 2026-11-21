@@ -1,5 +1,5 @@
 age,region,categories,asset_count,building_designs,functional_integration,recipe_completion,animation_support,visual_quality_approval,authored_damage_states
-1,temperate_woodland,"civic,dwelling,production,storage,workshop",7,7,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
+1,temperate_woodland,"civic,dwelling,production,storage,workshop",8,8,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
 1,tropical_rainforest,,0,0,False,False,missing,missing,False
 1,arid_desert,,0,0,False,False,missing,missing,False
 1,coastal_island,,0,0,False,False,missing,missing,False
@@ -7,7 +7,7 @@ age,region,categories,asset_count,building_designs,functional_integration,recipe
 1,cold_snowy,dwelling,1,1,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
 1,grassland_steppe,,0,0,False,False,missing,missing,False
 1,river_wetland,,0,0,False,False,missing,missing,False
-2,temperate_woodland,"dwelling,storage,workshop",5,5,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
+2,temperate_woodland,"agriculture,dwelling,storage,workshop",9,9,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
 2,tropical_rainforest,dwelling,1,1,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
 2,arid_desert,dwelling,1,1,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
 2,coastal_island,,0,0,False,False,missing,missing,False
@@ -15,7 +15,7 @@ age,region,categories,asset_count,building_designs,functional_integration,recipe
 2,cold_snowy,,0,0,False,False,missing,missing,False
 2,grassland_steppe,,0,0,False,False,missing,missing,False
 2,river_wetland,,0,0,False,False,missing,missing,False
-3,temperate_woodland,,0,0,False,False,missing,missing,False
+3,temperate_woodland,"civic,dwelling,market,production,storage,workshop",8,8,True,True,shared stages and worker choreography,internal logical-scale review; device/owner pending,False
 3,tropical_rainforest,,0,0,False,False,missing,missing,False
 3,arid_desert,,0,0,False,False,missing,missing,False
 3,coastal_island,,0,0,False,False,missing,missing,False
