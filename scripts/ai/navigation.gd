@@ -99,8 +99,8 @@ static func manhattan(a: Vector2i, b: Vector2i) -> int:
 # Capped bucket sampling prevents O(population^2) scans at busy hubs.
 static func _occupants(world: RefCounted, cell: Vector2i, self_id: int) -> int:
     var amount: int = int(world.ai_context.cell_counts.get(cell, 0))
-    var self: Dictionary = world.ai_context.people.get(self_id, {})
-    if not self.is_empty() and int(self["x"]) == cell.x and int(self["y"]) == cell.y:
+    var actor: Dictionary = world.ai_context.people.get(self_id, {})
+    if not actor.is_empty() and int(actor["x"]) == cell.x and int(actor["y"]) == cell.y:
         amount -= 1
     return maxi(0, amount)
 
