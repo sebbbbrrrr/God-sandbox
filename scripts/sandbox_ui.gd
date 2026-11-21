@@ -1,6 +1,8 @@
 extends CanvasLayer
 class_name GodSandboxHUD
 
+const Motion = preload("res://scripts/ui/premium_motion.gd")
+
 ## Responsive, canvas-space Android HUD. World input is owned by game.gd;
 ## interactive Controls consume their own taps and expose their visible bounds.
 signal power_changed(power: int)
@@ -10,14 +12,15 @@ signal speed_pressed
 signal save_pressed
 signal items_pressed
 signal civilisation_pressed
+signal motion_preference_changed(reduced: bool)
 
-const INK := Color("#172825")
-const SURFACE := Color("#1b2d2b")
-const SURFACE_RAISED := Color("#304640")
-const BORDER := Color("#647e68")
-const GOLD := Color("#e4c58b")
-const IVORY := Color("#f5ecda")
-const MUTED := Color("#b6c7b6")
+const INK := Color("#101c18")
+const SURFACE := Color("#162a24")
+const SURFACE_RAISED := Color("#2a4438")
+const BORDER := Color("#7b957d")
+const GOLD := Color("#ebcb91")
+const IVORY := Color("#f8f1e3")
+const MUTED := Color("#aebfac")
 const POWER_NAMES := ["Raise", "Fire", "Forest", "Bless", "Spawn", "Ocean"]
 const POWER_ICONS := ["raise", "fire", "forest", "bless", "spawn", "ocean"]
 const CATEGORIES := ["All", "World", "Life", "Nature", "Chaos"]
@@ -31,6 +34,7 @@ const ICON_PATHS := {
     "bless": "<path d='m12 2 2.6 6.5L21 11l-6.4 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2Z'/><path d='M20 18v5m-2.5-2.5h5M4 2v4M2 4h4'/>",
     "spawn": "<circle cx='12' cy='6' r='3'/><path d='M5 22v-5c0-4 2.8-6 7-6s7 2 7 6v5M9 16v6m6-6v6'/>",
     "ocean": "<path d='M2 7c3-4 5 4 10 0s7-4 10 0M2 13c3-4 5 4 10 0s7-4 10 0M2 19c3-4 5 4 10 0s7-4 10 0'/>",
+    "village": "<path d='M3 21V10l5-4 5 4v11M13 21V7l4-3 4 3v14M2 21h20M6 14h3m7-3h2m-2 4h2M7 18h2'/>",
     "tools": "<rect x='3' y='4' width='7' height='7' rx='1'/><rect x='14' y='4' width='7' height='7' rx='1'/><rect x='3' y='15' width='7' height='6' rx='1'/><rect x='14' y='15' width='7' height='6' rx='1'/>",
     "pause": "<rect x='5' y='4' width='5' height='16' rx='1'/><rect x='14' y='4' width='5' height='16' rx='1'/>",
     "play": "<path d='m7 4 13 8-13 8V4Z'/>",
@@ -46,6 +50,8 @@ var is_paused := false
 var current_speed := 1
 var palette_open := false
 var reduced_motion := false
+var haptics_enabled := true
+var last_haptic_at := -100
 var panel_tween: Tween
 var inspector_tween: Tween
 var icon_cache := {}
@@ -54,9 +60,11 @@ var root: Control
 var top_panel: PanelContainer
 var dock_panel: PanelContainer
 var palette_panel: PanelContainer
+var palette_content: VBoxContainer
 var inspector_panel: PanelContainer
 var modal_dim: ColorRect
 var settings_panel: PanelContainer
+var settings_content: VBoxContainer
 var status_line: Label
 var caption_line: Label
 var pause_button: Button
@@ -85,35 +93,19 @@ func _ready() -> void:
     _layout()
 
 func _panel_style(raised: bool = false) -> StyleBoxFlat:
-    var s := StyleBoxFlat.new()
-    var tint := SURFACE_RAISED if raised else SURFACE
-    tint.a = 0.96 if raised else 0.94
-    s.bg_color = tint
-    s.border_color = Color("#607c6c", 0.68)
-    s.set_border_width_all(1)
-    s.set_corner_radius_all(15)
-    s.set_content_margin_all(10)
-    s.shadow_color = Color(0.0, 0.0, 0.0, 0.28)
-    s.shadow_size = 5
-    s.shadow_offset = Vector2(0, 3)
-    return s
+    return Motion.surface(raised, 17, raised)
+
 
 func _button_style(selected: bool, hovered: bool = false) -> StyleBoxFlat:
-    var s := StyleBoxFlat.new()
-    s.bg_color = GOLD if selected else (Color("#456256") if hovered else Color("#243b35"))
-    s.set_corner_radius_all(10)
-    s.set_content_margin_all(5)
-    if selected:
-        s.border_color = Color("#ffe4ac")
-        s.set_border_width_all(1)
-    return s
+    return Motion.action(selected, hovered)
+
 
 func _icon(name: String, dark: bool = false) -> Texture2D:
     var key := name + (":dark" if dark else ":light")
     if icon_cache.has(key):
         return icon_cache[key]
     var path: String = ICON_PATHS.get(name, ICON_PATHS["tools"])
-    var stroke := "#233730" if dark else "#f5ecda"
+    var stroke := "#233730" if dark else "#f8f1e3"
     var svg := "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='" + stroke + "' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'>" + path + "</svg>"
     var img := Image.new()
     if img.load_svg_from_buffer(svg.to_utf8_buffer(), 1.5) != OK:
@@ -146,11 +138,12 @@ func _button(value: String, icon_name: String = "", width: float = 50.0) -> Butt
     b.add_theme_stylebox_override("normal", _button_style(false))
     b.add_theme_stylebox_override("hover", _button_style(false, true))
     b.add_theme_stylebox_override("pressed", _button_style(true))
-    b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+    b.add_theme_stylebox_override("focus", Motion.action(false, true))
     b.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
     if icon_name != "":
         b.set_meta("hud_icon", icon_name)
         b.icon = _icon(icon_name)
+    Motion.attach(b, func() -> bool: return not reduced_motion)
     return b
 
 func _set_selected(button: Button, selected: bool) -> void:
@@ -162,12 +155,34 @@ func _set_selected(button: Button, selected: bool) -> void:
         button.icon = _icon(str(button.get_meta("hud_icon")), selected)
 
 func _animate_press(button: Button) -> void:
+    if haptics_enabled and OS.has_feature("mobile"):
+        var now := Time.get_ticks_msec()
+        if now - last_haptic_at > 75:
+            last_haptic_at = now
+            Input.vibrate_handheld(9)
     if reduced_motion:
         return
-    button.pivot_offset = button.size * 0.5
-    var t := create_tween()
-    t.tween_property(button, "scale", Vector2(0.94, 0.94), 0.07)
-    t.tween_property(button, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    var tween := button.create_tween()
+    button.modulate = Color("#fff3dc")
+    tween.tween_property(button, "modulate", Color.WHITE, 0.18).set_trans(Tween.TRANS_SINE)
+
+
+func _settings_section(column: VBoxContainer, title: String, description: String) -> void:
+    var panel := PanelContainer.new()
+    panel.custom_minimum_size.y = 78
+    panel.add_theme_stylebox_override("panel", Motion.tile(11))
+    column.add_child(panel)
+    var stack := VBoxContainer.new()
+    stack.add_theme_constant_override("separation", 4)
+    panel.add_child(stack)
+    stack.add_child(_label(title, 13, GOLD))
+    var details := _label(description, 11, MUTED)
+    details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    details.clip_text = false
+    details.custom_minimum_size.y = 30
+    details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    stack.add_child(details)
+
 
 func _make_interface() -> void:
     root = Control.new()
@@ -187,11 +202,12 @@ func _make_interface() -> void:
     status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     status.add_theme_constant_override("separation", 0)
     top_row.add_child(status)
-    status_line = _label("GOD SANDBOX", 14, GOLD)
+    status_line = _label("GOD SANDBOX", 15, GOLD)
     caption_line = _label("Year 1  ·  0 souls", 10, MUTED)
     status.add_child(status_line)
     status.add_child(caption_line)
-    civilisation_button = _button("Towns", "", 56)
+    civilisation_button = _button("", "village", 52)
+    civilisation_button.tooltip_text = "Towns and civilisation information"
     pause_button = _button("", "pause", 42)
     speed_button = _button("1×", "", 44)
     var settings_button := _button("", "settings", 42)
@@ -223,10 +239,12 @@ func _make_interface() -> void:
     var dock_row := HBoxContainer.new()
     dock_row.add_theme_constant_override("separation", 6)
     dock_panel.add_child(dock_row)
-    hand_button = _button("Hand", "hand", 68)
-    items_button = _button("Items", "", 66)
-    palette_button = _button("Powers", "tools", 91)
-    active_button = _button("Choose power", "", 45)
+    hand_button = _button("", "hand", 54)
+    hand_button.tooltip_text = "Hand: navigate and inspect"
+    items_button = _button("Items", "", 62)
+    palette_button = _button("", "tools", 58)
+    palette_button.tooltip_text = "Choose god powers"
+    active_button = _button("Select", "", 45)
     active_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     dock_brush_button = _button("M", "", 43)
     for b in [hand_button, items_button, palette_button, active_button, dock_brush_button]:
@@ -265,13 +283,20 @@ func _make_interface() -> void:
     palette_panel.add_theme_stylebox_override("panel", _panel_style(true))
     palette_panel.mouse_filter = Control.MOUSE_FILTER_STOP
     root.add_child(palette_panel)
+    var palette_scroll := ScrollContainer.new()
+    palette_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    palette_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    palette_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    palette_panel.add_child(palette_scroll)
     var palette_vbox := VBoxContainer.new()
+    palette_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     palette_vbox.add_theme_constant_override("separation", 7)
-    palette_panel.add_child(palette_vbox)
+    palette_scroll.add_child(palette_vbox)
+    palette_content = palette_vbox
     var heading := HBoxContainer.new()
     heading.add_theme_constant_override("separation", 8)
     palette_vbox.add_child(heading)
-    var palette_title := _label("GOD POWERS", 14, GOLD)
+    var palette_title := _label("GOD POWERS", 17, GOLD)
     palette_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     heading.add_child(palette_title)
     var close_palette := _button("", "close", 34)
@@ -328,7 +353,7 @@ func _make_interface() -> void:
             _choose_brush(index)
         )
 
-    var hint := _label("Tap an equipped power again to return to Hand.", 11, MUTED)
+    var hint := _label("TAP AN ACTIVE POWER AGAIN TO RETURN TO HAND", 10, MUTED)
     palette_vbox.add_child(hint)
     palette_panel.visible = false
 
@@ -342,7 +367,7 @@ func _make_interface() -> void:
     inspector_panel.add_child(inspect_col)
     var inspect_header := HBoxContainer.new()
     inspect_col.add_child(inspect_header)
-    inspector_title = _label("INSPECT", 15, GOLD)
+    inspector_title = _label("INSPECT", 16, GOLD)
     inspector_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     inspect_header.add_child(inspector_title)
     var close_inspector := _button("", "close", 34)
@@ -361,7 +386,7 @@ func _make_interface() -> void:
 
     modal_dim = ColorRect.new()
     modal_dim.name = "ModalDim"
-    modal_dim.color = Color(0, 0, 0, 0.44)
+    modal_dim.color = Color(0.007, 0.016, 0.012, 0.68)
     modal_dim.mouse_filter = Control.MOUSE_FILTER_STOP
     modal_dim.visible = false
     root.add_child(modal_dim)
@@ -370,12 +395,19 @@ func _make_interface() -> void:
     settings_panel.mouse_filter = Control.MOUSE_FILTER_STOP
     settings_panel.add_theme_stylebox_override("panel", _panel_style(true))
     root.add_child(settings_panel)
+    var settings_scroll := ScrollContainer.new()
+    settings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    settings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    settings_panel.add_child(settings_scroll)
     var settings_col := VBoxContainer.new()
-    settings_col.add_theme_constant_override("separation", 12)
-    settings_panel.add_child(settings_col)
+    settings_content = settings_col
+    settings_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    settings_col.add_theme_constant_override("separation", 11)
+    settings_scroll.add_child(settings_col)
     var settings_head := HBoxContainer.new()
     settings_col.add_child(settings_head)
-    var settings_title := _label("SETTINGS", 17, GOLD)
+    var settings_title := _label("WORLD SETTINGS", 18, GOLD)
     settings_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     settings_head.add_child(settings_title)
     var settings_close := _button("", "close", 38)
@@ -385,24 +417,37 @@ func _make_interface() -> void:
         _animate_press(settings_close)
         _show_settings(false)
     )
-    settings_col.add_child(_label("Your world is autosaved while you play.", 12, MUTED))
+    _settings_section(settings_col, "WORLD & PROGRESS",
+        "Your world autosaves during play. Save manually before switching worlds.")
     var save_button := _button("Save world now", "", 120)
     save_button.custom_minimum_size.y = 50
     settings_col.add_child(save_button)
     save_button.pressed.connect(func() -> void:
         _animate_press(save_button)
         save_pressed.emit()
-        save_button.text = "World saved"
+        save_button.text = "Save requested"
     )
+    _settings_section(settings_col, "PRESENTATION",
+        "Choose responsive motion and tactile feedback for the interface.")
     motion_button = _button("Animations: On", "", 120)
     motion_button.custom_minimum_size.y = 50
     settings_col.add_child(motion_button)
     motion_button.pressed.connect(func() -> void:
+        _animate_press(motion_button)
         reduced_motion = not reduced_motion
         motion_button.text = "Animations: Off" if reduced_motion else "Animations: On"
+        motion_preference_changed.emit(reduced_motion)
     )
-    settings_col.add_child(_label("Hand: drag to move. Painting: drag to draw.", 12, MUTED))
-    settings_col.add_child(_label("Two fingers: move and zoom while editing.", 12, MUTED))
+    var haptic_button := _button("Haptics: On", "", 120)
+    haptic_button.custom_minimum_size.y = 48
+    settings_col.add_child(haptic_button)
+    haptic_button.pressed.connect(func() -> void:
+        _animate_press(haptic_button)
+        haptics_enabled = not haptics_enabled
+        haptic_button.text = "Haptics: On" if haptics_enabled else "Haptics: Off"
+    )
+    _settings_section(settings_col, "CONTROLS",
+        "Hand: drag to explore. Powers: tap or drag to act. Two fingers: pan and zoom.")
     settings_panel.visible = false
     _rebuild_power_buttons()
     _refresh_selection()
@@ -460,7 +505,7 @@ func _refresh_selection() -> void:
     _set_selected(hand_button, active_power == -1)
     _set_selected(palette_button, palette_open)
     _set_selected(active_button, active_power != -1)
-    active_button.text = "Choose power" if active_power == -1 else POWER_NAMES[active_power]
+    active_button.text = "Select" if active_power == -1 else POWER_NAMES[active_power]
     if active_power >= 0:
         active_button.set_meta("hud_icon", POWER_ICONS[active_power])
         active_button.icon = _icon(POWER_ICONS[active_power], true)
@@ -504,19 +549,24 @@ func open_palette(show: bool) -> void:
     if panel_tween != null and panel_tween.is_running():
         panel_tween.kill()
     var target_y := _palette_y()
+    # Palette stays inside its allocated screen bounds throughout the tween.
+    palette_panel.position.y = target_y
+    palette_panel.pivot_offset = palette_panel.size * 0.5
     if reduced_motion:
         palette_panel.visible = show
-        palette_panel.position.y = target_y if show else dock_panel.position.y + 8
+        palette_panel.scale = Vector2.ONE
         palette_panel.modulate.a = 1.0 if show else 0.0
         return
     if show:
         palette_panel.visible = true
-        palette_panel.position.y = dock_panel.position.y + 6
+        palette_panel.scale = Vector2(0.975, 0.975)
         palette_panel.modulate.a = 0.0
     panel_tween = create_tween().set_parallel(true)
     panel_tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-    panel_tween.tween_property(palette_panel, "position:y", target_y if show else dock_panel.position.y + 8, 0.22)
-    panel_tween.tween_property(palette_panel, "modulate:a", 1.0 if show else 0.0, 0.18)
+    panel_tween.tween_property(palette_panel, "scale",
+        Vector2.ONE if show else Vector2(0.985, 0.985), 0.22)
+    panel_tween.tween_property(palette_panel, "modulate:a",
+        1.0 if show else 0.0, 0.18)
     if not show:
         panel_tween.chain().tween_callback(func() -> void:
             if not palette_open:
@@ -526,7 +576,7 @@ func open_palette(show: bool) -> void:
 func _palette_y() -> float:
     var viewport_size := get_viewport().get_visible_rect().size
     if viewport_size.x > viewport_size.y * 1.2:
-        return maxf(78.0, (viewport_size.y - palette_panel.size.y) * 0.45)
+        return maxf(76.0, (viewport_size.y - palette_panel.size.y) * 0.5)
     return dock_panel.position.y - palette_panel.size.y - 9
 
 func _show_settings(show: bool) -> void:
@@ -611,10 +661,24 @@ func _layout() -> void:
     top_panel.size = Vector2(width, 62)
     dock_panel.size = Vector2(width, 72)
     dock_panel.position = Vector2(x, size_view.y - 82)
+    var narrow := size_view.x < 390.0
+    civilisation_button.text = ""
+    civilisation_button.custom_minimum_size.x = 44 if narrow else 52
+    for button in [pause_button, speed_button]:
+        button.custom_minimum_size.x = 38 if narrow else (42 if button == pause_button else 44)
+    hand_button.custom_minimum_size.x = 44 if narrow else 54
+    items_button.custom_minimum_size.x = 48 if narrow else 62
+    palette_button.custom_minimum_size.x = 49 if narrow else 58
+    active_button.custom_minimum_size.x = 44 if narrow else 45
+    dock_brush_button.custom_minimum_size.x = 38 if narrow else 43
+    palette_button.text = ""
     var is_landscape := size_view.x > size_view.y * 1.2
-    var palette_width := minf(370.0, size_view.x * 0.48) if is_landscape else width
+    power_grid.columns = 2 if narrow else 3
+    var palette_width := minf(385.0, size_view.x * 0.52) if is_landscape else width
     var palette_x := size_view.x - palette_width - 12.0 if is_landscape else x
-    palette_panel.size = Vector2(palette_width, palette_panel.get_combined_minimum_size().y)
+    var palette_height := palette_content.get_combined_minimum_size().y + 22
+    var available_height := maxf(180.0, size_view.y - 102.0) if is_landscape else maxf(170.0, dock_panel.position.y - 88.0)
+    palette_panel.size = Vector2(palette_width, minf(palette_height, available_height))
     if panel_tween == null or not panel_tween.is_running():
         palette_panel.position = Vector2(palette_x, _palette_y() if palette_open else dock_panel.position.y + 8)
     else:
@@ -623,7 +687,10 @@ func _layout() -> void:
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
     modal_dim.size = size_view
-    settings_panel.size = Vector2(minf(size_view.x - 30, 360), settings_panel.get_combined_minimum_size().y)
+    # A bounded 580px content sheet leaves the game recognisable behind it.
+    # The internal ScrollContainer handles smaller phones and landscape.
+    var settings_height := minf(size_view.y - 26.0, 580.0)
+    settings_panel.size = Vector2(minf(size_view.x - 30.0, 380.0), settings_height)
     settings_panel.position = (size_view - settings_panel.size) * 0.5
 
 func blocks_world_input(point: Vector2) -> bool:

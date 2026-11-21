@@ -36,6 +36,11 @@ func _ready() -> void:
     world = load_world()
     if world == null:
         world = Simulation.new(int(Time.get_unix_time_from_system()) % 2147483647)
+    # A fresh world can be inspected before its first authoritative tick.
+    # Initialise the existing legacy-capital registry and membership once,
+    # rather than showing a false "No settlements" empty UI at 1x/paused.
+    world.settlements.ensure_legacy(world)
+    world.settlements.rebuild_membership(world)
     font = ThemeDB.fallback_font
     camera_center = Vector2(world.WIDTH / 2.0, world.HEIGHT / 2.0)
     selected_power = -1
@@ -68,6 +73,7 @@ func _ready() -> void:
     hud.save_pressed.connect(save_world)
     hud.items_pressed.connect(_open_items)
     hud.civilisation_pressed.connect(_toggle_civilisation)
+    hud.motion_preference_changed.connect(_set_reduced_menu_motion)
     hud.set_active_power(selected_power)
     hud.set_brush(brush_index)
 
@@ -202,6 +208,11 @@ func _cycle_speed() -> void:
     simulation_speed = 2 if simulation_speed == 1 else (4 if simulation_speed == 2 else 1)
     hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused, simulation_speed)
 
+func _set_reduced_menu_motion(reduced: bool) -> void:
+    if civilisation_ui != null:
+        civilisation_ui.reduced_motion = reduced
+
+
 func _toggle_civilisation() -> void:
     if civilisation_ui == null:
         return
@@ -259,6 +270,9 @@ func _input(event: InputEvent) -> void:
             (event is InputEventMouseButton or event is InputEventMouseMotion):
         return
     if inspector.visible:
+        if item_visual != null and ((event is InputEventScreenTouch and not event.pressed) or
+                (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT)):
+            item_visual.flash_feedback(event.position)
         super._input(event)
         if item_visual != null:
             item_visual.queue_redraw()

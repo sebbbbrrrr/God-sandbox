@@ -13,7 +13,7 @@ args = parser.parse_args()
 root = pathlib.Path(__file__).resolve().parents[2]
 logs = pathlib.Path(args.logs)
 logs.mkdir(parents=True, exist_ok=True)
-names = ["simulation", "citizen_ai", "citizen_cognition", "civilisation_calendar_lifecycle",
+names = ["civilisation_premium_menu", "simulation", "citizen_ai", "citizen_cognition", "civilisation_calendar_lifecycle",
          "household_care", "food_survival", "autonomous_demography", "era_occupations",
          "item_catalogue", "physical_inventory", "construction", "toolmaking",
          "toolmaking_autonomy", "item_inspector", "game_item_ui", "unified_integration",

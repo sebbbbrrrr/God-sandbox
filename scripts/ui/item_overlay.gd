@@ -2,22 +2,34 @@ extends RefCounted
 # D4: compact modal inventory inspector, original porcelain/olive HUD styling.
 # CanvasItem drawing is display-only; all commands live in item_inspector.gd.
 const Art = preload("res://scripts/ui/item_pixel_art.gd")
-const BACK := Color("#182a28")
-const SURFACE := Color("#233b37")
-const PANEL := Color("#293e38")
-const BORDER := Color("#7b8e75")
-const GOLD := Color("#dcc49c")
-const IVORY := Color("#efe5d2")
-const MUTED := Color("#afc0b2")
-const GREEN := Color("#829d7e")
+const BACK := Color("#13241f")
+const SURFACE := Color("#1c332b")
+const PANEL := Color("#274238")
+const BORDER := Color("#79947f")
+const GOLD := Color("#ebcb93")
+const IVORY := Color("#f7eddd")
+const MUTED := Color("#acbfad")
+const GREEN := Color("#88bf95")
+static var _style_cache: Dictionary = {}
 
 static func _label(canvas: CanvasItem, font: Font, message: String, pos: Vector2,
         size: int, color: Color = IVORY, width: float = -1.0) -> void:
     canvas.draw_string(font, pos, message, HORIZONTAL_ALIGNMENT_LEFT, width, size, color)
 
-static func _rect(canvas: CanvasItem, rect: Rect2, fill: Color, outline: Color = BORDER) -> void:
-    canvas.draw_rect(rect, fill)
-    canvas.draw_rect(rect, outline, false, 1.0)
+static func _rect(canvas: CanvasItem, rect: Rect2, fill: Color,
+        outline: Color = BORDER, radius: int = 8) -> void:
+    # Cache styles: no StyleBox allocations while the inventory renders at 30fps.
+    var key := fill.to_html(true) + ":" + outline.to_html(true) + ":" + str(radius)
+    if not _style_cache.has(key):
+        var style := StyleBoxFlat.new()
+        style.bg_color = fill
+        style.border_color = Color(outline, 0.57)
+        style.set_border_width_all(1)
+        style.set_corner_radius_all(radius)
+        style.anti_aliasing = true
+        style.anti_aliasing_size = 0.6
+        _style_cache[key] = style
+    canvas.draw_style_box(_style_cache[key], rect)
 
 static func draw_chip(canvas: CanvasItem, font: Font, viewport: Vector2, toolbar: float,
         active: bool = false) -> void:
@@ -46,15 +58,15 @@ static func draw_panel(canvas: CanvasItem, font: Font, world: RefCounted,
     canvas.draw_rect(Rect2(0.0, 50.0, viewport.x,
         viewport.y - toolbar - 50.0), Color(0.04, 0.09, 0.08, 0.56))
     canvas.draw_rect(Rect2(bounds.position + Vector2(3, 5),
-        bounds.size), Color(0.03, 0.06, 0.05, 0.56))
-    _rect(canvas, bounds, BACK, Color("#819d88"))
-    canvas.draw_rect(Rect2(bounds.position, Vector2(bounds.size.x, 39)), SURFACE)
+        bounds.size), Color(0.01, 0.03, 0.02, 0.44))
+    _rect(canvas, bounds, BACK, Color("#c3ad83"), 14)
+    canvas.draw_rect(Rect2(bounds.position + Vector2(2, 2), Vector2(bounds.size.x - 4, 38)), SURFACE)
     canvas.draw_rect(Rect2(bounds.position.x + 1, bounds.position.y + 39,
         bounds.size.x - 2, 1.0), GOLD)
     _label(canvas, font, inspector.title_for(world),
-        bounds.position + Vector2(13, 26), 15, IVORY, bounds.size.x - 62)
+        bounds.position + Vector2(13, 26), 16, GOLD, bounds.size.x - 62)
     var close: Rect2 = g["close"]
-    _rect(canvas, close, Color("#405549"))
+    _rect(canvas, close, Color("#355446"), Color("#b6c899"), 9)
     _label(canvas, font, "X", close.position + Vector2(13, 27), 18, GOLD)
     var tabs: Array = g["tabs"]
     _tab(canvas, font, tabs[0], "PACK", inspector.view_kind == "citizen",
@@ -70,9 +82,9 @@ static func draw_panel(canvas: CanvasItem, font: Font, world: RefCounted,
             Vector2(area.size.x, inspector.ROW_HEIGHT - 2))
         var index: int = inspector.scroll + slot
         var selected: bool = index < rows.size() and str(rows[index]["key"]) == inspector.selected_key
-        _rect(canvas, rect, Color("#405c4e") if selected else
-            Color("#293f39") if posmod(slot, 2) == 0 else Color("#263a34"),
-            GOLD if selected else Color("#3f5b4e"))
+        _rect(canvas, rect, Color("#416552") if selected else
+            Color("#253e34") if posmod(slot, 2) == 0 else Color("#21382f"),
+            GOLD if selected else Color("#577464"), 7)
         if index >= rows.size():
             continue
         var entry: Dictionary = rows[index]
@@ -143,8 +155,8 @@ static func draw_panel(canvas: CanvasItem, font: Font, world: RefCounted,
             Vector2(button_w - 4, action_rect.size.y - 2))
         var has_action := i < actions.size()
         var usable := has_action and bool(actions[i]["enabled"])
-        var fill := Color("#718e76") if usable else Color("#2a403a")
-        _rect(canvas, b, fill, GOLD if usable else Color("#486157"))
+        var fill := Color("#426c56") if usable else Color("#263a32")
+        _rect(canvas, b, fill, GOLD if usable else Color("#486157"), 9)
         if has_action:
             var text_value := str(actions[i]["label"])
             if text_value.length() > 14:
