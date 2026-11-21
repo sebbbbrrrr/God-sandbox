@@ -44,6 +44,11 @@ func run() -> void:
         "town panel has a distinct overview and scrollable body")
     check(sheet.hero_name.text != "" and sheet.hero_values[0].text != "",
         "town hero renders actual selection instead of static placeholder")
+    check(sheet.picker.item_count >= 2 and sheet.hero_name.text != "NO SETTLEMENT",
+        "initial capitals are inspectable even when simulation is paused before tick one")
+    check(hud.civilisation_button.text == "" and hud.palette_button.text == "" and
+        hud.civilisation_button.tooltip_text != "",
+        "icon-only HUD actions retain clear meanings without truncated captions")
     sheet._switch_tab(2)
     check(sheet.current_tab == 2, "route tab selects promptly")
     sheet._on_map_toggled(true)
