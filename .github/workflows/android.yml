@@ -2,7 +2,7 @@ name: God Sandbox Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, fix/citizen-workforce-distribution-pixel-tools]
   workflow_dispatch:
 
 permissions:
@@ -77,6 +77,12 @@ jobs:
 
       - name: Run simulation regression tests
         run: ./godot --headless --path . --script res://tests/simulation_test.gd
+
+      - name: Validate citizen movement, work animation and distribution
+        run: |
+          ./godot --headless --path . --script res://tests/construction_animation_test.gd
+          ./godot --headless --path . --script res://tests/workforce_distribution_test.gd
+          ./godot --headless --path . --script res://tests/food_survival_test.gd
 
       - name: Smoke-test main game scene
         run: ./godot --headless --path . --quit-after 30
