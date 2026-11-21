@@ -1,6 +1,7 @@
 extends RefCounted
 const Nav = preload("res://scripts/ai/navigation.gd")
 const Site = preload("res://scripts/construction/site_state.gd")
+const Labour = preload("res://scripts/ai/labour_priorities.gd")
 
 func interrupt(engine: RefCounted, world: RefCounted, id: String) -> void:
     var task: Dictionary = engine.jobs.get(id, {})
@@ -49,14 +50,22 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
         # Actual occupation, tools, proximity and local knowledge govern work.
         var chosen = {}
         var best = -2147483647
+        var pressure: Dictionary = Labour.pressures(world, nation)
+        var critical_repairs := false
+        for house in engine.houses:
+            if world.settlements.sid(house) == nation and str(house.get("pending_action", "")) == "repair" and int(house.get("condition", 100)) < 45:
+                critical_repairs = true
+                break
+        # Protect collapsing housing before assigning optional projects.
+        var maintenance_assigned := critical_repairs and engine.lifecycle.assign(engine, world, person)
         var origin = Vector2i(int(person["x"]), int(person["y"]))
         for site in engine.projects:
-            if world.settlements.sid(site) != nation or site["paused"] or int(site["reserved"]) != 0:
+            if maintenance_assigned or world.settlements.sid(site) != nation or site["paused"] or int(site["reserved"]) != 0:
                 continue
             var row: Dictionary = engine.catalogue.definition(str(site["definition_id"]))
             if not engine.catalogue.worker_eligible(world, person, row):
                 continue
-            var score = int(site.get("priority", 50)) * 100 - Nav.manhattan(origin, Vector2i(int(site["x"]), int(site["y"])))
+            var score: int = Labour.project_score(world, site, origin, pressure)
             if score > best:
                 chosen = site
                 best = score
@@ -64,7 +73,7 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
             chosen["reserved"] = int(person["id"])
             chosen["assigned_workers"] = [int(person["id"])]
             engine.jobs[id] = {"kind": "build", "nation": int(person["nation"]), "settlement_id": nation, "project_id": int(chosen["id"]), "phase": "depot", "cargo": {}, "wood": 0, "stone": 0, "last_active_tick": int(world.tick)}
-        elif engine.lifecycle.assign(engine, world, person):
+        elif maintenance_assigned or engine.lifecycle.assign(engine, world, person):
             pass
         else:
             if engine.gatherer_count(nation) >= engine.MAX_GATHERERS:
@@ -89,7 +98,7 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
     var site: Dictionary = engine.site_by_id(int(task.get("project_id", 0)))
     if str(task["phase"]) == "return" or site.is_empty():
         if not task.get("cargo", {}).is_empty():
-            if engine.walk(world, person, mind, depot) and world.inventory.transfer(world, "citizen:" + id, "settlement:" + str(nation), task["cargo"], int(person["id"])):
+            if engine.walk(world, person, mind, depot, 1) and world.inventory.transfer(world, "citizen:" + id, "settlement:" + str(nation), task["cargo"], int(person["id"])):
                 finish(engine, id, mind)
             return true
         finish(engine, id, mind)
@@ -103,7 +112,7 @@ func work_step(engine: RefCounted, world: RefCounted, person: Dictionary, mind: 
         return false
     var target = Vector2i(int(site["x"]), int(site["y"]))
     if str(task["phase"]) == "depot":
-        if not engine.walk(world, person, mind, depot):
+        if not engine.walk(world, person, mind, depot, 1):
             return true
         engine.reserve_available(world, site)
         var claim: Dictionary = world.inventory.reservations.get("site:" + str(site["id"]), {}).get("units", {})
