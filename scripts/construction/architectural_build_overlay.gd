@@ -10,11 +10,16 @@ var atlas: RefCounted
 var parent_renderer
 var seconds := 0.0
 var pending := 0.0
+var profiles: Dictionary = {}
 
 func setup(renderer: Node2D, simulation: RefCounted, pixel_atlas: RefCounted) -> void:
     parent_renderer = renderer
     world = simulation
     atlas = pixel_atlas
+    var manifest: Variant = JSON.parse_string(FileAccess.get_file_as_string(
+        "res://data/architecture/construction_motion_manifest.json"))
+    if manifest is Dictionary:
+        profiles = manifest.get("buildings", {})
     texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
     z_index = 470
 
@@ -82,7 +87,8 @@ func _draw() -> void:
         var phase: Dictionary = progress_by_phase(site, row)
         _draw_survey(dest, phase, site)
         if parent_renderer.detail > 0:
-            _draw_pieces(sprite, dest.position, phase, int(site.get("id", 0)))
+            var profile: Dictionary = profiles.get(str(site.get("definition_id", "")), {})
+            _draw_pieces(sprite, dest.position, phase, int(site.get("id", 0)), profile)
         else:
             # Distant-view budget: whole horizontal sections without per-brick calls.
             _draw_low_detail(sprite, dest, phase)
@@ -100,7 +106,8 @@ func _draw_survey(rect: Rect2, phase: Dictionary, site: Dictionary) -> void:
     if bool(site.get("paused", false)):
         draw_rect(rect, Color("#985847", 0.13))
 
-func _draw_pieces(sprite: String, at: Vector2, phase: Dictionary, seed: int) -> void:
+func _draw_pieces(sprite: String, at: Vector2, phase: Dictionary, seed: int,
+        profile: Dictionary) -> void:
     var source: Rect2 = atlas.region(sprite)
     var width: int = int(source.size.x)
     var height: int = int(source.size.y)
@@ -110,9 +117,15 @@ func _draw_pieces(sprite: String, at: Vector2, phase: Dictionary, seed: int) -> 
     # from its final authored atlas rectangle.
     var base_top: int = floori(float(height) * 0.79)
     var roof_bottom: int = floori(float(height) * 0.34)
-    _draw_band(sprite, at, source, base_top, height, 5, 3, float(phase["base"]), seed)
-    _draw_band(sprite, at, source, roof_bottom, base_top, 7, 4, float(phase["walls"]), seed + 11)
-    _draw_band(sprite, at, source, 0, roof_bottom, 6, 3, float(phase["roof"]), seed + 29)
+    var foundation: Array = profile.get("foundation", [5, 3])
+    var walls: Array = profile.get("walls", [7, 4])
+    var roofing: Array = profile.get("roof", [6, 3])
+    _draw_band(sprite, at, source, base_top, height,
+        int(foundation[0]), int(foundation[1]), float(phase["base"]), seed)
+    _draw_band(sprite, at, source, roof_bottom, base_top,
+        int(walls[0]), int(walls[1]), float(phase["walls"]), seed + 11)
+    _draw_band(sprite, at, source, 0, roof_bottom,
+        int(roofing[0]), int(roofing[1]), float(phase["roof"]), seed + 29)
 
 func _draw_band(sprite: String, at: Vector2, src: Rect2, top: int, bottom: int,
         cell_width: int, cell_height: int, fraction: float, seed: int) -> void:
