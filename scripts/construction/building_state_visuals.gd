@@ -24,7 +24,8 @@ static func draw(canvas: Node2D, game: Node2D) -> void:
                 canvas.draw_polyline(points,Color("#463e31"),maxf(1.0,s),false)
         if bool(house.get("abandoned",false)):
             _prop(canvas,atlas,"fern_cluster",p+Vector2(ts*0.5,ts*1.4),s*0.55)
-    Operational.draw(canvas, game)
+    if game.world_renderer == null or game.world_renderer.build_overlay == null:
+        Operational.draw(canvas, game)
     # Persistent collapse provenance supplies actual ruins. Demolitions are clean.
     for entity in game.world.construction.archived:
         var history: Array = entity.get("history",[])
