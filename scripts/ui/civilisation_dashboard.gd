@@ -351,14 +351,16 @@ func open_for(id: int = -1) -> void:
         shade.modulate.a = 1.0
         sheet.scale = Vector2.ONE
         return
-    var target := sheet.position
+    # Inset scale never escapes the safe viewport, even during the first frame
+    # of an Android orientation change. A vertical slide overflowed landscape.
     shade.modulate.a = 0.0
     sheet.modulate.a = 0.0
-    sheet.position = target + Vector2(0, 30)
+    sheet.pivot_offset = sheet.size * 0.5
+    sheet.scale = Vector2(0.96, 0.96)
     panel_tween = create_tween().set_parallel(true)
     panel_tween.tween_property(shade, "modulate:a", 1.0, 0.19)
     panel_tween.tween_property(sheet, "modulate:a", 1.0, 0.26)
-    panel_tween.tween_property(sheet, "position", target, 0.33).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+    panel_tween.tween_property(sheet, "scale", Vector2.ONE, 0.30).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
 
 
 func close() -> void:
