@@ -50,7 +50,8 @@ static func _social_snapshot(world: RefCounted, people: Dictionary) -> Dictionar
             unique[pair] = true
             var first := _sid(people[str(owner_id)])
             var second := _sid(people[str(other_id)])
-            for id in [first, second]:
+            var involved := [first] if first == second else [first, second]
+            for id in involved:
                 var k := str(id)
                 if not by_settlement.has(k):
                     by_settlement[k] = {"ties": 0, "trust": 0, "rivalry": 0, "external": 0}
