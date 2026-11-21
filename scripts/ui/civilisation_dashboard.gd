@@ -246,7 +246,7 @@ func _layout() -> void:
         map_button.text = "Map" if compact else "Routes"
         map_button.custom_minimum_size.x = 58 if compact else 78
     if locate_button != null:
-        locate_button.text = "⌖" if compact else "Locate"
+        locate_button.text = "Find" if compact else "Locate"
         locate_button.custom_minimum_size.x = 43 if compact else 58
     if brand_subtitle != null:
         brand_subtitle.visible = not compact
