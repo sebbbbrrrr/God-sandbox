@@ -60,6 +60,7 @@ var root: Control
 var top_panel: PanelContainer
 var dock_panel: PanelContainer
 var palette_panel: PanelContainer
+var palette_content: VBoxContainer
 var inspector_panel: PanelContainer
 var modal_dim: ColorRect
 var settings_panel: PanelContainer
@@ -274,9 +275,16 @@ func _make_interface() -> void:
     palette_panel.add_theme_stylebox_override("panel", _panel_style(true))
     palette_panel.mouse_filter = Control.MOUSE_FILTER_STOP
     root.add_child(palette_panel)
+    var palette_scroll := ScrollContainer.new()
+    palette_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    palette_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    palette_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    palette_panel.add_child(palette_scroll)
     var palette_vbox := VBoxContainer.new()
+    palette_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     palette_vbox.add_theme_constant_override("separation", 7)
-    palette_panel.add_child(palette_vbox)
+    palette_scroll.add_child(palette_vbox)
+    palette_content = palette_vbox
     var heading := HBoxContainer.new()
     heading.add_theme_constant_override("separation", 8)
     palette_vbox.add_child(heading)
@@ -554,7 +562,7 @@ func open_palette(show: bool) -> void:
 func _palette_y() -> float:
     var viewport_size := get_viewport().get_visible_rect().size
     if viewport_size.x > viewport_size.y * 1.2:
-        return maxf(78.0, (viewport_size.y - palette_panel.size.y) * 0.45)
+        return maxf(76.0, (viewport_size.y - palette_panel.size.y) * 0.5)
     return dock_panel.position.y - palette_panel.size.y - 9
 
 func _show_settings(show: bool) -> void:
@@ -639,10 +647,23 @@ func _layout() -> void:
     top_panel.size = Vector2(width, 62)
     dock_panel.size = Vector2(width, 72)
     dock_panel.position = Vector2(x, size_view.y - 82)
+    var narrow := size_view.x < 390.0
+    civilisation_button.text = "" if narrow else "Towns"
+    civilisation_button.custom_minimum_size.x = 44 if narrow else 76
+    for button in [pause_button, speed_button]:
+        button.custom_minimum_size.x = 38 if narrow else (42 if button == pause_button else 44)
+    hand_button.custom_minimum_size.x = 44 if narrow else 68
+    items_button.custom_minimum_size.x = 48 if narrow else 62
+    palette_button.custom_minimum_size.x = 60 if narrow else 86
+    active_button.custom_minimum_size.x = 44 if narrow else 45
+    dock_brush_button.custom_minimum_size.x = 38 if narrow else 43
+    palette_button.text = "Powers" if not narrow else "Tools"
     var is_landscape := size_view.x > size_view.y * 1.2
-    var palette_width := minf(370.0, size_view.x * 0.48) if is_landscape else width
+    var palette_width := minf(385.0, size_view.x * 0.52) if is_landscape else width
     var palette_x := size_view.x - palette_width - 12.0 if is_landscape else x
-    palette_panel.size = Vector2(palette_width, palette_panel.get_combined_minimum_size().y)
+    var palette_height := palette_content.get_combined_minimum_size().y + 22
+    var available_height := maxf(180.0, size_view.y - 102.0) if is_landscape else maxf(170.0, dock_panel.position.y - 88.0)
+    palette_panel.size = Vector2(palette_width, minf(palette_height, available_height))
     if panel_tween == null or not panel_tween.is_running():
         palette_panel.position = Vector2(palette_x, _palette_y() if palette_open else dock_panel.position.y + 8)
     else:
@@ -651,7 +672,7 @@ func _layout() -> void:
     inspector_panel.position = Vector2(size_view.x - inspector_panel.size.x - 11, top_panel.position.y + 73)
     modal_dim.position = Vector2.ZERO
     modal_dim.size = size_view
-    settings_panel.size = Vector2(minf(size_view.x - 30, 380), minf(size_view.y - 26, settings_panel.get_combined_minimum_size().y))
+    settings_panel.size = Vector2(minf(size_view.x - 30, 380), minf(size_view.y - 26, maxf(260.0, settings_panel.get_combined_minimum_size().y)))
     settings_panel.position = (size_view - settings_panel.size) * 0.5
 
 func blocks_world_input(point: Vector2) -> bool:
