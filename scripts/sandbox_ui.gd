@@ -379,9 +379,15 @@ func _make_interface() -> void:
     settings_panel.mouse_filter = Control.MOUSE_FILTER_STOP
     settings_panel.add_theme_stylebox_override("panel", _panel_style(true))
     root.add_child(settings_panel)
+    var settings_scroll := ScrollContainer.new()
+    settings_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    settings_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    settings_panel.add_child(settings_scroll)
     var settings_col := VBoxContainer.new()
-    settings_col.add_theme_constant_override("separation", 12)
-    settings_panel.add_child(settings_col)
+    settings_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    settings_col.add_theme_constant_override("separation", 11)
+    settings_scroll.add_child(settings_col)
     var settings_head := HBoxContainer.new()
     settings_col.add_child(settings_head)
     var settings_title := _label("WORLD SETTINGS", 18, GOLD)
@@ -402,7 +408,7 @@ func _make_interface() -> void:
     save_button.pressed.connect(func() -> void:
         _animate_press(save_button)
         save_pressed.emit()
-        save_button.text = "World saved"
+        save_button.text = "Save requested"
     )
     _settings_section(settings_col, "PRESENTATION",
         "Choose responsive motion and tactile feedback for the interface.")
