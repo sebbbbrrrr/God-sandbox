@@ -1,21 +1,21 @@
 {
-  "version": 1,
+  "version": 2,
   "note": "Per-building atlas sprite assembly profiles. Source pixels are never modified; subdivisions are reveal geometry, not exact physical material unit counts.",
   "buildings": {
     "primitive_shelter": {
       "sprite": "hut_a",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
@@ -27,17 +27,17 @@
     "timber_hut": {
       "sprite": "cottage_a",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        8,
         3
       ],
       "walls": [
-        4,
+        8,
         3
       ],
       "roof": [
@@ -49,21 +49,21 @@
     "tool_area": {
       "sprite": "workshop_a",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -71,21 +71,21 @@
     "local_storage": {
       "sprite": "storage_a",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -93,40 +93,40 @@
     "forest_camp": {
       "sprite": "workshop_b",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        8,
         3
       ],
       "walls": [
-        4,
+        8,
         3
       ],
       "roof": [
         5,
-        3
+        2
       ],
       "operation": "none"
     },
     "quarry_camp": {
       "sprite": "stone_house_a",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "stone",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
         5,
-        3
+        4
       ],
       "walls": [
-        4,
-        3
+        5,
+        4
       ],
       "roof": [
         5,
@@ -137,39 +137,39 @@
     "cultivation_field": {
       "sprite": "farmhouse_a",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        8,
         3
       ],
       "walls": [
-        4,
+        8,
         3
       ],
       "roof": [
-        5,
-        3
+        6,
+        2
       ],
       "operation": "none"
     },
     "market_square": {
       "sprite": "market_a",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        8,
         3
       ],
       "walls": [
-        4,
+        8,
         3
       ],
       "roof": [
@@ -181,44 +181,44 @@
     "gathering_hall": {
       "sprite": "barn_a",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
         5,
-        3
+        2
       ],
       "operation": "none"
     },
     "branch_shelter": {
       "sprite": "arch_branch_shelter",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        9,
+        4
       ],
       "walls": [
-        4,
-        3
+        9,
+        4
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -226,19 +226,19 @@
     "knapping_canopy": {
       "sprite": "arch_knapping_canopy",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        9,
+        4
       ],
       "walls": [
-        4,
-        3
+        9,
+        4
       ],
       "roof": [
         5,
@@ -249,19 +249,19 @@
     "logging_canopy": {
       "sprite": "arch_logging_canopy",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        8,
+        4
       ],
       "walls": [
-        4,
-        3
+        8,
+        4
       ],
       "roof": [
         5,
@@ -272,19 +272,19 @@
     "quarry_shade": {
       "sprite": "arch_quarry_shade",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        8,
+        4
       ],
       "walls": [
-        4,
-        3
+        8,
+        4
       ],
       "roof": [
         5,
@@ -295,22 +295,22 @@
     "basket_store": {
       "sprite": "arch_basket_store",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wattle",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -318,22 +318,22 @@
     "meeting_canopy": {
       "sprite": "arch_meeting_canopy",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        9,
+        4
       ],
       "walls": [
-        4,
-        3
+        9,
+        4
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -341,53 +341,53 @@
     "charcoal_clamp": {
       "sprite": "arch_charcoal_clamp",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "earth",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        7,
+        4
       ],
       "walls": [
-        4,
-        3
+        7,
+        4
       ],
       "roof": [
-        5,
-        3
+        6,
+        4
       ],
       "operation": "heat_embers"
     },
     "earth_shelter": {
       "sprite": "arch_earth_shelter",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "earth",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        6,
+        4
       ],
       "walls": [
-        4,
-        3
+        6,
+        4
       ],
       "roof": [
         5,
-        3
+        4
       ],
       "operation": "none"
     },
     "wattle_house": {
       "sprite": "arch_wattle_house",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "wattle",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -400,11 +400,11 @@
         3
       ],
       "walls": [
-        4,
+        5,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -412,7 +412,7 @@
     "communal_longhouse": {
       "sprite": "arch_longhouse",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -420,11 +420,11 @@
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
@@ -436,7 +436,7 @@
     "raised_granary": {
       "sprite": "arch_raised_granary",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -444,15 +444,15 @@
         "wood"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
@@ -460,7 +460,7 @@
     "pottery_kiln": {
       "sprite": "arch_pottery_kiln",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "clay",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -474,11 +474,11 @@
         3
       ],
       "walls": [
-        4,
+        5,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "heat_embers"
@@ -486,7 +486,7 @@
     "weaving_house": {
       "sprite": "arch_weaving_house",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "wattle",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -494,11 +494,11 @@
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
@@ -510,7 +510,7 @@
     "adobe_house": {
       "sprite": "arch_adobe_house",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "adobe",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -520,22 +520,22 @@
       ],
       "foundation": [
         5,
-        3
+        4
       ],
       "walls": [
-        4,
-        3
+        5,
+        4
       ],
       "roof": [
-        5,
-        3
+        6,
+        4
       ],
       "operation": "none"
     },
     "stilt_house": {
       "sprite": "arch_stilt_house",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -543,11 +543,11 @@
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
@@ -559,18 +559,18 @@
     "cordage_canopy": {
       "sprite": "arch_cordage_canopy",
       "age": 1,
-      "material_family": "masonry",
+      "material_family": "wood",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
+        8,
         3
       ],
       "walls": [
-        4,
+        8,
         3
       ],
       "roof": [
@@ -582,7 +582,7 @@
     "timber_workyard": {
       "sprite": "arch_timber_workyard",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -590,11 +590,11 @@
         "wood"
       ],
       "foundation": [
-        5,
+        7,
         3
       ],
       "walls": [
-        4,
+        7,
         3
       ],
       "roof": [
@@ -606,7 +606,7 @@
     "grain_grinding_shelter": {
       "sprite": "arch_grain_grinding_shelter",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "stone",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -614,11 +614,11 @@
         "wood"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
@@ -630,7 +630,7 @@
     "water_lift": {
       "sprite": "arch_water_lift",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -638,11 +638,11 @@
         "wood"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
@@ -654,7 +654,7 @@
     "bronze_courtyard": {
       "sprite": "arch_bronze_courtyard",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "adobe",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -666,7 +666,7 @@
         3
       ],
       "walls": [
-        4,
+        5,
         3
       ],
       "roof": [
@@ -678,7 +678,7 @@
     "bronze_smelter": {
       "sprite": "arch_bronze_smelter",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "brick",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -688,11 +688,11 @@
       ],
       "foundation": [
         5,
-        3
+        4
       ],
       "walls": [
-        4,
-        3
+        5,
+        4
       ],
       "roof": [
         5,
@@ -703,7 +703,7 @@
     "bronze_forge": {
       "sprite": "arch_bronze_forge",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "brick",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -711,15 +711,15 @@
         "wood"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "heat_embers"
@@ -727,19 +727,19 @@
     "ore_mine": {
       "sprite": "arch_ore_mine",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "stone",
       "build_materials": [
         "plant_fibre",
         "stone",
         "wood"
       ],
       "foundation": [
-        5,
-        3
+        6,
+        4
       ],
       "walls": [
-        4,
-        3
+        6,
+        4
       ],
       "roof": [
         5,
@@ -750,7 +750,7 @@
     "bronze_granary": {
       "sprite": "arch_bronze_granary",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "brick",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -762,7 +762,7 @@
         3
       ],
       "walls": [
-        4,
+        5,
         3
       ],
       "roof": [
@@ -774,7 +774,7 @@
     "bronze_market": {
       "sprite": "arch_bronze_market",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "clay",
         "stone",
@@ -783,11 +783,11 @@
         "woven_cloth"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
@@ -799,7 +799,7 @@
     "bronze_meeting_hall": {
       "sprite": "arch_bronze_meeting_hall",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "brick",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -807,11 +807,11 @@
         "timber_beam"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
@@ -823,7 +823,7 @@
     "masonry_workyard": {
       "sprite": "arch_masonry_workyard",
       "age": 3,
-      "material_family": "masonry",
+      "material_family": "stone",
       "build_materials": [
         "clay",
         "plant_fibre",
@@ -835,7 +835,7 @@
         3
       ],
       "walls": [
-        4,
+        5,
         3
       ],
       "roof": [
@@ -847,7 +847,7 @@
     "fenced_farmstead": {
       "sprite": "arch_fenced_farmstead",
       "age": 2,
-      "material_family": "masonry",
+      "material_family": "timber",
       "build_materials": [
         "plant_fibre",
         "reeds",
@@ -855,18 +855,25 @@
         "wood"
       ],
       "foundation": [
-        5,
+        6,
         3
       ],
       "walls": [
-        4,
+        6,
         3
       ],
       "roof": [
-        5,
+        6,
         3
       ],
       "operation": "none"
     }
+  },
+  "frame_sheet": {
+    "path_template": "res://assets/pixel/construction_frames/{building_id}.png.b64",
+    "frames": 32,
+    "columns": 8,
+    "rows": 4,
+    "quality": "source-pixel-exact construction reveal; 37 individually authored layouts, rasterised cumulative frames"
   }
 }
