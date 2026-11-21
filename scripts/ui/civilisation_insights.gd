@@ -86,15 +86,17 @@ static func _routes(world: RefCounted) -> Array[Dictionary]:
         var link: Dictionary = world.regional_economy.links[key]
         var path: Array = link.get("path", [])
         var built := 0
+        var built_indices: Array[int] = []
         for i in range(1, path.size() - 1):
             if path[i] is Array and path[i].size() >= 2:
                 if world.regional_economy.is_road(world,
                         Vector2i(int(path[i][0]), int(path[i][1]))):
                     built += 1
+                    built_indices.append(i)
         result.append({"key": str(key), "a": int(link.get("a", -1)),
             "b": int(link.get("b", -1)), "status": str(link.get("status", "unplanned")),
-            "built": built, "required": maxi(0, path.size() - 2),
-            "path": path, "attempt": int(link.get("attempt", 0))})
+            "built": built, "built_indices": built_indices,
+            "required": maxi(0, path.size() - 2), "path": path, "attempt": int(link.get("attempt", 0))})
     result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
         var aa := int(a["a"])
         var ba := int(b["a"])
