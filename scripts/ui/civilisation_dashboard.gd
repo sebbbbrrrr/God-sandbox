@@ -319,7 +319,11 @@ func _bar(name: String, value: int, description: String = "", inverse: bool = fa
     bar.value = clampi(value, 0, 100)
     bar.show_percentage = false
     bar.custom_minimum_size.y = 12
-    var tint := MUTED if value < 0 else (DANGER if value >= 70 else (WARNING if value >= 40 else GOOD)) if inverse else (GOOD if value >= 70 else (WARNING if value >= 40 else DANGER))
+    var tint := MUTED
+    if value >= 0:
+        tint = DANGER if value >= 70 else (WARNING if value >= 40 else GOOD)
+        if not inverse:
+            tint = GOOD if value >= 70 else (WARNING if value >= 40 else DANGER)
     bar.add_theme_stylebox_override("background", _style(DARK, 5))
     bar.add_theme_stylebox_override("fill", _style(tint, 5))
     content.add_child(bar)
