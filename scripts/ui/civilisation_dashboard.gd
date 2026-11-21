@@ -30,6 +30,9 @@ var shade: ColorRect
 var sheet: PanelContainer
 var picker: OptionButton
 var map_button: CheckButton
+var locate_button: Button
+var brand_title: Label
+var brand_subtitle: Label
 var tab_buttons: Array[Button] = []
 var scroller: ScrollContainer
 var content: VBoxContainer
@@ -125,8 +128,10 @@ func _build() -> void:
     brand.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     brand.add_theme_constant_override("separation", -1)
     headline.add_child(brand)
-    brand.add_child(_label("CIVILISATION", 18, GOLD))
-    brand.add_child(_label("THE LIVING WORLD  /  INTELLIGENCE", 9, MUTED))
+    brand_title = _label("CIVILISATION", 18, GOLD)
+    brand_subtitle = _label("LIVING WORLD / INTELLIGENCE", 9, MUTED)
+    brand.add_child(brand_title)
+    brand.add_child(brand_subtitle)
     map_button = CheckButton.new()
     map_button.text = "Routes"
     map_button.tooltip_text = "Draw real road connections and settlement markers on the world"
@@ -137,9 +142,10 @@ func _build() -> void:
     Motion.attach(map_button, func() -> bool: return not reduced_motion)
     headline.add_child(map_button)
     map_button.toggled.connect(_on_map_toggled)
-    var focus := _button("Locate", 58)
-    focus.pressed.connect(_focus_selected)
-    headline.add_child(focus)
+    locate_button = _button("Locate", 58)
+    locate_button.tooltip_text = "Locate the selected town on the world map"
+    locate_button.pressed.connect(_focus_selected)
+    headline.add_child(locate_button)
     var dismiss := _button("X", 43)
     dismiss.pressed.connect(close)
     headline.add_child(dismiss)
@@ -235,6 +241,20 @@ func _layout() -> void:
     root.size = size
     shade.position = Vector2.ZERO
     shade.size = size
+    var compact := size.x < 390.0
+    if map_button != null:
+        map_button.text = "Map" if compact else "Routes"
+        map_button.custom_minimum_size.x = 58 if compact else 78
+    if locate_button != null:
+        locate_button.text = "⌖" if compact else "Locate"
+        locate_button.custom_minimum_size.x = 43 if compact else 58
+    if brand_subtitle != null:
+        brand_subtitle.visible = not compact
+    var short_tabs := ["Home", "Goods", "Trade", "People", "Past"]
+    var long_tabs := ["Overview", "Economy", "Routes", "People", "History"]
+    for i in range(tab_buttons.size()):
+        tab_buttons[i].text = short_tabs[i] if compact else long_tabs[i]
+        tab_buttons[i].add_theme_font_size_override("font_size", 10 if compact else 11)
     var landscape := size.x > size.y * 1.18
     if landscape:
         var width := minf(540.0, maxf(320.0, size.x * 0.59))
