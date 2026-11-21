@@ -68,6 +68,7 @@ func _ready() -> void:
     hud.save_pressed.connect(save_world)
     hud.items_pressed.connect(_open_items)
     hud.civilisation_pressed.connect(_toggle_civilisation)
+    hud.motion_preference_changed.connect(_set_reduced_menu_motion)
     hud.set_active_power(selected_power)
     hud.set_brush(brush_index)
 
@@ -201,6 +202,11 @@ func _toggle_pause() -> void:
 func _cycle_speed() -> void:
     simulation_speed = 2 if simulation_speed == 1 else (4 if simulation_speed == 2 else 1)
     hud.update_stats(1 + world.tick / 3600, world.citizens.size(), paused, simulation_speed)
+
+func _set_reduced_menu_motion(reduced: bool) -> void:
+    if civilisation_ui != null:
+        civilisation_ui.reduced_motion = reduced
+
 
 func _toggle_civilisation() -> void:
     if civilisation_ui == null:
