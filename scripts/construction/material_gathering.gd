@@ -1,5 +1,6 @@
 extends RefCounted
 const Nav = preload("res://scripts/ai/navigation.gd")
+const Labour = preload("res://scripts/ai/labour_priorities.gd")
 const RESOURCE_RADIUS := 12
 const MAX_GATHERERS := 4
 var stockpiles: Array[Dictionary] = [{"wood": 0, "stone": 0}, {"wood": 0, "stone": 0}]
@@ -48,7 +49,10 @@ func source_for(world: RefCounted, person: Dictionary, material: String) -> Dict
             var target = approach(world, origin, source)
             if target.x < 0:
                 continue
+            var claims: int = Labour.claim_count(jobs, [source.x, source.y], ["gather"])
             var score: int = Nav.manhattan(origin, target) + Nav.manhattan(target, depot)
+            # A second gatherer should prefer a different forest/quarry tile.
+            score += claims * 48 + posmod(source.x * 3 + source.y * 5 + int(person["id"]), 5)
             if score < shortest:
                 shortest = score
                 result = {"source": [source.x, source.y], "target": [target.x, target.y]}
@@ -62,16 +66,18 @@ func gatherer_count(nation: int) -> int:
     return result
 
 
-func walk(world: RefCounted, person: Dictionary, mind: Dictionary, target: Vector2i) -> bool:
+func walk(world: RefCounted, person: Dictionary, mind: Dictionary,
+        target: Vector2i, contact_radius: int = 0) -> bool:
     var previous = Vector2i(int(person["x"]), int(person["y"]))
-    if previous == target:
+    if (Nav.manhattan(previous, target) <= contact_radius):
         return true
-    var next: Vector2i = Nav.next_step(world, person, mind, target)
+    var destination: Vector2i = Nav.hub_access(world, person, target) if contact_radius > 0 else target
+    var next: Vector2i = Nav.next_step(world, person, mind, destination)
     if next != previous:
         person["x"] = next.x
         person["y"] = next.y
         world.ai_context.moved(person, previous)
-    return next == target
+    return Nav.manhattan(next, target) <= contact_radius
 
 func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: String, task: Dictionary, depot: Vector2i) -> bool:
     if str(task["phase"]) == "depot":
@@ -80,7 +86,7 @@ func gather_step(world: RefCounted, person: Dictionary, mind: Dictionary, id: St
         if info.is_empty():
             holder = "settlement:"+str(task.get("settlement_id",task["nation"]))
             info = world.inventory._holder(world,holder)
-        if walk(world, person, mind, info.get("cell",depot)):
+        if walk(world, person, mind, info.get("cell",depot), 1):
             var material = str(task["material"])
             if world.inventory.transfer(world, "citizen:" + id,
                     holder, {material: maxi(1, int(task.get("amount", 1)))}, int(person["id"])):
